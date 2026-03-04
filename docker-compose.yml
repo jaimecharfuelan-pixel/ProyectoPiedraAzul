@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: '3.9'
 
 services:
@@ -211,3 +212,17 @@ volumes:
 networks:
   piedrazul-net:
     driver: bridge
+=======
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: ContenedorPostgresDePiedraAzul
+    environment:
+      POSTGRES_USER: PiedraAzulUsuario
+      POSTGRES_PASSWORD: PiedraAzulContraseña
+      POSTGRES_DB: BaseDeDatosPiedraAzul
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+>>>>>>> bbca243 (Entorno listo)
