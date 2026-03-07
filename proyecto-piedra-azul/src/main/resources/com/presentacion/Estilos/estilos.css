@@ -1,0 +1,15 @@
+.button {
+    -fx-background-color: #2196F3;
+    /* Azul moderno */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 20;
+    /* Bordes redondeados */
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #1976D2;
+    /* Azul más oscuro al pasar el mouse */
+}
