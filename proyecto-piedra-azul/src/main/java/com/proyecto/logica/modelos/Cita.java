@@ -1,50 +1,60 @@
 package com.proyecto.logica.modelos;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class Cita {
-    private LocalDate attFecha;
-    private LocalTime attHora;
-    private Medico attMedico;
-    private Paciente attPaciente;
 
-    public Cita(LocalDate prmFecha, LocalTime prmHora, Medico prmMedico, Paciente prmPaciente) {
-        this.attFecha = prmFecha;
-        this.attHora = prmHora;
-        this.attMedico = prmMedico;
-        this.attPaciente = prmPaciente;
+    private int id;
+    private Paciente paciente;
+    private Medico medico;
+    private LocalDateTime fechaHora;
+    private String estado;
+
+    public Cita(int prmId, Paciente prmPaciente, Medico prmMedico, LocalDateTime prmFechaHora, String prmEstado) {
+        this.id = prmId;
+        this.paciente = prmPaciente;
+        this.medico = prmMedico;
+        this.fechaHora = prmFechaHora;
+        this.estado = prmEstado;
     }
 
-    public LocalDate getFecha() {
-        return attFecha;
+    public int getId() {
+        return id;
     }
 
-    public void setFecha(LocalDate prmFecha) {
-        this.attFecha = prmFecha;
-    }
-
-    public LocalTime getHora() {
-        return attHora;
-    }
-
-    public void setHora(LocalTime prmHora) {
-        this.attHora = prmHora;
-    }
-
-    public Medico getMedico() {
-        return attMedico;
-    }
-
-    public void setMedico(Medico prmMedico) {
-        this.attMedico = prmMedico;
+    public void setId(int prmId) {
+        this.id = prmId;
     }
 
     public Paciente getPaciente() {
-        return attPaciente;
+        return paciente;
     }
 
     public void setPaciente(Paciente prmPaciente) {
-        this.attPaciente = prmPaciente;
+        this.paciente = prmPaciente;
+    }
+
+    public Medico getMedico() {
+        return medico;
+    }
+
+    public void setMedico(Medico prmMedico) {
+        this.medico = prmMedico;
+    }
+
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(LocalDateTime prmFechaHora) {
+        this.fechaHora = prmFechaHora;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String prmEstado) {
+        this.estado = prmEstado;
     }
 }
