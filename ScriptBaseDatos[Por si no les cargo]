@@ -1,0 +1,77 @@
+-- 1. ELIMINACIÓN DE TABLAS (Por si quieren volver a ejecutar el script desde cero)
+DROP TABLE IF EXISTS Cita;
+DROP TABLE IF EXISTS JornadaLaboral;
+DROP TABLE IF EXISTS Usuario;
+DROP TABLE IF EXISTS Paciente;
+DROP TABLE IF EXISTS Agendador;
+DROP TABLE IF EXISTS MedicoTerapista;
+DROP TABLE IF EXISTS Persona;
+DROP TABLE IF EXISTS DominioEspecialidad;
+
+-- 2. TABLAS INDEPENDIENTES Y CATÁLOGOS
+CREATE TABLE DominioEspecialidad (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Persona (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    CC VARCHAR(20) UNIQUE NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    celular VARCHAR(20),
+    genero CHAR(1),
+    fechaNacimiento DATE,
+    correo VARCHAR(150)
+);
+
+-- 3. ESPECIALIZACIONES (Herencia de Persona)
+CREATE TABLE MedicoTerapista (
+    idPersona INT PRIMARY KEY,
+    especialidad INT,
+    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE,
+    FOREIGN KEY (especialidad) REFERENCES DominioEspecialidad(id)
+);
+
+CREATE TABLE Paciente (
+    idPersona INT PRIMARY KEY,
+    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Agendador (
+    idPersona INT PRIMARY KEY,
+    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+);
+
+-- 4. TABLAS DEPENDIENTES
+CREATE TABLE Usuario (
+    id SERIAL PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    idPersona INT UNIQUE,
+    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+);
+
+-- Entidad Débil por Identificación (Usa PK compuesta)
+CREATE TABLE JornadaLaboral (
+    idMedico INT NOT NULL,
+    idTurno INT NOT NULL, 
+    horaInicio TIME NOT NULL,
+    horaFin TIME NOT NULL,
+    diasSemana VARCHAR(50), 
+    duracionEstimadaAtencion INT,
+    PRIMARY KEY (idMedico, idTurno),
+    FOREIGN KEY (idMedico) REFERENCES MedicoTerapista(idPersona) ON DELETE CASCADE
+);
+
+-- Entidad Débil por Existencia
+CREATE TABLE Cita (
+    idCita SERIAL PRIMARY KEY,
+    idPaciente INT NOT NULL,
+    idMedico INT NOT NULL,
+    fecha DATE NOT NULL,
+    horaInicio TIME NOT NULL,
+    horaFin TIME NOT NULL,
+    FOREIGN KEY (idPaciente) REFERENCES Paciente(idPersona) ON DELETE CASCADE,
+    FOREIGN KEY (idMedico) REFERENCES MedicoTerapista(idPersona) ON DELETE CASCADE
+);
