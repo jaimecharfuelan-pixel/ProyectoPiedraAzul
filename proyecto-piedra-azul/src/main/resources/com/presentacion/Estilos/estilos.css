@@ -1,15 +1,153 @@
-.button {
-    -fx-background-color: #2196F3;
-    /* Azul moderno */
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-background-radius: 20;
-    /* Bordes redondeados */
-    -fx-padding: 10 20;
-    -fx-cursor: hand;
+
+.root {
+    -fx-background-color: #f0f2f5; /* Fondo general de la ventana */
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
 }
 
+/* ========================================================================= */
+/* --- CONTENEDOR PRINCIPAL DEL LOGIN (El "Card" central blanco) ---       */
+/* ========================================================================= */
+.main-login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
+}
+
+/* ========================================================================= */
+/* --- SECCIÓN IZQUIERDA (FORMULARIO) ---                                */
+/* ========================================================================= */
+.login-left-pane {
+    -fx-background-color: white;
+    -fx-padding: 50px 40px 40px 40px; /* Padding generoso */
+    -fx-background-radius: 15px 0 0 15px; /* Redondear solo lado izquierdo */
+}
+
+/* Título "Bienvenido" */
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003E72; /* Color azul principal */
+    -fx-padding: 0 0 10px 0;
+}
+
+/* Subtítulo*/
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #888888; /* Gris suave */
+    -fx-padding: 0 0 30px 0;
+}
+
+/* Etiquetas de campo (Usuario, Contraseña) */
+.label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666666;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 5px 0;
+}
+
+/* --- ESTILOS PARA CAMPOS DE TEXTO Y CONTRASEÑA --- */
+.text-field, .password-field {
+    -fx-background-color: #f5f5f5; /* Fondo gris claro */
+    -fx-background-radius: 8px; /* Bordes redondeados pequeños */
+    -fx-border-color: transparent;
+    -fx-padding: 12px 15px; /* Más alto para que queden mejor */
+    -fx-font-size: 14px;
+}
+
+/* Efecto al enfocar el campo */
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 8px;
+    -fx-background-color: white; /* Cambia a blanco al editar */
+}
+
+/* Texto de prompt (placeholder) */
+.text-field .prompt-text, .password-field .prompt-text {
+    -fx-prompt-text-fill: #aaaaaa;
+}
+
+/* --- ESTILOS PARA ENLACES (Links) --- */
+.hyperlink {
+    -fx-text-fill: #2196F3;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-underline: true;
+}
+
+.label-grey-small {
+    -fx-font-size: 12px;
+    -fx-text-fill: #888888;
+}
+
+/* ========================================================================= */
+/* --- ESTILOS PARA EL BOTÓN PRINCIPAL (Actualizando el tuyo) ---          */
+/* ========================================================================= */
+.button {
+    -fx-background-color: #005db2 !important;
+    -fx-text-fill: white !important;          
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
 .button:hover {
-    -fx-background-color: #1976D2;
-    /* Azul más oscuro al pasar el mouse */
+    -fx-background-color: #004a8f !important;
+}
+/* ========================================================================= */
+/* --- SECCIÓN DERECHA (INFORMACIÓN) ---                                 */
+/* ========================================================================= */
+.login-right-pane {
+    -fx-background-color: #e8f1fc; /* Fondo azul claro pastel */
+    -fx-background-radius: 0 15px 15px 0; /* Redondear solo lado derecho */
+    -fx-padding: 40px;
+    -fx-alignment: CENTER; /* Central todo */
+}
+
+.logo-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-padding: 30px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 5);
+}
+
+.info-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003E72;
+    -fx-padding: 20px 0 10px 0;
+    -fx-text-alignment: CENTER;
+}
+
+.info-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666666;
+    -fx-text-alignment: CENTER;
+    -fx-line-spacing: 1.5; /* Separación de líneas */
+    -fx-padding: 0 0 30px 0;
+}
+
+/* --- ESTILOS PARA LA GRILLA DE ICONOS --- */
+.feature-icons-container {
+    -fx-alignment: CENTER;
+    -fx-spacing: 20px;
+}
+
+.feature-item {
+    -fx-alignment: TOP_CENTER;
+    -fx-spacing: 8px;
+}
+
+.feature-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #555555;
+    -fx-font-weight: normal;
+}
+.label-numero-grande {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a2b48;
 }
