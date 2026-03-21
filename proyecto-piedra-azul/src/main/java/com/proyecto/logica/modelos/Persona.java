@@ -3,6 +3,7 @@ package com.proyecto.logica.modelos;
 import java.time.LocalDate;
 
 public abstract class Persona {
+    private int id;
     private String attDocumento;
     private String attNombre;
     private String attApellido;
@@ -11,8 +12,10 @@ public abstract class Persona {
     private LocalDate attFechaNacimiento;
     private String attEmail;
 
-    public Persona(String prmDocumento, String prmNombre, String prmApellido, String prmCelular, String prmGenero,
+    public Persona(int prmId, String prmDocumento, String prmNombre, String prmApellido, String prmCelular,
+            String prmGenero,
             LocalDate prmFechaNacimiento, String prmEmail) {
+        this.id = prmId;
         this.attDocumento = prmDocumento;
         this.attNombre = prmNombre;
         this.attApellido = prmApellido;
@@ -20,6 +23,14 @@ public abstract class Persona {
         this.attGenero = prmGenero;
         this.attFechaNacimiento = prmFechaNacimiento;
         this.attEmail = prmEmail;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDocumento() {
