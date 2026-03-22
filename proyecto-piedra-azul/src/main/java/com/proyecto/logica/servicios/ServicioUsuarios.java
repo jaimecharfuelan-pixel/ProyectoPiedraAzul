@@ -1,33 +1,37 @@
 package com.proyecto.logica.servicios;
 
-import com.proyecto.persistencia.interfaces.IRepositorioPersona;
-import com.proyecto.logica.modelos.Paciente;
-import com.proyecto.logica.modelos.Persona;
+import com.proyecto.logica.interfaces.IServicioUsuarios;
+import com.proyecto.logica.modelos.Usuario;
+import com.proyecto.persistencia.interfaces.IRepositorioUsuario;
+import java.util.List;
 
-public class ServicioUsuarios {
+public class ServicioUsuarios implements IServicioUsuarios {
 
-    private IRepositorioPersona attRepositorioPersona;
+    private final IRepositorioUsuario repoUsuario;
 
-    public ServicioUsuarios(IRepositorioPersona prmRepositorio) {
-        this.attRepositorioPersona = prmRepositorio;
+    public ServicioUsuarios(IRepositorioUsuario prmRepoUsuario) {
+        this.repoUsuario = prmRepoUsuario;
     }
 
-    public int registrarPaciente(Paciente prmPaciente) {
-        return attRepositorioPersona.guardar(prmPaciente);
+    @Override
+    public Usuario autenticar(String prmUsuario, String prmContrasena) {
+        // 1. Buscamos todos los usuarios (o implementamos un buscarPorNombre en el repo)
+        List<Usuario> usuarios = repoUsuario.listar();
+
+        // 2. Filtramos por nombre y contraseña
+        return usuarios.stream()
+                .filter(u -> u.getUsuario().equals(prmUsuario) && 
+                             u.getContrasena().equals(prmContrasena))
+                .findFirst()
+                .orElse(null);
     }
 
-    public Persona buscarPorDocumento(String prmDocumento) {
-        return attRepositorioPersona.buscarPorDocumento(prmDocumento);
-    }
-
-    public Persona autenticar(String prmUsuario, String prmClave) {
-
-        Persona persona = attRepositorioPersona.buscarPorDocumento(prmUsuario);
-
-        if (persona != null) {
-            return persona;
+    @Override
+    public boolean registrarUsuario(Usuario prmUsuario) {
+        // Validaciones básicas de negocio
+        if (prmUsuario.getUsuario() == null || prmUsuario.getUsuario().isEmpty()) {
+            return false;
         }
-
-        return null;
+        return repoUsuario.guardar(prmUsuario) > 0;
     }
 }

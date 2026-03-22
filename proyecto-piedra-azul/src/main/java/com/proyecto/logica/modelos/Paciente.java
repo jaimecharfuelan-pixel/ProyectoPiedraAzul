@@ -4,11 +4,23 @@ import java.time.LocalDate;
 
 public class Paciente extends Persona {
 
-    public Paciente(int id, String documento, String nombre, String apellido,
-            String celular, String genero,
-            LocalDate fechaNacimiento, String email) {
 
-        super(id, documento, nombre, apellido, celular, genero, fechaNacimiento, email);
+    // Constructor vacío
+    public Paciente() {
+        super();
     }
 
+    // Constructor completo
+    public Paciente(int prmIdPersona, String prmNombre, String prmCedulaCiudadania, String prmApellido,
+                    String prmCelular, Integer prmIdGenero, LocalDate prmFechaNacimiento,
+                    String prmCorreo, Integer prmIdUsuario, Integer prmIdEstado,
+                    Integer prmIdAgendadorContacto) {
+
+        super(prmIdPersona, prmNombre, prmCedulaCiudadania, prmApellido, prmCelular, prmIdGenero,
+              prmFechaNacimiento, prmCorreo, prmIdUsuario, prmIdEstado);
+
+    }
+
+
+    
 }

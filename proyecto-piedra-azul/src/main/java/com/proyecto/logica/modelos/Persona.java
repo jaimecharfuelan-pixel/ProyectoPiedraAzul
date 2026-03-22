@@ -3,42 +3,46 @@ package com.proyecto.logica.modelos;
 import java.time.LocalDate;
 
 public abstract class Persona {
-    private int id;
-    private String attDocumento;
+
+    private int attIdPersona;
     private String attNombre;
+    private String attCedulaCiudadania;
     private String attApellido;
     private String attCelular;
-    private String attGenero;
+    private Integer attIdGenero; // FK
     private LocalDate attFechaNacimiento;
-    private String attEmail;
+    private String attCorreo;
+    private Integer attIdUsuario; // nullable
+    private Integer attIdEstado; // FK
 
-    public Persona(int prmId, String prmDocumento, String prmNombre, String prmApellido, String prmCelular,
-            String prmGenero,
-            LocalDate prmFechaNacimiento, String prmEmail) {
-        this.id = prmId;
-        this.attDocumento = prmDocumento;
+    // Constructor vacío
+    public Persona() {}
+
+    // Constructor completo
+    public Persona(int prmIdPersona, String prmNombre, String prmCedulaCiudadania, String prmApellido,
+                   String prmCelular, Integer prmIdGenero, LocalDate prmFechaNacimiento,
+                   String prmCorreo, Integer prmIdUsuario, Integer prmIdEstado) {
+
+        this.attIdPersona = prmIdPersona;
         this.attNombre = prmNombre;
+        this.attCedulaCiudadania = prmCedulaCiudadania;
         this.attApellido = prmApellido;
         this.attCelular = prmCelular;
-        this.attGenero = prmGenero;
+        this.attIdGenero = prmIdGenero;
         this.attFechaNacimiento = prmFechaNacimiento;
-        this.attEmail = prmEmail;
+        this.attCorreo = prmCorreo;
+        this.attIdUsuario = prmIdUsuario;
+        this.attIdEstado = prmIdEstado;
     }
 
-    public int getId() {
-        return id;
+    // Getters y Setters
+
+    public int getIdPersona() {
+        return attIdPersona;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDocumento() {
-        return attDocumento;
-    }
-
-    public void setDocumento(String prmDocumento) {
-        this.attDocumento = prmDocumento;
+    public void setIdPersona(int prmIdPersona) {
+        this.attIdPersona = prmIdPersona;
     }
 
     public String getNombre() {
@@ -47,6 +51,14 @@ public abstract class Persona {
 
     public void setNombre(String prmNombre) {
         this.attNombre = prmNombre;
+    }
+
+    public String getCedulaCiudadania() {
+        return attCedulaCiudadania;
+    }
+
+    public void setCedulaCiudadania(String prmCedulaCiudadania) {
+        this.attCedulaCiudadania = prmCedulaCiudadania;
     }
 
     public String getApellido() {
@@ -65,12 +77,12 @@ public abstract class Persona {
         this.attCelular = prmCelular;
     }
 
-    public String getGenero() {
-        return attGenero;
+    public Integer getIdGenero() {
+        return attIdGenero;
     }
 
-    public void setGenero(String prmGenero) {
-        this.attGenero = prmGenero;
+    public void setIdGenero(Integer prmIdGenero) {
+        this.attIdGenero = prmIdGenero;
     }
 
     public LocalDate getFechaNacimiento() {
@@ -81,11 +93,28 @@ public abstract class Persona {
         this.attFechaNacimiento = prmFechaNacimiento;
     }
 
-    public String getEmail() {
-        return attEmail;
+    public String getCorreo() {
+        return attCorreo;
     }
 
-    public void setEmail(String prmEmail) {
-        this.attEmail = prmEmail;
+    public void setCorreo(String prmCorreo) {
+        this.attCorreo = prmCorreo;
     }
+
+    public Integer getIdUsuario() {
+        return attIdUsuario;
+    }
+
+    public void setIdUsuario(Integer prmIdUsuario) {
+        this.attIdUsuario = prmIdUsuario;
+    }
+
+    public Integer getIdEstado() {
+        return attIdEstado;
+    }
+
+    public void setIdEstado(Integer prmIdEstado) {
+        this.attIdEstado = prmIdEstado;
+    }
+
 }

@@ -4,11 +4,15 @@ import java.time.LocalDate;
 
 public class Agendador extends Persona {
 
-    public Agendador(int id, String documento, String nombre, String apellido,
-            String celular, String genero,
-            LocalDate fechaNacimiento, String email) {
-
-        super(id, documento, nombre, apellido, celular, genero, fechaNacimiento, email);
+    public Agendador() {
+        super();
     }
 
+    public Agendador(int prmIdPersona, String prmNombre, String prmCedulaCiudadania, String prmApellido,
+                     String prmCelular, Integer prmIdGenero, LocalDate prmFechaNacimiento,
+                     String prmCorreo, Integer prmIdUsuario, Integer prmIdEstado) {
+        
+        super(prmIdPersona, prmNombre, prmCedulaCiudadania, prmApellido, prmCelular, prmIdGenero, 
+              prmFechaNacimiento, prmCorreo, prmIdUsuario, prmIdEstado);
+    }
 }

@@ -3,23 +3,27 @@ package com.proyecto.logica.modelos;
 import java.time.LocalDate;
 
 public class MedicoTerapista extends Persona {
+     
+    private int attIdEspecialidad;
 
-    private int especialidad;
+    public MedicoTerapista(int prmIdPersona, String prmNombre, String prmCedulaCiudadania,
+                           String prmApellido, String prmCelular, Integer prmIdGenero,
+                           LocalDate prmFechaNacimiento, String prmCorreo,
+                           Integer prmIdUsuario, Integer prmIdEstado,
+                           int prmIdEspecialidad) {
 
-    public MedicoTerapista(int id, String documento, String nombre, String apellido,
-            String celular, String genero,
-            LocalDate fechaNacimiento, String email,
-            int especialidad) {
+        super(prmIdPersona, prmNombre, prmCedulaCiudadania, prmApellido,
+              prmCelular, prmIdGenero, prmFechaNacimiento,
+              prmCorreo, prmIdUsuario, prmIdEstado);
 
-        super(id, documento, nombre, apellido, celular, genero, fechaNacimiento, email);
-        this.especialidad = especialidad;
+        this.attIdEspecialidad = prmIdEspecialidad;
     }
 
-    public int getEspecialidad() {
-        return especialidad;
+    public int getIdEspecialidad() {
+        return attIdEspecialidad;
     }
 
-    public void setEspecialidad(int especialidad) {
-        this.especialidad = especialidad;
+    public void setIdEspecialidad(int prmIdEspecialidad) {
+        this.attIdEspecialidad = prmIdEspecialidad;
     }
 }

@@ -1,77 +1,92 @@
--- 1. ELIMINACIÓN DE TABLAS (Por si quieren volver a ejecutar el script desde cero)
-DROP TABLE IF EXISTS Cita;
-DROP TABLE IF EXISTS JornadaLaboral;
-DROP TABLE IF EXISTS Usuario;
-DROP TABLE IF EXISTS Paciente;
-DROP TABLE IF EXISTS Agendador;
-DROP TABLE IF EXISTS MedicoTerapista;
-DROP TABLE IF EXISTS Persona;
-DROP TABLE IF EXISTS DominioEspecialidad;
-
--- 2. TABLAS INDEPENDIENTES Y CATÁLOGOS
-CREATE TABLE DominioEspecialidad (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL
+-- 1. TABLAS DE DOMINIO
+CREATE TABLE Dominio_Estado (
+    id_estado SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL
 );
 
+CREATE TABLE Dominio_Genero (
+    id_genero SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE Dominio_Especialidad (
+    id_especialidad SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Dominio_EstadoCita (
+    id_estado_cita SERIAL PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL
+);
+
+-- 2. SEGURIDAD Y USUARIOS
+CREATE TABLE Usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    contrasena TEXT NOT NULL
+);
+
+CREATE TABLE Rol (
+    id_rol SERIAL PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    id_usuario INT NOT NULL,
+    CONSTRAINT fk_rol_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
+);
+
+CREATE TABLE Sesion_Token (
+    id_token SERIAL PRIMARY KEY,
+    token_hash TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion TIMESTAMP NOT NULL,
+    id_estado INT REFERENCES Dominio_Estado(id_estado),
+    id_usuario INT NOT NULL,
+    CONSTRAINT fk_token_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- 3. PERSONAS Y ESPECIALIZACIONES
 CREATE TABLE Persona (
-    id SERIAL PRIMARY KEY,
+    id_persona SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    CC VARCHAR(20) UNIQUE NOT NULL,
+    cedula_ciudadania VARCHAR(20) UNIQUE NOT NULL,
     apellido VARCHAR(100) NOT NULL,
-    celular VARCHAR(20),
-    genero CHAR(1),
-    fechaNacimiento DATE,
-    correo VARCHAR(150)
+    celular VARCHAR(15),
+    id_genero INT REFERENCES Dominio_Genero(id_genero),
+    fecha_nacimiento DATE,
+    correo VARCHAR(100),
+    id_usuario INT UNIQUE REFERENCES Usuario(id_usuario),
+    id_estado INT REFERENCES Dominio_Estado(id_estado)
 );
 
--- 3. ESPECIALIZACIONES (Herencia de Persona)
-CREATE TABLE MedicoTerapista (
-    idPersona INT PRIMARY KEY,
-    especialidad INT,
-    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE,
-    FOREIGN KEY (especialidad) REFERENCES DominioEspecialidad(id)
-);
-
-CREATE TABLE Paciente (
-    idPersona INT PRIMARY KEY,
-    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+CREATE TABLE Medico_Terapista (
+    id_persona INT PRIMARY KEY REFERENCES Persona(id_persona) ON DELETE CASCADE,
+    id_especialidad INT REFERENCES Dominio_Especialidad(id_especialidad)
 );
 
 CREATE TABLE Agendador (
-    idPersona INT PRIMARY KEY,
-    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+    id_persona INT PRIMARY KEY REFERENCES Persona(id_persona) ON DELETE CASCADE
 );
 
--- 4. TABLAS DEPENDIENTES
-CREATE TABLE Usuario (
-    id SERIAL PRIMARY KEY,
-    usuario VARCHAR(50) UNIQUE NOT NULL,
-    contrasena VARCHAR(255) NOT NULL,
-    idPersona INT UNIQUE,
-    FOREIGN KEY (idPersona) REFERENCES Persona(id) ON DELETE CASCADE
+CREATE TABLE Paciente (
+    id_persona INT PRIMARY KEY REFERENCES Persona(id_persona) ON DELETE CASCADE,
 );
 
--- Entidad Débil por Identificación (Usa PK compuesta)
-CREATE TABLE JornadaLaboral (
-    idMedico INT NOT NULL,
-    idTurno INT NOT NULL, 
-    horaInicio TIME NOT NULL,
-    horaFin TIME NOT NULL,
-    diasSemana VARCHAR(50), 
-    duracionEstimadaAtencion INT,
-    PRIMARY KEY (idMedico, idTurno),
-    FOREIGN KEY (idMedico) REFERENCES MedicoTerapista(idPersona) ON DELETE CASCADE
+-- 4. OPERATIVA
+CREATE TABLE Jornada_Laboral (
+    id_jornada SERIAL PRIMARY KEY,
+    id_medico INT NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    dias_semana VARCHAR(50),
+    duracion_estimada_atencion INT,
+    CONSTRAINT fk_jornada_medico FOREIGN KEY (id_medico) REFERENCES Medico_Terapista(id_persona) ON DELETE CASCADE
 );
 
--- Entidad Débil por Existencia
 CREATE TABLE Cita (
-    idCita SERIAL PRIMARY KEY,
-    idPaciente INT NOT NULL,
-    idMedico INT NOT NULL,
+    id_cita SERIAL PRIMARY KEY,
+    id_paciente INT NOT NULL REFERENCES Paciente(id_persona),
+    id_medico INT NOT NULL REFERENCES Medico_Terapista(id_persona),
     fecha DATE NOT NULL,
-    horaInicio TIME NOT NULL,
-    horaFin TIME NOT NULL,
-    FOREIGN KEY (idPaciente) REFERENCES Paciente(idPersona) ON DELETE CASCADE,
-    FOREIGN KEY (idMedico) REFERENCES MedicoTerapista(idPersona) ON DELETE CASCADE
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    id_estado_cita INT REFERENCES Dominio_EstadoCita(id_estado_cita)
 );
