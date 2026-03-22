@@ -67,7 +67,7 @@ CREATE TABLE Agendador (
 );
 
 CREATE TABLE Paciente (
-    id_persona INT PRIMARY KEY REFERENCES Persona(id_persona) ON DELETE CASCADE,
+    id_persona INT PRIMARY KEY REFERENCES Persona(id_persona) ON DELETE CASCADE
 );
 
 -- 4. OPERATIVA

@@ -3,11 +3,13 @@ package com.proyecto.presentacion;
 import com.proyecto.logica.modelos.Persona;
 
 public class SesionUsuario {
+
     private static SesionUsuario attInstancia;
+
     private Persona attUsuarioActual;
+    private String token;
 
     private SesionUsuario() {
-        // Constructor privado para Singleton
     }
 
     public static SesionUsuario getInstancia() {
@@ -17,11 +19,27 @@ public class SesionUsuario {
         return attInstancia;
     }
 
+    // 🔹 Usuario
     public void setUsuario(Persona prmUsuario) {
         this.attUsuarioActual = prmUsuario;
     }
 
     public Persona getUsuario() {
         return attUsuarioActual;
+    }
+
+    // TOKEN (LO NUEVO)
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    // OPCIONAL: cerrar sesión
+    public void limpiarSesion() {
+        this.attUsuarioActual = null;
+        this.token = null;
     }
 }

@@ -15,15 +15,17 @@ public class ServicioUsuarios implements IServicioUsuarios {
 
     @Override
     public Usuario autenticar(String prmUsuario, String prmContrasena) {
-        // 1. Buscamos todos los usuarios (o implementamos un buscarPorNombre en el repo)
-        List<Usuario> usuarios = repoUsuario.listar();
 
-        // 2. Filtramos por nombre y contraseña
-        return usuarios.stream()
-                .filter(u -> u.getUsuario().equals(prmUsuario) && 
-                             u.getContrasena().equals(prmContrasena))
-                .findFirst()
-                .orElse(null);
+        Usuario usuario = repoUsuario.buscarPorNombreUsuario(prmUsuario);
+
+        if (usuario == null)
+            return null;
+
+        if (!usuario.getContrasena().equals(prmContrasena)) {
+            return null;
+        }
+
+        return usuario;
     }
 
     @Override
