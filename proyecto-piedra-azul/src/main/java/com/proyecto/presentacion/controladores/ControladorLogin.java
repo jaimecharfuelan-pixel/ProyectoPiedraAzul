@@ -1,8 +1,10 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.logica.modelos.Usuario;
 import com.proyecto.logica.servicios.ServicioUsuarios;
+import com.proyecto.logica.servicios.ServicioAuth;
 import com.proyecto.persistencia.repositorios.RepositorioUsuario;
+import com.proyecto.presentacion.SesionUsuario;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
@@ -14,26 +16,35 @@ import javafx.scene.Parent;
 
 public class ControladorLogin {
 
-    @FXML private TextField txtUsuario; // Asegúrate de poner fx:id="txtUsuario" en el FXML
-    @FXML private PasswordField txtContrasena; // Asegúrate de poner fx:id="txtContrasena" en el FXML
+    @FXML
+    private TextField txtUsuario;
+    @FXML
+    private PasswordField txtContrasena;
 
-    private ServicioUsuarios servicioUsuarios;
+    private ServicioAuth servicioAuth;
 
     public ControladorLogin() {
-        // Inicializamos el servicio (En un proyecto real usarías Inyección de Dependencias)
-        this.servicioUsuarios = new ServicioUsuarios(new RepositorioUsuario());
+        ServicioUsuarios servicioUsuarios = new ServicioUsuarios(new RepositorioUsuario());
+        this.servicioAuth = new ServicioAuth(servicioUsuarios);
     }
 
     @FXML
     public void onBtnIniciarSesionClicked() {
+
         String user = txtUsuario.getText();
         String pass = txtContrasena.getText();
 
-        Usuario usuario = servicioUsuarios.autenticar(user, pass);
+        String token = servicioAuth.login(user, pass);
 
-        if (usuario != null) {
-            System.out.println("✅ Acceso concedido");
+        if (token != null) {
+
+            System.out.println(" Token generado: " + token);
+
+            // Guardar token en sesión
+            SesionUsuario.getInstancia().setToken(token);
+
             navegarAPanelPrincipal();
+
         } else {
             mostrarError("Acceso Denegado", "Usuario o contraseña incorrectos.");
         }

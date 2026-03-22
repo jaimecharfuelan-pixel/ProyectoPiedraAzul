@@ -9,14 +9,15 @@ public class ConexionBD {
     private static Connection instancia;
     private static final String URL = "jdbc:postgresql://localhost:5432/BaseDeDatosPiedraAzul";
     private static final String USUARIO = "PiedraAzulUsuario";
-    private static final String CONTRASENA = "PiedraAzulContraseña";
+    private static final String CONTRASENA = "PiedraAzulContrasena";
 
-    private ConexionBD() {} // Constructor privado (GoF: Singleton)
+    private ConexionBD() {
+    } // Constructor privado (GoF: Singleton)
 
     public static Connection getInstance() throws SQLException {
         if (instancia == null || instancia.isClosed()) {
             instancia = DriverManager.getConnection(URL, USUARIO, CONTRASENA);
-            
+
             // --- CAMBIO CLAVE AQUÍ ---
             // Configuramos el esquema por defecto para esta sesión
             try (Statement stmt = instancia.createStatement()) {
