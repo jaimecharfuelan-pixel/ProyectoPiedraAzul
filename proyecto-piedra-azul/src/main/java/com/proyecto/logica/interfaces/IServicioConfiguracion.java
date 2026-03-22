@@ -1,9 +1,13 @@
 package com.proyecto.logica.interfaces;
 
-import com.proyecto.logica.modelos.ConfiguracionAgenda;
+import java.util.List;
+
+import com.proyecto.logica.modelos.JornadaLaboral;
 
 public interface IServicioConfiguracion {
-    boolean guardarConfiguracion(ConfiguracionAgenda prmConfiguracion);
+    // Configurar jornada y duración de citas
+    public boolean configurarDisponibilidadMedico(JornadaLaboral prmJornada);
 
-    ConfiguracionAgenda obtenerConfiguracion(String prmIdMedico);
+    public List<JornadaLaboral> obtenerTodasLasJornadas();
+
 }

@@ -1,4 +1,3 @@
-
 .root {
     -fx-background-color: #f0f2f5; /* Fondo general de la ventana */
     -fx-font-family: "Segoe UI", "Roboto", sans-serif;
@@ -150,4 +149,173 @@
     -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: #1a2b48;
+}
+/* --- BOTÓN CERRAR SESIÓN ROJO (FORZADO) --- */
+.button-logout {
+    -fx-background-color: #dc2626 !important; /* Rojo sólido */
+    -fx-text-fill: white !important;          /* Texto blanco */
+    -fx-background-radius: 8px !important;
+    -fx-font-weight: bold !important;
+    -fx-border-width: 0px !important;         /* Quitamos cualquier borde previo */
+}
+
+.button-logout:hover {
+    -fx-background-color: #b91c1c !important; /* Rojo más oscuro al pasar el mouse */
+}
+
+/* Estilo moderno para el ComboBox */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb; /* Gris suave */
+    -fx-border-width: 1px;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2 5 2 5;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #4b5563;
+}
+
+/* Estilo para la lista que se despliega */
+.combo-box .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #1a2b48;
+    -fx-padding: 10;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f3f4f6; /* Color de selección suave */
+}
+
+/* El texto de sugerencia (Prompt Text) */
+.combo-box > .list-cell {
+    -fx-text-fill: #9ca3af; /* Gris más claro para que parezca sugerencia */
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f9fafb; /* Fondo gris muy suave para cabeceras */
+    -fx-padding: 10 0 10 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a2b48; /* Azul oscuro corporativo */
+    -fx-font-size: 13px;
+}
+
+/* --- ESTILO PARA EL DATEPICKER (CAMPO) --- */
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* El icono del calendario pequeño */
+.date-picker > .arrow-button > .layout {
+    -fx-background-color: #1e40af; /* Azul oscuro corporativo */
+}
+
+/* --- ESTILO PARA EL CALENDARIO DESPLEGABLE --- */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #1e40af; /* Encabezado azul */
+}
+
+.date-picker-popup > .month-year-pane > .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Días de la semana (L, M, M, J...) */
+.date-picker-popup > .calendar-grid > .day-name-cell {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Celda de día normal */
+.date-picker-popup > .calendar-grid > .day-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #1f2937;
+    -fx-padding: 8px;
+}
+
+/* Día seleccionado */
+.date-picker-popup > .calendar-grid > .day-cell:selected {
+    -fx-background-color: #1e40af;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+}
+
+/* Día de hoy (resaltado suave) */
+.date-picker-popup > .calendar-grid > .today {
+    -fx-border-color: #1e40af;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+/* Al pasar el mouse por encima de un día */
+.date-picker-popup > .calendar-grid > .day-cell:hover {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #1e40af;
+}
+
+/* --- ESTILO PARA EL SCROLLPANE (CONTENEDOR) --- */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+}
+
+/* Fondo de la barra (el carril por donde se mueve) */
+.scroll-pane .scroll-bar:vertical,
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: #f3f4f6; /* Gris muy claro */
+    -fx-background-radius: 10px;
+}
+
+/* El "Thumb" (la pieza que arrastras) */
+.scroll-pane .scroll-bar:vertical .thumb,
+.scroll-pane .scroll-bar:horizontal .thumb {
+    -fx-background-color: #9ca3af; /* Gris medio */
+    -fx-background-radius: 10px;
+    -fx-background-insets: 2;
+}
+
+/* Cuando pasas el mouse por la barra se pone del azul de la clínica */
+.scroll-pane .scroll-bar:vertical .thumb:hover,
+.scroll-pane .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #1e40af; 
+}
+
+/* Quitar los botones de flechitas arriba/abajo (se ve más moderno) */
+.scroll-pane .scroll-bar .increment-button,
+.scroll-pane .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane .scroll-bar .increment-arrow,
+.scroll-pane .scroll-bar .decrement-arrow {
+    -fx-shape: " "; /* Esto oculta las flechas */
+    -fx-padding: 0;
+}
+
+/* Esquina donde se juntan las dos barras (abajo a la derecha) */
+.scroll-pane .corner {
+    -fx-background-color: transparent;
 }

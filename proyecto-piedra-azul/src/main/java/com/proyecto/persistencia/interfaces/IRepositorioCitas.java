@@ -5,10 +5,13 @@ import java.util.List;
 
 public interface IRepositorioCitas {
 
-    boolean guardar(Cita prmCita);
+    int guardar(Cita prmCita);
 
-    boolean eliminar(int prmIdCita);
+    Cita buscarPorId(int prmIdCita);
 
     List<Cita> listar();
 
+    boolean actualizar(Cita prmCita);
+
+    boolean inactivar(int prmIdCita);
 }

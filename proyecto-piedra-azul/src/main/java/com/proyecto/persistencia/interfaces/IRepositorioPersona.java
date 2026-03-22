@@ -5,16 +5,17 @@ import java.util.List;
 
 public interface IRepositorioPersona {
 
-    int guardar(Persona persona);
+    int guardar(Persona prmPersona);
 
-    Persona buscarPorDocumento(String documento);
+    Persona buscarPorId(int prmIdPersona);
 
-    Persona buscarPorId(int id);
+    Persona buscarPorDocumento(String prmCedulaCiudadania);
 
-    List<Persona> listar();
+    List<Persona> listar(); 
 
-    boolean actualizar(Persona persona);
+    List<Persona> listarPorEstado(int prmIdEstado); 
 
-    boolean eliminar(int id);
+    boolean actualizar(Persona prmPersona);
 
+    boolean inactivar(int prmIdPersona); 
 }

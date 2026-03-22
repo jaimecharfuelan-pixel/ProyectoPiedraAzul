@@ -1,27 +1,36 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.logica.interfaces.IServicioCitas;
-import com.proyecto.logica.interfaces.IServicioUsuarios;
-import com.proyecto.logica.modelos.Medico;
-
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.ResourceBundle;
 
-public class ControladorAgendador {
-    private IServicioCitas attServicioCitas;
-    private IServicioUsuarios attServicioUsuarios;
+import com.proyecto.logica.modelos.Cita;
 
-    public ControladorAgendador(IServicioCitas prmServicioCitas, IServicioUsuarios prmServicioUsuarios) {
-        this.attServicioCitas = prmServicioCitas;
-        this.attServicioUsuarios = prmServicioUsuarios;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.fxml.Initializable;
+import java.net.URL;
+
+public class ControladorAgendador  {
+
+    // Asegúrate de tener estas importaciones
+    @FXML private DatePicker dpFechaFiltro;
+    @FXML private ComboBox<String> cbDoctorFiltro; // O ComboBox<Medico> según tu modelo
+    @FXML private TableView<Cita> tblCitas;
+
+    @FXML
+    void onFiltroCambiado(ActionEvent event) {
+        LocalDate fechaSeleccionada = dpFechaFiltro.getValue();
+        String doctorSeleccionado = cbDoctorFiltro.getValue();
+        
+        System.out.println("Filtrando por: " + fechaSeleccionada + " y " + doctorSeleccionado);
+        
+        // Aquí llamarías a tu servicio para recargar la tabla
+        // cargarCitas(fechaSeleccionada, doctorSeleccionado);
     }
-
-    public void listarCitas(Medico prmMedico, LocalDate prmFecha) {
-        // Lógica
-    }
-
-    public void agendarCita(String prmDocumento, String prmNombre, String prmApellido, String prmCelular,
-            String prmGenero, LocalDate prmNacimiento, Medico prmMedico, LocalTime prmHora) {
-        // Lógica
-    }
+    
 }

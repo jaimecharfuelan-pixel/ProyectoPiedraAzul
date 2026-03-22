@@ -1,60 +1,90 @@
 package com.proyecto.logica.modelos;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Cita {
 
-    private int id;
-    private Paciente paciente;
-    private Medico medico;
-    private LocalDateTime fechaHora;
-    private String estado;
+    private int attIdCita;
+    private int attIdPaciente; // FK
+    private int attIdMedico; // FK
+    private LocalDate attFecha;
+    private LocalTime attHoraInicio;
+    private LocalTime attHoraFin;
+    private Integer attIdEstadoCita; // FK
 
-    public Cita(int prmId, Paciente prmPaciente, Medico prmMedico, LocalDateTime prmFechaHora, String prmEstado) {
-        this.id = prmId;
-        this.paciente = prmPaciente;
-        this.medico = prmMedico;
-        this.fechaHora = prmFechaHora;
-        this.estado = prmEstado;
+    // Constructor vacío
+    public Cita() {}
+
+    // Constructor completo
+    public Cita(int prmIdCita, int prmIdPaciente, int prmIdMedico,
+                LocalDate prmFecha, LocalTime prmHoraInicio, LocalTime prmHoraFin,
+                Integer prmIdEstadoCita) {
+
+        this.attIdCita = prmIdCita;
+        this.attIdPaciente = prmIdPaciente;
+        this.attIdMedico = prmIdMedico;
+        this.attFecha = prmFecha;
+        this.attHoraInicio = prmHoraInicio;
+        this.attHoraFin = prmHoraFin;
+        this.attIdEstadoCita = prmIdEstadoCita;
     }
 
-    public int getId() {
-        return id;
+    // Getters y Setters
+
+    public int getIdCita() {
+        return attIdCita;
     }
 
-    public void setId(int prmId) {
-        this.id = prmId;
+    public void setIdCita(int prmIdCita) {
+        this.attIdCita = prmIdCita;
     }
 
-    public Paciente getPaciente() {
-        return paciente;
+    public int getIdPaciente() {
+        return attIdPaciente;
     }
 
-    public void setPaciente(Paciente prmPaciente) {
-        this.paciente = prmPaciente;
+    public void setIdPaciente(int prmIdPaciente) {
+        this.attIdPaciente = prmIdPaciente;
     }
 
-    public Medico getMedico() {
-        return medico;
+    public int getIdMedico() {
+        return attIdMedico;
     }
 
-    public void setMedico(Medico prmMedico) {
-        this.medico = prmMedico;
+    public void setIdMedico(int prmIdMedico) {
+        this.attIdMedico = prmIdMedico;
     }
 
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
+    public LocalDate getFecha() {
+        return attFecha;
     }
 
-    public void setFechaHora(LocalDateTime prmFechaHora) {
-        this.fechaHora = prmFechaHora;
+    public void setFecha(LocalDate prmFecha) {
+        this.attFecha = prmFecha;
     }
 
-    public String getEstado() {
-        return estado;
+    public LocalTime getHoraInicio() {
+        return attHoraInicio;
     }
 
-    public void setEstado(String prmEstado) {
-        this.estado = prmEstado;
+    public void setHoraInicio(LocalTime prmHoraInicio) {
+        this.attHoraInicio = prmHoraInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return attHoraFin;
+    }
+
+    public void setHoraFin(LocalTime prmHoraFin) {
+        this.attHoraFin = prmHoraFin;
+    }
+
+    public Integer getIdEstadoCita() {
+        return attIdEstadoCita;
+    }
+
+    public void setIdEstadoCita(Integer prmIdEstadoCita) {
+        this.attIdEstadoCita = prmIdEstadoCita;
     }
 }

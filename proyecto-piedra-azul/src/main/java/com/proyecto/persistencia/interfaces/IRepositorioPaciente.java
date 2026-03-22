@@ -5,12 +5,13 @@ import java.util.List;
 
 public interface IRepositorioPaciente {
 
-    boolean guardar(int idPersona);
+    int guardar(Paciente prmPaciente);
 
-    Paciente buscar(int idPersona);
+    Paciente buscarPorId(int prmIdPersona);
 
     List<Paciente> listar();
 
-    boolean eliminar(int idPersona);
+    boolean actualizar(Paciente prmPaciente);
 
+    boolean inactivar(int prmIdPersona);
 }
