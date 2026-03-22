@@ -93,7 +93,7 @@ public class ControladorLogin {
         });
     }
 
-    // 🔘 LOGIN (sin validación extra)
+    // LOGIN
     @FXML
     public void onBtnIniciarSesionClicked() {
 
