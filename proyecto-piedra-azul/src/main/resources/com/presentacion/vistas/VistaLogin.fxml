@@ -21,17 +21,29 @@
                   <Label prefHeight="60.0" prefWidth="377.0" styleClass="info-title" text="Bienvenido" />
                   <Label layoutY="49.0" prefHeight="69.0" prefWidth="287.0" styleClass="label-grey-small" text="Por favor ingrese sus credenciales para acceder al portal de pacientes." wrapText="true" />
                 
-                <Button layoutX="-3.0" layoutY="307.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBtnIniciarSesionClicked" prefHeight="42.0" prefWidth="299.0" text="INICIAR SESIÓN" />
-                
+                <Button fx:id="btnLogin"
+        layoutX="-3.0"
+        layoutY="307.0"
+        onAction="#onBtnIniciarSesionClicked"
+        prefHeight="42.0"
+        prefWidth="299.0"
+        text="INICIAR SESIÓN" />
                   <PasswordField fx:id="txtContrasena" layoutX="-3.0" layoutY="220.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="299.0" promptText="**********" styleClass="password-field" />
                   
                   <Label layoutY="127.0" text="Usuario " />
                   
                   <TextField fx:id="txtUsuario" layoutX="-3.0" layoutY="145.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="299.0" promptText="Usuario123" styleClass="text-field">
+
                      <font>
                         <Font size="6.0" />
                      </font>
                   </TextField>
+
+                     <Label fx:id="lblErrorUsuario"
+                     layoutX="-3.0"
+                     layoutY="190.0"
+                     prefWidth="299.0"
+                     style="-fx-text-fill: red; -fx-font-size: 11px;" />
                   
                   <Label layoutY="201.0" text="Contraseña" />
                   <Hyperlink layoutX="154.0" layoutY="271.0" text="¿Olvidó su contraseña?" />
