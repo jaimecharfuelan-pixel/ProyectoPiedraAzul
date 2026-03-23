@@ -6,15 +6,19 @@ import com.proyecto.persistencia.interfaces.*;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServicioAgendamiento implements IServicioAgendamiento {
 
     private final IRepositorioCitas repoCitas;
     private final IRepositorioJornadaLaboral repoJornada;
+    private final IRepositorioMedicoTerapista repoMedico;
 
-    public ServicioAgendamiento(IRepositorioCitas prmRepoCitas, IRepositorioJornadaLaboral prmRepoJornada) {
+    public ServicioAgendamiento(IRepositorioCitas prmRepoCitas, IRepositorioJornadaLaboral prmRepoJornada,
+                                 IRepositorioMedicoTerapista prmRepoMedico) {
         this.repoCitas = prmRepoCitas;
         this.repoJornada = prmRepoJornada;
+        this.repoMedico = prmRepoMedico;
     }
 
     @Override
@@ -89,15 +93,21 @@ public class ServicioAgendamiento implements IServicioAgendamiento {
         };
     }
 
-    @Override
-    public List<Cita> listarCitasPorMedico(int prmIdMedico, LocalDate prmFecha) {
-        return repoCitas.listar().stream()
-                .filter(c -> c.getIdMedico() == prmIdMedico && c.getFecha().equals(prmFecha))
-                .toList();
-    }
+    
 
     @Override
     public boolean crearCitaManual(Cita prmCita) {
         return repoCitas.guardar(prmCita) > 0;
+    }
+
+    @Override
+    public List<Cita> listarCitas(Integer prmIdMedico, LocalDate prmFecha) {
+        LocalDate fechaFiltro = (prmFecha != null) ? prmFecha : LocalDate.now();
+        List<Cita> todas = repoCitas.listar();
+
+        return todas.stream()
+            .filter(c -> c.getFecha().equals(fechaFiltro))
+            .filter(c -> prmIdMedico == null || c.getIdMedico() == prmIdMedico)
+            .collect(Collectors.toList());
     }
 }

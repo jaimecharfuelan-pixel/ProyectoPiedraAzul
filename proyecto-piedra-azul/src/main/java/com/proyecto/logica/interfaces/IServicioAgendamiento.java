@@ -24,8 +24,7 @@ import java.util.List;
 
 
 public interface IServicioAgendamiento {
-    // F1 y F2: Para el agendador
-    List<Cita> listarCitasPorMedico(int prmIdMedico, LocalDate prmFecha);
+    
     boolean crearCitaManual(Cita prmCita);
 
     // F3: La función de disponibilidad que pediste
@@ -33,4 +32,13 @@ public interface IServicioAgendamiento {
     
     // F3: Agendamiento desde la Web
     boolean agendarCitaWeb(int prmIdPaciente, int prmIdMedico, LocalDate prmFecha, LocalTime prmHora);
+
+    /**
+     * Lista citas filtrando por médico y/o fecha.
+     * Si ambos son null, retorna todas las citas del día de hoy para todos los médicos.
+     * Si solo se pasa idMedico, retorna citas de ese médico hoy.
+     * Si solo se pasa fecha, retorna todas las citas de esa fecha.
+     * Si se pasan ambos, filtra por médico y fecha.
+     */
+    List<Cita> listarCitas(Integer prmIdMedico, LocalDate prmFecha);
 }
