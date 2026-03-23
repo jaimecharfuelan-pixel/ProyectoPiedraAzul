@@ -55,7 +55,12 @@ public class ControladorAgendarCita {
         repoMedico = new RepositorioMedicoTerapista();
 
         cargarMedicos();
+        cargarGenero();
         cargarEventos();
+    }
+
+    private void cargarGenero() {
+        cbGenero.getItems().addAll("Masculino", "Femenino", "Otro");
     }
 
     // =========================
@@ -64,13 +69,21 @@ public class ControladorAgendarCita {
     private void cargarMedicos() {
 
         List<MedicoTerapista> lista = repoMedico.listarActivos();
+
+        System.out.println("Médicos encontrados: " + lista.size());
+
+        if (lista.isEmpty()) {
+            mostrarError("No hay médicos activos en la base de datos");
+        }
+
+        cbMedico.getItems().clear();
         cbMedico.getItems().addAll(lista);
 
         cbMedico.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(MedicoTerapista item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item.getNombre() + " " + item.getApellido());
+                setText(empty || item == null ? "" : item.getNombre() + " " + item.getApellido());
             }
         });
 
@@ -78,7 +91,7 @@ public class ControladorAgendarCita {
             @Override
             protected void updateItem(MedicoTerapista item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item.getNombre() + " " + item.getApellido());
+                setText(empty || item == null ? "" : item.getNombre() + " " + item.getApellido());
             }
         });
     }
@@ -104,6 +117,12 @@ public class ControladorAgendarCita {
         List<LocalTime> disponibles = servicio.consultarDisponibilidad(
                 cbMedico.getValue().getIdPersona(),
                 dpFecha.getValue());
+
+        System.out.println("Horarios encontrados: " + disponibles.size());
+
+        if (disponibles.isEmpty()) {
+            mostrarError("El médico no tiene disponibilidad ese día");
+        }
 
         cbHora.getItems().addAll(disponibles);
     }
@@ -186,6 +205,7 @@ public class ControladorAgendarCita {
         p.setCedulaCiudadania(txtCedula.getText());
         p.setCorreo(txtCorreo.getText());
         p.setCelular(txtCelular.getText());
+        p.setFechaNacimiento(dpFecha.getValue());
         p.setIdEstado(2); // Activo
 
         int id = repoPaciente.guardar(p);
@@ -207,6 +227,7 @@ public class ControladorAgendarCita {
         cbMedico.setValue(null);
         cbHora.getItems().clear();
         dpFecha.setValue(null);
+        cbGenero.setValue(null);
     }
 
     // =========================
