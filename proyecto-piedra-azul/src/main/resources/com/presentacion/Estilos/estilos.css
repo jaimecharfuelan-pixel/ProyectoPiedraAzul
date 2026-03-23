@@ -319,3 +319,158 @@
 .scroll-pane .corner {
     -fx-background-color: transparent;
 }
+
+/* --- ESTILO EXCLUSIVO PARA EL FORMULARIO --- */
+#scrollFormulario, .scroll-blanco {
+    -fx-background-color: white; /* Fondo blanco */
+    -fx-background: white;        /* Esto cambia el fondo interno del ScrollPane */
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Forzar que el área de visualización sea blanca */
+#scrollFormulario .viewport, .scroll-blanco .viewport {
+    -fx-background-color: white;
+}
+
+/* Estilo de la barra vertical específica */
+#scrollFormulario .scroll-bar:vertical, .scroll-blanco .scroll-bar:vertical {
+    -fx-background-color: #f9fafb; /* Un gris casi blanco para que casi no se note */
+    -fx-pref-width: 6px;            /* Más delgada que la anterior */
+    -fx-background-radius: 10px;
+}
+
+/* El "Thumb" (la pieza que se mueve) */
+#scrollFormulario .scroll-bar:vertical .thumb, .scroll-blanco .scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1; /* Gris azulado muy suave */
+    -fx-background-radius: 10px;
+}
+
+/* Al pasar el mouse se pone del azul de Piedra Azul */
+#scrollFormulario .scroll-bar:vertical .thumb:hover, .scroll-blanco .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #1e40af;
+}
+
+/* Eliminar botones de flechas */
+#scrollFormulario .scroll-bar .increment-button, 
+#scrollFormulario .scroll-bar .decrement-button,
+.scroll-blanco .scroll-bar .increment-button,
+.scroll-blanco .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+
+
+/* Quitar el degradado gris interno de los ComboBox */
+.combo-box .cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4b5563;
+    -fx-font-family: "Segoe UI";
+}
+
+/* Estilo para el TextArea de 'Motivo' */
+.text-area {
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8px;
+    -fx-font-family: "Segoe UI";
+}
+
+/* Quitar el fondo blanco interno del TextArea */
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+/* --- DETALLES DE INTERACCIÓN --- */
+
+/* Cuando el usuario hace clic o está sobre el campo */
+.combo-box:focused, .date-picker:focused, .text-area:focused {
+    -fx-background-color: white;
+    -fx-border-color: #1e40af; /* Azul corporativo */
+    -fx-border-width: 1.5px;
+}
+
+/* Estilo para las etiquetas (Labels) */
+.label {
+    -fx-text-fill: #1a2b48;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI";
+}
+/* --- CONTENEDOR DE CAPA (OVERLAY) --- */
+.overlay-fondo {
+    -fx-background-color: rgba(0, 0, 0, 0.4); /* Oscurece el login de fondo */
+    -fx-alignment: center;
+}
+
+/* --- VENTANA EMERGENTE (POP-UP) --- */
+.ventana-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1px;
+    /* Sombra profunda para dar efecto de elevación */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 25, 0, 0, 8);
+    -fx-padding: 30px;
+}
+
+/* Título dentro del Pop-up */
+.titulo-popup {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a2b48; /* El azul oscuro de tu logo */
+}
+
+/* --- BOTÓN DE CERRAR (X) --- */
+/* --- BOTÓN DE CERRAR (X) SIEMPRE CIRCULAR --- */
+.btn-cerrar {
+    -fx-background-color: #dc2626 !important; 
+    -fx-text-fill: white !important;
+    
+    /* Forzamos el radio circular en 100px para que no cambie */
+    -fx-background-radius: 100px !important;
+    -fx-border-radius: 100px !important;
+    
+    /* Esto evita que al presionar aparezca el recuadro gris/azul de fondo */
+    -fx-background-insets: 0 !important;
+    
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    
+    /* Tamaño fijo obligatorio */
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    
+    -fx-alignment: center;
+    -fx-border-color: transparent !important;
+}
+
+/* Estado presionado: mantenemos la forma pero oscurecemos el color */
+.btn-cerrar:pressed {
+    -fx-background-color: #991b1b !important;
+    -fx-background-radius: 100px !important;
+    -fx-background-insets: 0 !important;
+}
+
+/* Quitar el borde de enfoque (ese cuadro azul que sale al hacer clic) */
+.btn-cerrar:focused {
+    -fx-background-color: #dc2626 !important;
+    -fx-background-insets: 0 !important;
+    -fx-background-radius: 100px !important;
+}
+
+/* Reutiliza tus estilos de TextField para los campos del registro */
+.field-popup {
+    -fx-background-color: #f9fafb;
+    -fx-border-color: #e5e7eb;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
