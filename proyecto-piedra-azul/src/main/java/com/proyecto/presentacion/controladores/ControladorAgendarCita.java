@@ -31,11 +31,25 @@ public class ControladorAgendarCita {
     @FXML
     private DatePicker dpFecha;
     @FXML
+    private DatePicker dpFechaNac;
+    @FXML
     private ComboBox<LocalTime> cbHora;
     @FXML
     private TextArea txtMotivo;
     @FXML
     private Button btnGuardar;
+    @FXML
+    private Label lblErrorCedula;
+    @FXML
+    private Label lblErrorNombre;
+    @FXML
+    private Label lblErrorApellido;
+    @FXML
+    private Label lblErrorCorreo;
+    @FXML
+    private Label lblErrorCelular;
+    @FXML
+    private Label lblErrorMotivo;
 
     // Repos y servicios
     private ServicioAgendamiento servicio;
@@ -57,6 +71,18 @@ public class ControladorAgendarCita {
         cargarMedicos();
         cargarGenero();
         cargarEventos();
+        iniciarValidaciones();
+    }
+
+    private void iniciarValidaciones() {
+
+        validarCedula();
+        validarNombre(txtNombre, lblErrorNombre);
+        validarNombre(txtApellido, lblErrorApellido);
+        validarCelular();
+        validarCorreo();
+        validarMotivo();
+        validarFechas();
     }
 
     private void cargarGenero() {
@@ -193,6 +219,52 @@ public class ControladorAgendarCita {
         }
     }
 
+    @FXML
+    private void onBuscarPaciente() {
+
+        String cedula = txtCedula.getText();
+
+        if (cedula == null || cedula.isEmpty()) {
+            mostrarError("Ingrese una cédula para buscar");
+            return;
+        }
+
+        Persona persona = repoPersona.buscarPorDocumento(cedula);
+
+        if (persona == null) {
+            mostrarError("No se encontró ninguna persona con esa cédula");
+            return;
+        }
+
+        // Llenar campos automáticamente
+        txtNombre.setText(persona.getNombre());
+        txtApellido.setText(persona.getApellido());
+        txtCorreo.setText(persona.getCorreo());
+        txtCelular.setText(persona.getCelular());
+
+        // Fecha nacimiento
+        if (persona.getFechaNacimiento() != null) {
+            dpFechaNac.setValue(persona.getFechaNacimiento());
+        }
+
+        // Género (si manejas IDs)
+        if (persona.getIdGenero() != null) {
+            switch (persona.getIdGenero()) {
+                case 1 -> cbGenero.setValue("Masculino");
+                case 2 -> cbGenero.setValue("Femenino");
+                default -> cbGenero.setValue("Otro");
+            }
+        }
+
+        mostrarInfo("Paciente cargado correctamente");
+        txtNombre.setDisable(true);
+        txtApellido.setDisable(true);
+        txtCorreo.setDisable(true);
+        txtCelular.setDisable(true);
+        dpFechaNac.setDisable(true);
+        cbGenero.setDisable(true);
+    }
+
     // =========================
     // CREAR PACIENTE
     // =========================
@@ -205,7 +277,7 @@ public class ControladorAgendarCita {
         p.setCedulaCiudadania(txtCedula.getText());
         p.setCorreo(txtCorreo.getText());
         p.setCelular(txtCelular.getText());
-        p.setFechaNacimiento(dpFecha.getValue());
+        p.setFechaNacimiento(dpFechaNac.getValue());
         p.setIdEstado(2); // Activo
 
         int id = repoPaciente.guardar(p);
@@ -218,6 +290,12 @@ public class ControladorAgendarCita {
     // LIMPIAR
     // =========================
     private void limpiar() {
+        txtNombre.setDisable(true);
+        txtApellido.setDisable(true);
+        txtCorreo.setDisable(true);
+        txtCelular.setDisable(true);
+        dpFechaNac.setDisable(true);
+        cbGenero.setDisable(true);
         txtNombre.clear();
         txtApellido.clear();
         txtCedula.clear();
@@ -243,5 +321,140 @@ public class ControladorAgendarCita {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setContentText(msg);
         a.showAndWait();
+    }
+
+    private void mostrarErrorCampo(Control campo, Label label, String msg) {
+        campo.setStyle("-fx-border-color: red; -fx-border-width: 2;");
+        label.setText(msg);
+    }
+
+    private void mostrarCorrecto(Control campo, Label label) {
+        campo.setStyle("-fx-border-color: green; -fx-border-width: 2;");
+        label.setText("");
+    }
+
+    private void limpiarError(Control campo, Label label) {
+        campo.setStyle("");
+        label.setText("");
+    }
+
+    private void validarCedula() {
+        txtCedula.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            if (newVal.length() > 12) {
+                txtCedula.setText(oldVal);
+                return;
+            }
+
+            if (newVal.isEmpty()) {
+                limpiarError(txtCedula, lblErrorCedula);
+                return;
+            }
+
+            if (!newVal.matches("\\d+")) {
+                mostrarErrorCampo(txtCedula, lblErrorCedula, "Solo números");
+            } else if (newVal.startsWith(" ")) {
+                mostrarErrorCampo(txtCedula, lblErrorCedula, "No iniciar con espacio");
+            } else {
+                mostrarCorrecto(txtCedula, lblErrorCedula);
+            }
+        });
+    }
+
+    private void validarNombre(TextField campo, Label errorLabel) {
+
+        campo.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            if (newVal.length() > 20) {
+                campo.setText(oldVal);
+                return;
+            }
+
+            if (newVal.isEmpty()) {
+                limpiarError(campo, errorLabel);
+                return;
+            }
+
+            if (newVal.matches(".*\\d.*")) {
+                mostrarErrorCampo(campo, errorLabel, "No números");
+            } else if (newVal.startsWith(" ")) {
+                mostrarErrorCampo(campo, errorLabel, "No iniciar con espacio");
+            } else {
+                mostrarCorrecto(campo, errorLabel);
+            }
+        });
+    }
+
+    private void validarCelular() {
+
+        txtCelular.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            if (newVal.length() > 15) {
+                txtCelular.setText(oldVal);
+                return;
+            }
+
+            if (newVal.isEmpty()) {
+                limpiarError(txtCelular, lblErrorCelular);
+                return;
+            }
+
+            if (!newVal.matches("\\d+")) {
+                mostrarErrorCampo(txtCelular, lblErrorCelular, "Solo números");
+            } else {
+                mostrarCorrecto(txtCelular, lblErrorCelular);
+            }
+        });
+    }
+
+    private void validarCorreo() {
+
+        txtCorreo.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            if (newVal.length() > 35) {
+                txtCorreo.setText(oldVal);
+                return;
+            }
+
+            if (newVal.contains(" ")) {
+                mostrarErrorCampo(txtCorreo, lblErrorCorreo, "Sin espacios");
+            } else {
+                mostrarCorrecto(txtCorreo, lblErrorCorreo);
+            }
+        });
+    }
+
+    private void validarMotivo() {
+
+        txtMotivo.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            if (newVal.length() > 70) {
+                txtMotivo.setText(oldVal);
+                return;
+            }
+
+            if (newVal.contains("   ")) {
+                mostrarErrorCampo(txtMotivo, lblErrorMotivo, "Máx 2 espacios seguidos");
+            } else {
+                mostrarCorrecto(txtMotivo, lblErrorMotivo);
+            }
+        });
+    }
+
+    private void validarFechas() {
+
+        dpFecha.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(date.isBefore(LocalDate.now()));
+            }
+        });
+
+        dpFechaNac.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(date.isAfter(LocalDate.now()));
+            }
+        });
     }
 }

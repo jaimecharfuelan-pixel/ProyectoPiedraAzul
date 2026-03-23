@@ -44,46 +44,52 @@
                <!-- BOTONES -->
                <Button fx:id="btnGuardar" layoutX="445.0" layoutY="452.0" onAction="#onGuardarCita" prefWidth="130.0" text="+ Guardar Cita" />
 
-               <Button layoutX="307.0" layoutY="452.0" prefWidth="130.0" text="- Cancelar" />
+               <Button layoutX="307.0" layoutY="452.0" prefWidth="130.0" styleClass="button-logout" text="- Cancelar" />
 
                <Label layoutX="14.0" styleClass="info-title" text="Agendar Cita" />
 
                <!-- SCROLL -->
-               <ScrollPane layoutY="59.0" prefHeight="385.0" prefWidth="589.0">
+               <ScrollPane layoutY="59.0" prefHeight="383.0" prefWidth="589.0">
                   <content>
                      <AnchorPane>
 
-                        <GridPane styleClass="scroll-blanco">
+                        <GridPane prefHeight="540.0" prefWidth="564.0" styleClass="scroll-blanco">
 
-                           <!-- NOMBRE -->
+                           
                            <Pane>
                               <children>
-                                 <TextField fx:id="txtNombre" layoutX="6.0" layoutY="35.0" prefWidth="268.0" promptText="Nombre" />
-                                 <Label layoutX="16.0" layoutY="14.0" text="Nombre *" />
+                                 <TextField fx:id="txtCedula" layoutX="8.0" layoutY="36.0" prefWidth="220.0" promptText="Cédula" />   
+                                 <Label layoutX="16.0" layoutY="14.0" text="Cédula *" />
+                                 <Label fx:id="lblErrorCedula" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              <Button layoutX="239.0" layoutY="36.0" onAction="#onBuscarPaciente" prefHeight="44.0" prefWidth="40.0" text="🔍" />
                               </children>
                            </Pane>
 
-                           <!-- APELLIDO -->
+                          
                            <Pane GridPane.columnIndex="1">
                               <children>
-                                 <TextField fx:id="txtApellido" layoutX="11.0" layoutY="33.0" prefWidth="268.0" promptText="Apellido" />
-                                 <Label layoutX="16.0" layoutY="11.0" text="Apellido *" />
+                                 <TextField fx:id="txtNombre" layoutX="9.0" layoutY="32.0" prefHeight="44.0" prefWidth="263.0" promptText="Nombre" />
+                                 <Label layoutX="16.0" layoutY="10.0" text="Nombre *" />
+                                 <Label fx:id="lblErrorNombre" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
                               </children>
                            </Pane>
 
-                           <!-- CEDULA -->
+                           
                            <Pane GridPane.rowIndex="1">
                               <children>
-                                 <TextField fx:id="txtCedula" layoutX="7.0" layoutY="39.0" prefWidth="268.0" promptText="Cédula" />
-                                 <Label layoutX="16.0" layoutY="17.0" text="Cédula *" />
+                                 <TextField fx:id="txtApellido" layoutX="6.0" layoutY="38.0" prefWidth="268.0" promptText="Apellido" />
+                                 <Label layoutX="16.0" layoutY="16.0" text="Apellido *" />
+                                 <Label fx:id="lblErrorApellido" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
                               </children>
                            </Pane>
+                           
 
-                           <!-- CORREO -->
+                           
                            <Pane GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <children>
                                  <TextField fx:id="txtCorreo" layoutX="8.0" layoutY="38.0" prefWidth="268.0" promptText="Correo" />
                                  <Label layoutX="16.0" layoutY="16.0" text="Correo (Opcional)" />
+                                 <Label fx:id="lblErrorCorreo" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
                               </children>
                            </Pane>
 
@@ -91,15 +97,16 @@
                            <Pane GridPane.rowIndex="2">
                               <children>
                                  <TextField fx:id="txtCelular" layoutX="9.0" layoutY="38.0" prefWidth="268.0" promptText="Celular" />
-                                 <Label layoutX="16.0" layoutY="16.0" text="Celular" />
+                                 <Label layoutX="16.0" layoutY="16.0" text="Celular (Opcional)" />
+                                 <Label fx:id="lblErrorCelular" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
                               </children>
                            </Pane>
 
                            <!-- GENERO -->
                            <Pane GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <children>
-                                 <ChoiceBox fx:id="cbGenero" layoutX="10.0" layoutY="39.0" prefWidth="265.0" />
-                                 <Label layoutX="16.0" layoutY="16.0" text="Género" />
+                                 <DatePicker fx:id="dpFechaNac" layoutX="3.0" layoutY="37.0" prefWidth="269.0" />
+                                 <Label layoutX="16.0" layoutY="14.0" text="Fecha de Nacimiento *" />
                               </children>
                            </Pane>
 
@@ -114,16 +121,18 @@
                            <!-- HORA -->
                            <Pane GridPane.columnIndex="1" GridPane.rowIndex="3">
                               <children>
-                                 <ComboBox fx:id="cbHora" layoutX="11.0" layoutY="33.0" prefWidth="264.0" />
-                                 <Label layoutX="16.0" layoutY="12.0" text="Hora *" />
+                                 <ComboBox fx:id="cbMedico" layoutX="7.0" layoutY="34.0" prefHeight="44.0" prefWidth="269.0" promptText="Seleccione un Doctor" />
+                                 <Label layoutX="16.0" layoutY="11.0" text="Doctor *" />
                               </children>
                            </Pane>
 
                            <!-- DOCTOR -->
                            <Pane GridPane.rowIndex="4">
                               <children>
-                                 <ComboBox fx:id="cbMedico" layoutX="9.0" layoutY="36.0" prefWidth="272.0" promptText="Seleccione un Doctor" />
-                                 <Label layoutX="16.0" layoutY="14.0" text="Doctor *" />
+                                 <ComboBox fx:id="cbHora" layoutX="8.0" layoutY="43.0" prefWidth="264.0" />
+                                 <Label layoutX="16.0" layoutY="21.0" text="Hora *" />
+                                 <ChoiceBox fx:id="cbGenero" layoutX="7.0" layoutY="129.0" prefHeight="45.0" prefWidth="265.0" />
+                                 <Label layoutX="16.0" layoutY="105.0" text="Género" />
                               </children>
                            </Pane>
 
@@ -132,6 +141,7 @@
                               <children>
                                  <TextArea fx:id="txtMotivo" layoutX="11.0" layoutY="37.0" prefWidth="263.0" promptText="Motivo" />
                                  <Label layoutX="21.0" layoutY="14.0" text="Motivo *" />
+                                 <Label fx:id="lblErrorMotivo" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
                               </children>
                            </Pane>
                            <columnConstraints>
@@ -150,7 +160,6 @@
                      </AnchorPane>
                   </content>
                </ScrollPane>
-               <DatePicker fx:id="dpFechaNac" layoutX="261.0" layoutY="17.0" prefWidth="269.0" />
 
             </Pane>
          </children>
