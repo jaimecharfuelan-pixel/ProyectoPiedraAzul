@@ -9,7 +9,7 @@ public class ConexionBD {
     private static Connection instancia;
     private static final String URL = "jdbc:postgresql://localhost:5432/BaseDeDatosPiedraAzul";
     private static final String USUARIO = "PiedraAzulUsuario";
-    private static final String CONTRASENA = "PiedraAzulContrasena";
+    private static final String CONTRASENA = "PiedraAzulContraseña";
 
     private ConexionBD() {
     } // Constructor privado (GoF: Singleton)
