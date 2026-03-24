@@ -41,4 +41,11 @@ public interface IServicioAgendamiento {
      * Si se pasan ambos, filtra por médico y fecha.
      */
     List<Cita> listarCitas(Integer prmIdMedico, LocalDate prmFecha);
+
+    // Métodos para gestión admin
+    List<Cita> listarTodasLasCitas();
+
+    boolean editarCita(Cita prmCita);
+
+    boolean cancelarCita(int prmIdCita);
 }

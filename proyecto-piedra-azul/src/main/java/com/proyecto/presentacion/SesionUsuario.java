@@ -8,6 +8,9 @@ public class SesionUsuario {
 
     private Persona attUsuarioActual;
     private String token;
+    private int idUsuario;
+    private String rol;
+    private int idPacienteActual; // usado cuando el paciente agenda su propia cita
 
     private SesionUsuario() {
     }
@@ -19,7 +22,6 @@ public class SesionUsuario {
         return attInstancia;
     }
 
-    // 🔹 Usuario
     public void setUsuario(Persona prmUsuario) {
         this.attUsuarioActual = prmUsuario;
     }
@@ -28,7 +30,6 @@ public class SesionUsuario {
         return attUsuarioActual;
     }
 
-    // TOKEN (LO NUEVO)
     public void setToken(String token) {
         this.token = token;
     }
@@ -37,9 +38,35 @@ public class SesionUsuario {
         return token;
     }
 
-    // OPCIONAL: cerrar sesión
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    public int getIdPacienteActual() {
+        return idPacienteActual;
+    }
+
+    public void setIdPacienteActual(int idPacienteActual) {
+        this.idPacienteActual = idPacienteActual;
+    }
+
     public void limpiarSesion() {
         this.attUsuarioActual = null;
         this.token = null;
+        this.idUsuario = 0;
+        this.rol = null;
+        this.idPacienteActual = 0;
     }
 }
