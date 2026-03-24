@@ -1,24 +1,25 @@
 package com.proyecto;
 
-import javafx.application.Application;
+import javafx.application.Application; // <-- IMPORTANTE: Debe estar este import
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class App extends Application {
+// DEBES agregar "extends Application" después del nombre de la clase
+public class App extends Application { 
+
     @Override
     public void start(Stage stage) throws Exception {
-        // Carga la VistaLogin desde tu carpeta de recursos corregida
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaLogin.fxml"));
-        Parent root = loader.load();
-        
-        stage.setScene(new Scene(root));
-        stage.setTitle("Proyecto Piedra Azul - Login");
+        // Aquí va tu lógica para cargar el FXML (Login o Main)
+        Parent root = FXMLLoader.load(getClass().getResource("/com/presentacion/vistas/VistaLogin.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Proyecto Piedra Azul");
         stage.show();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch(args); // Ahora esto ya no debería dar error
     }
 }
