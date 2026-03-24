@@ -464,8 +464,72 @@ public class ControladorAgendarCita {
 
     @FXML
     private void onCancelar(ActionEvent event) {
+        String rol = com.proyecto.presentacion.SesionUsuario.getInstancia().getRol();
+        String vista = (rol != null && rol.equals("paciente"))
+                ? "/com/presentacion/vistas/VistaPaciente.fxml"
+                : "/com/presentacion/vistas/VistaAgendador.fxml";
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaAgendador.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
+            Parent root = loader.load();
+            Stage stage = (Stage) btnGuardar.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Llamado desde ControladorPaciente cuando el paciente agenda su propia cita.
+     * Precarga sus datos y oculta la lupa de búsqueda.
+     */
+    public void setModoPaciente(int prmIdPaciente) {
+        if (prmIdPaciente <= 0) return;
+
+        Persona persona = repoPersona.buscarPorId(prmIdPaciente);
+        if (persona == null) return;
+
+        // Precargar campos con los datos del paciente logueado
+        txtNombre.setText(persona.getNombre());
+        txtApellido.setText(persona.getApellido());
+        txtCedula.setText(persona.getCedulaCiudadania());
+        if (persona.getCorreo() != null) txtCorreo.setText(persona.getCorreo());
+        if (persona.getCelular() != null) txtCelular.setText(persona.getCelular());
+        if (persona.getFechaNacimiento() != null) dpFechaNac.setValue(persona.getFechaNacimiento());
+        if (persona.getIdGenero() != null) {
+            cbGenero.setValue(switch (persona.getIdGenero()) {
+                case 1 -> "Masculino"; case 2 -> "Femenino"; default -> "Otro";
+            });
+        }
+
+        // Bloquear campos de identidad y ocultar lupa
+        txtNombre.setDisable(true);
+        txtApellido.setDisable(true);
+        txtCedula.setDisable(true);
+        txtCorreo.setDisable(true);
+        txtCelular.setDisable(true);
+        dpFechaNac.setDisable(true);
+        cbGenero.setDisable(true);
+
+        // Al cancelar, volver a vista paciente (no agendador)
+        btnGuardar.setOnAction(e -> {
+            if (!validar()) return;
+            boolean ok = servicio.agendarCitaWeb(
+                    prmIdPaciente,
+                    cbMedico.getValue().getIdPersona(),
+                    dpFecha.getValue(),
+                    cbHora.getValue());
+            if (ok) {
+                mostrarInfo("Cita agendada correctamente");
+                volverAPaciente();
+            } else {
+                mostrarError("Ese horario ya no está disponible");
+            }
+        });
+    }
+
+    private void volverAPaciente() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaPaciente.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.setScene(new Scene(root));

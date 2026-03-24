@@ -110,4 +110,19 @@ public class ServicioAgendamiento implements IServicioAgendamiento {
             .filter(c -> prmIdMedico == null || c.getIdMedico() == prmIdMedico)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Cita> listarTodasLasCitas() {
+        return repoCitas.listar();
+    }
+
+    @Override
+    public boolean editarCita(Cita prmCita) {
+        return repoCitas.actualizar(prmCita);
+    }
+
+    @Override
+    public boolean cancelarCita(int prmIdCita) {
+        return repoCitas.inactivar(prmIdCita);
+    }
 }

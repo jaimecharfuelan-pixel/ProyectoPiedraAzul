@@ -12,43 +12,59 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.proyecto.presentacion.controladores.ControladorPaciente">
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.proyecto.presentacion.controladores.ControladorPaciente">
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="layout" stylesheets="@../Estilos/estilos.css">
          <children>
-            <VBox layoutX="11.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="778.0" styleClass="main-login-card">
+
+            <!-- HEADER -->
+            <VBox layoutX="11.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                  minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="778.0"
+                  styleClass="main-login-card">
                <children>
                   <Pane prefHeight="105.0" prefWidth="778.0">
                      <children>
-                        <Button layoutX="494.0" layoutY="16.0" mnemonicParsing="false" text="+ Agendar Cita " />
-                        <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="15.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
-                           </image>
+                        <Button layoutX="494.0" layoutY="16.0" mnemonicParsing="false"
+                                text="+ Agendar Cita" onAction="#onAgendarCita" />
+                        <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="15.0" layoutY="4.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                           <image><Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" /></image>
                         </ImageView>
-                        <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" styleClass="button-logout" text="- Cerrar Sesión" />
-                        <Label layoutX="138.0" prefHeight="59.0" prefWidth="180.0" styleClass="info-title" text="Hola Paciente" />
+                        <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false"
+                                prefHeight="28.0" prefWidth="130.0" styleClass="button-logout"
+                                text="- Cerrar Sesión" onAction="#onCerrarSesion" />
+                        <Label layoutX="138.0" prefHeight="59.0" prefWidth="180.0"
+                               styleClass="info-title" text="Hola Paciente" />
                      </children>
                   </Pane>
                </children>
             </VBox>
-            <VBox layoutX="36.0" layoutY="141.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0" prefWidth="746.0" styleClass="main-login-card">
+
+            <!-- LABEL HISTORIAL -->
+            <Label layoutX="51.0" layoutY="80.0" prefHeight="59.0" prefWidth="200.0"
+                   styleClass="info-title" text="Historial Cita" />
+
+            <!-- TABLA HISTORIAL -->
+            <VBox layoutX="36.0" layoutY="141.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                  minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0" prefWidth="746.0"
+                  styleClass="main-login-card">
                <children>
                   <ScrollPane prefHeight="160.0" prefWidth="1369.0">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1378.0">
                            <children>
-                              <TableView fx:id="tblCitas1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="182.0" prefWidth="1380.0" styleClass="scroll-blanco">
+                              <TableView fx:id="tblHistorial" maxHeight="-Infinity" maxWidth="-Infinity"
+                                         minHeight="-Infinity" minWidth="-Infinity"
+                                         prefHeight="182.0" prefWidth="1380.0" styleClass="scroll-blanco">
                                  <columns>
-                                    <TableColumn fx:id="colPaciente1" prefWidth="187.99996995925903" text="Cédula Paciente" />
-                                    <TableColumn fx:id="colHora1" minWidth="4.79998779296875" prefWidth="178.4000244140625" text="Nombre Paciente" />
-                                    <TableColumn fx:id="colFecha1" minWidth="6.4000244140625" prefWidth="128.00006103515625" text="Cédula Medico" />
-                                    <TableColumn fx:id="colMedico1" minWidth="0.0" prefWidth="265.59991455078125" text="Nombre Medico" />
-                                    <TableColumn fx:id="colMedico2" minWidth="0.0" prefWidth="183.199951171875" text="Feche del Turno" />
-                                    <TableColumn fx:id="colMedico3" minWidth="0.0" prefWidth="108.79998779296875" text="Hora Inicio" />
-                                    <TableColumn fx:id="colMedico31" minWidth="0.0" prefWidth="161.5999755859375" text="Hora Final" />
-                                    <TableColumn fx:id="colMedico311" minWidth="0.0" prefWidth="161.5999755859375" text="Estado de la Cita" />
+                                    <TableColumn fx:id="colHistNomPaciente"  prefWidth="188.0" text="Nombre Paciente" />
+                                    <TableColumn fx:id="colHistCedMedico"    prefWidth="178.0" text="Cédula Medico" />
+                                    <TableColumn fx:id="colHistNomMedico"    prefWidth="265.0" text="Nombre Medico" />
+                                    <TableColumn fx:id="colHistFecha"        prefWidth="183.0" text="Fecha del Turno" />
+                                    <TableColumn fx:id="colHistHoraInicio"   prefWidth="109.0" text="Hora Inicio" />
+                                    <TableColumn fx:id="colHistHoraFin"      prefWidth="161.0" text="Hora Final" />
+                                    <TableColumn fx:id="colHistEstado"       prefWidth="161.0" text="Estado de la Cita" />
                                  </columns>
                               </TableView>
                            </children>
@@ -57,22 +73,31 @@
                   </ScrollPane>
                </children>
             </VBox>
-            <VBox layoutX="36.0" layoutY="380.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="178.0" prefWidth="745.0" styleClass="main-login-card">
+
+            <!-- LABEL CITAS FUTURAS -->
+            <Label layoutX="51.0" layoutY="320.0" prefHeight="59.0" prefWidth="200.0"
+                   styleClass="info-title" text="Citas Futuras" />
+
+            <!-- TABLA CITAS FUTURAS -->
+            <VBox layoutX="36.0" layoutY="380.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                  minHeight="-Infinity" minWidth="-Infinity" prefHeight="178.0" prefWidth="745.0"
+                  styleClass="main-login-card">
                <children>
                   <ScrollPane prefHeight="186.0" prefWidth="735.0">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="339.0" prefWidth="1378.0">
                            <children>
-                              <TableView fx:id="tblCitas11" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="182.0" prefWidth="1380.0" styleClass="scroll-blanco">
+                              <TableView fx:id="tblFuturas" maxHeight="-Infinity" maxWidth="-Infinity"
+                                         minHeight="-Infinity" minWidth="-Infinity"
+                                         prefHeight="182.0" prefWidth="1380.0" styleClass="scroll-blanco">
                                  <columns>
-                                    <TableColumn fx:id="colPaciente11" prefWidth="187.99996995925903" text="Cédula Paciente" />
-                                    <TableColumn fx:id="colHora11" minWidth="4.79998779296875" prefWidth="178.4000244140625" text="Nombre Paciente" />
-                                    <TableColumn fx:id="colFecha11" minWidth="6.4000244140625" prefWidth="128.00006103515625" text="Cédula Medico" />
-                                    <TableColumn fx:id="colMedico11" minWidth="0.0" prefWidth="265.59991455078125" text="Nombre Medico" />
-                                    <TableColumn fx:id="colMedico21" minWidth="0.0" prefWidth="183.199951171875" text="Feche del Turno" />
-                                    <TableColumn fx:id="colMedico31" minWidth="0.0" prefWidth="108.79998779296875" text="Hora Inicio" />
-                                    <TableColumn fx:id="colMedico311" minWidth="0.0" prefWidth="161.5999755859375" text="Hora Final" />
-                                    <TableColumn fx:id="colMedico3111" minWidth="0.0" prefWidth="161.5999755859375" text="Estado de la Cita" />
+                                    <TableColumn fx:id="colFutNomPaciente"  prefWidth="188.0" text="Nombre Paciente" />
+                                    <TableColumn fx:id="colFutCedMedico"    prefWidth="178.0" text="Cédula Medico" />
+                                    <TableColumn fx:id="colFutNomMedico"    prefWidth="265.0" text="Nombre Medico" />
+                                    <TableColumn fx:id="colFutFecha"        prefWidth="183.0" text="Fecha del Turno" />
+                                    <TableColumn fx:id="colFutHoraInicio"   prefWidth="109.0" text="Hora Inicio" />
+                                    <TableColumn fx:id="colFutHoraFin"      prefWidth="161.0" text="Hora Final" />
+                                    <TableColumn fx:id="colFutEstado"       prefWidth="161.0" text="Estado de la Cita" />
                                  </columns>
                               </TableView>
                            </children>
@@ -81,8 +106,7 @@
                   </ScrollPane>
                </children>
             </VBox>
-            <Label layoutX="51.0" layoutY="80.0" prefHeight="59.0" prefWidth="180.0" styleClass="info-title" text="Historial Cita" />
-            <Label layoutX="51.0" layoutY="320.0" prefHeight="59.0" prefWidth="180.0" styleClass="info-title" text="Citas Futuras" />
+
          </children>
       </AnchorPane>
    </children>

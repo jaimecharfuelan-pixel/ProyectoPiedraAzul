@@ -30,10 +30,24 @@ public class ServicioUsuarios implements IServicioUsuarios {
 
     @Override
     public boolean registrarUsuario(Usuario prmUsuario) {
-        // Validaciones básicas de negocio
         if (prmUsuario.getUsuario() == null || prmUsuario.getUsuario().isEmpty()) {
             return false;
         }
         return repoUsuario.guardar(prmUsuario) > 0;
+    }
+
+    @Override
+    public boolean editarUsuario(Usuario prmUsuario) {
+        return repoUsuario.actualizar(prmUsuario);
+    }
+
+    @Override
+    public boolean eliminarUsuario(int prmIdUsuario) {
+        return repoUsuario.inactivar(prmIdUsuario);
+    }
+
+    @Override
+    public java.util.List<Usuario> listarUsuarios() {
+        return repoUsuario.listar();
     }
 }
