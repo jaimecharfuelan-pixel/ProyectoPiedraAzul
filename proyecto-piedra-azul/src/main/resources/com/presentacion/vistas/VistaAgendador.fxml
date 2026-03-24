@@ -24,7 +24,10 @@
                <children>
                   <Pane prefHeight="105.0" prefWidth="778.0">
                      <children>
-                        <Button layoutX="511.0" layoutY="16.0" mnemonicParsing="false" text="+ Nueva Cita " />
+                         <Button layoutX="511.0" layoutY="16.0"
+                           mnemonicParsing="false"
+                           text="+ Nueva Cita "
+                           onAction="#onNuevaCita"/>
                         <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="15.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />

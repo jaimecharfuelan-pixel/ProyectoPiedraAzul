@@ -16,15 +16,17 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../Estilos/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../Estilos/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.proyecto.presentacion.controladores.ControladorAgendarCita">
+
    <children>
-      <VBox layoutX="11.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="778.0" styleClass="main-login-card">
+
+      <!-- HEADER -->
+      <VBox layoutX="11.0" layoutY="14.0" prefHeight="64.0" prefWidth="778.0" styleClass="main-login-card">
          <children>
-            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="78.0" prefWidth="778.0">
+            <Pane prefHeight="78.0" prefWidth="778.0">
                <children>
-                  <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="323.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="323.0" preserveRatio="true">
                      <image>
                         <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
                      </image>
@@ -33,103 +35,135 @@
             </Pane>
          </children>
       </VBox>
-      <VBox layoutX="89.0" layoutY="88.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="492.0" prefWidth="595.0" styleClass="main-login-card">
+
+      <!-- FORM -->
+      <VBox layoutX="89.0" layoutY="88.0" prefHeight="492.0" prefWidth="595.0" styleClass="main-login-card">
          <children>
-            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="494.0" prefWidth="596.0">
-               <children>
-                  <Button layoutX="445.0" layoutY="452.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" text="+ Guardar Cita  " />
-                  <Label layoutX="14.0" prefHeight="59.0" prefWidth="180.0" styleClass="info-title" text="Agendar Cita" />
-                  <Button layoutX="307.0" layoutY="452.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" styleClass="button-logout" text="- Cancelar" />
-                  <ScrollPane layoutY="59.0" prefHeight="385.0" prefWidth="589.0">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="442.0" prefWidth="558.0">
-                           <children>
-                              <GridPane layoutX="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="571.0" styleClass="scroll-blanco">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="571.0" minWidth="10.0" prefWidth="286.2" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="311.99994506835935" minWidth="0.0" prefWidth="283.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints maxHeight="104.8" minHeight="10.0" prefHeight="86.40000610351562" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="105.60000610351562" minHeight="0.0" prefHeight="90.39999389648438" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="115.99998779296874" minHeight="0.0" prefHeight="89.60003662109372" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="156.80003662109374" minHeight="10.0" prefHeight="87.99996948242188" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="132.00001831054686" minHeight="0.0" prefHeight="127.20003051757811" vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Pane prefHeight="200.0" prefWidth="326.0">
-                                       <children>
-                                          <TextField layoutX="6.0" layoutY="35.0" prefHeight="44.0" prefWidth="268.0" promptText="Nombre" />
-                                          <Label layoutX="16.0" layoutY="14.0" text="Nombre *" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-                                       <children>
-                                          <TextField layoutX="11.0" layoutY="33.0" prefHeight="44.0" prefWidth="268.0" promptText="Apellido" />
-                                          <Label layoutX="16.0" layoutY="11.0" text="Apellido  *" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="0.0" prefWidth="287.0" GridPane.rowIndex="1">
-                                       <children>
-                                          <TextField layoutX="7.0" layoutY="39.0" prefHeight="44.0" prefWidth="268.0" promptText="Cédula" />
-                                          <Label layoutX="16.0" layoutY="17.0" text="Cédula  *" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                       <children>
-                                          <Label layoutX="16.0" layoutY="16.0" text="Correo Electrónico (Opcional)" />
-                                          <TextField layoutX="8.0" layoutY="38.0" prefHeight="44.0" prefWidth="268.0" promptText="Correo Electrónico" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="82.0" prefWidth="286.0" GridPane.rowIndex="2">
-                                       <children>
-                                          <TextField layoutX="9.0" layoutY="38.0" prefHeight="44.0" prefWidth="268.0" promptText="Nombre" />
-                                          <Label layoutX="16.0" layoutY="16.0" text="Celular (Opcional)" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                       <children>
-                                          <Label layoutX="16.0" layoutY="16.0" text="Genero" />
-                                          <ChoiceBox layoutX="10.0" layoutY="39.0" prefHeight="43.0" prefWidth="265.0" styleClass="combo-box" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
-                                       <children>
-                                          <Label layoutX="16.0" layoutY="14.0" text="Doctor *" />
-                                          <ComboBox layoutX="9.0" layoutY="36.0" prefHeight="44.0" prefWidth="272.0" promptText="Seleccione un Doctor" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                                       <children>
-                                          <Label layoutX="21.0" layoutY="14.0" text="Motivo *" />
-                                          <TextArea layoutX="11.0" layoutY="37.0" prefHeight="78.0" prefWidth="263.0" promptText="Describa el motivo de consulta" styleClass="text-area">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                          </TextArea>
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="114.0" prefWidth="286.0" GridPane.rowIndex="3">
-                                       <children>
-                                          <Label layoutX="16.0" layoutY="11.0" text="Fecha de la Cita *" />
-                                          <DatePicker layoutX="10.0" layoutY="33.0" prefHeight="46.0" prefWidth="269.0" promptText="Fecha de la Cita" styleClass="date-picker" />
-                                       </children>
-                                    </Pane>
-                                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                       <children>
-                                          <ComboBox layoutX="11.0" layoutY="33.0" prefHeight="44.0" prefWidth="264.0" promptText="Hora" />
-                                          <Label layoutX="16.0" layoutY="12.0" text="Hora de la Cita *" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </GridPane>
-                           </children>
-                        </AnchorPane>
-                    </content>
-                  </ScrollPane>
-               </children>
+            <Pane prefHeight="494.0" prefWidth="596.0">
+
+               <!-- BOTONES -->
+               <Button fx:id="btnGuardar" layoutX="445.0" layoutY="452.0" onAction="#onGuardarCita" prefWidth="130.0" text="+ Guardar Cita" />
+
+               <Button layoutX="307.0" layoutY="452.0" prefWidth="130.0" styleClass="button-logout" text="- Cancelar" />
+
+               <Label layoutX="14.0" styleClass="info-title" text="Agendar Cita" />
+
+               <!-- SCROLL -->
+               <ScrollPane layoutY="59.0" prefHeight="383.0" prefWidth="589.0">
+                  <content>
+                     <AnchorPane>
+
+                        <GridPane prefHeight="540.0" prefWidth="564.0" styleClass="scroll-blanco">
+
+                           
+                           <Pane>
+                              <children>
+                                 <TextField fx:id="txtCedula" layoutX="8.0" layoutY="36.0" prefWidth="220.0" promptText="Cédula" />   
+                                 <Label layoutX="16.0" layoutY="14.0" text="Cédula *" />
+                                 <Label fx:id="lblErrorCedula" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              <Button layoutX="239.0" layoutY="36.0" onAction="#onBuscarPaciente" prefHeight="44.0" prefWidth="40.0" text="🔍" />
+                              </children>
+                           </Pane>
+
+                          
+                           <Pane GridPane.columnIndex="1">
+                              <children>
+                                 <TextField fx:id="txtNombre" layoutX="9.0" layoutY="32.0" prefHeight="44.0" prefWidth="263.0" promptText="Nombre" />
+                                 <Label layoutX="16.0" layoutY="10.0" text="Nombre *" />
+                                 <Label fx:id="lblErrorNombre" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              </children>
+                           </Pane>
+
+                           
+                           <Pane GridPane.rowIndex="1">
+                              <children>
+                                 <TextField fx:id="txtApellido" layoutX="6.0" layoutY="38.0" prefWidth="268.0" promptText="Apellido" />
+                                 <Label layoutX="16.0" layoutY="16.0" text="Apellido *" />
+                                 <Label fx:id="lblErrorApellido" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              </children>
+                           </Pane>
+                           
+
+                           
+                           <Pane GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <children>
+                                 <TextField fx:id="txtCorreo" layoutX="8.0" layoutY="38.0" prefWidth="268.0" promptText="Correo" />
+                                 <Label layoutX="16.0" layoutY="16.0" text="Correo (Opcional)" />
+                                 <Label fx:id="lblErrorCorreo" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              </children>
+                           </Pane>
+
+                           <!-- CELULAR -->
+                           <Pane GridPane.rowIndex="2">
+                              <children>
+                                 <TextField fx:id="txtCelular" layoutX="9.0" layoutY="38.0" prefWidth="268.0" promptText="Celular" />
+                                 <Label layoutX="16.0" layoutY="16.0" text="Celular (Opcional)" />
+                                 <Label fx:id="lblErrorCelular" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              </children>
+                           </Pane>
+
+                           <!-- GENERO -->
+                           <Pane GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <children>
+                                 <DatePicker fx:id="dpFechaNac" layoutX="3.0" layoutY="37.0" prefWidth="269.0" />
+                                 <Label layoutX="16.0" layoutY="14.0" text="Fecha de Nacimiento *" />
+                              </children>
+                           </Pane>
+
+                           <!-- FECHA -->
+                           <Pane GridPane.rowIndex="3">
+                              <children>
+                                 <DatePicker fx:id="dpFecha" layoutX="10.0" layoutY="33.0" prefWidth="269.0" />
+                                 <Label layoutX="16.0" layoutY="11.0" text="Fecha *" />
+                              </children>
+                           </Pane>
+
+                           <!-- HORA -->
+                           <Pane GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <children>
+                                 <ComboBox fx:id="cbMedico" layoutX="7.0" layoutY="34.0" prefHeight="44.0" prefWidth="269.0" promptText="Seleccione un Doctor" />
+                                 <Label layoutX="16.0" layoutY="11.0" text="Doctor *" />
+                              </children>
+                           </Pane>
+
+                           <!-- DOCTOR -->
+                           <Pane GridPane.rowIndex="4">
+                              <children>
+                                 <ComboBox fx:id="cbHora" layoutX="8.0" layoutY="43.0" prefWidth="264.0" />
+                                 <Label layoutX="16.0" layoutY="21.0" text="Hora *" />
+                                 <ChoiceBox fx:id="cbGenero" layoutX="7.0" layoutY="129.0" prefHeight="45.0" prefWidth="265.0" />
+                                 <Label layoutX="16.0" layoutY="105.0" text="Género" />
+                              </children>
+                           </Pane>
+
+                           <!-- MOTIVO -->
+                           <Pane GridPane.columnIndex="1" GridPane.rowIndex="4">
+                              <children>
+                                 <TextArea fx:id="txtMotivo" layoutX="11.0" layoutY="37.0" prefWidth="263.0" promptText="Motivo" />
+                                 <Label layoutX="21.0" layoutY="14.0" text="Motivo *" />
+                                 <Label fx:id="lblErrorMotivo" style="-fx-text-fill: red;" layoutX="7.0" layoutY="85.0"/>
+                              </children>
+                           </Pane>
+                           <columnConstraints>
+                              <ColumnConstraints />
+                              <ColumnConstraints />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
+
+                        </GridPane>
+                     </AnchorPane>
+                  </content>
+               </ScrollPane>
+
             </Pane>
          </children>
       </VBox>
+
    </children>
 </AnchorPane>

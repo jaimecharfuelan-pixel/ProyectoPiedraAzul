@@ -17,12 +17,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.net.URL;
@@ -49,7 +50,6 @@ public class ControladorAgendador implements Initializable {
     private IRepositorioMedicoTerapista repoMedico;
     private IRepositorioPaciente repoPaciente;
 
-    // Mapas para resolver nombres sin tocar los modelos
     private Map<Integer, String> nombresMedicos;
     private Map<Integer, String> nombresPacientes;
 
@@ -63,57 +63,41 @@ public class ControladorAgendador implements Initializable {
             repoMedico
         );
 
-        // Precarga los mapas de nombres
-        nombresMedicos = repoMedico.listar().stream()
-            .collect(Collectors.toMap(
-                m -> m.getIdPersona(),
-                m -> m.getNombre() + " " + m.getApellido()
-            ));
-
-        nombresPacientes = repoPaciente.listar().stream()
-            .collect(Collectors.toMap(
-                p -> p.getIdPersona(),
-                p -> p.getNombre() + " " + p.getApellido()
-            ));
-
+        // Precarga de nombres para que la tabla no muestre solo IDs
+        refrescarMapasDeNombres();
+        
         configurarColumnas();
         cargarMedicosEnComboBox();
         cargarCitas(null, null);
         actualizarContadores();
     }
 
+    private void refrescarMapasDeNombres() {
+        nombresMedicos = repoMedico.listar().stream()
+            .collect(Collectors.toMap(m -> m.getIdPersona(), m -> m.getNombre() + " " + m.getApellido()));
+
+        nombresPacientes = repoPaciente.listar().stream()
+            .collect(Collectors.toMap(p -> p.getIdPersona(), p -> p.getNombre() + " " + p.getApellido()));
+    }
+
     private void configurarColumnas() {
-        colPaciente.setCellValueFactory(cellData -> {
-            String nombre = nombresPacientes.getOrDefault(cellData.getValue().getIdPaciente(),
-                "Paciente #" + cellData.getValue().getIdPaciente());
-            return new SimpleStringProperty(nombre);
-        });
+        colPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(
+            nombresPacientes.getOrDefault(cellData.getValue().getIdPaciente(), "Paciente #" + cellData.getValue().getIdPaciente())));
 
-        colMedico.setCellValueFactory(cellData -> {
-            String nombre = nombresMedicos.getOrDefault(cellData.getValue().getIdMedico(),
-                "Médico #" + cellData.getValue().getIdMedico());
-            return new SimpleStringProperty(nombre);
-        });
+        colMedico.setCellValueFactory(cellData -> new SimpleStringProperty(
+            nombresMedicos.getOrDefault(cellData.getValue().getIdMedico(), "Médico #" + cellData.getValue().getIdMedico())));
 
-        colFecha.setCellValueFactory(cellData ->
-            new SimpleStringProperty(
-                cellData.getValue().getFecha() != null ? cellData.getValue().getFecha().toString() : ""
-            )
-        );
+        colFecha.setCellValueFactory(cellData -> new SimpleStringProperty(
+            cellData.getValue().getFecha() != null ? cellData.getValue().getFecha().toString() : ""));
 
-        colHora.setCellValueFactory(cellData ->
-            new SimpleStringProperty(
-                cellData.getValue().getHoraInicio() != null ? cellData.getValue().getHoraInicio().toString() : ""
-            )
-        );
+        colHora.setCellValueFactory(cellData -> new SimpleStringProperty(
+            cellData.getValue().getHoraInicio() != null ? cellData.getValue().getHoraInicio().toString() : ""));
     }
 
     private void cargarMedicosEnComboBox() {
-        // Usa listar() para traer todos, sin depender del id_estado
         List<MedicoTerapista> medicos = repoMedico.listar();
-
         ObservableList<MedicoTerapista> items = FXCollections.observableArrayList();
-        items.add(null); // Opción "Todos los médicos"
+        items.add(null); 
         items.addAll(medicos);
 
         cbDoctorFiltro.setItems(items);
@@ -125,34 +109,36 @@ public class ControladorAgendador implements Initializable {
             @Override
             public MedicoTerapista fromString(String s) { return null; }
         });
-        cbDoctorFiltro.getSelectionModel().selectFirst();
     }
 
-    private void cargarCitas(Integer prmIdMedico, LocalDate prmFecha) {
-        List<Cita> citas = servicioAgendamiento.listarCitas(prmIdMedico, prmFecha);
+    private void cargarCitas(Integer idMedico, LocalDate fecha) {
+        List<Cita> citas = servicioAgendamiento.listarCitas(idMedico, fecha);
         tblCitas.setItems(FXCollections.observableArrayList(citas));
     }
 
     private void actualizarContadores() {
         List<Cita> citasHoy = servicioAgendamiento.listarCitas(null, LocalDate.now());
-        if (lblTotalHoy != null)
-            lblTotalHoy.setText(String.valueOf(citasHoy.size()));
-
-        long pendientes = citasHoy.stream()
-            .filter(c -> c.getIdEstadoCita() != null && c.getIdEstadoCita() == 1)
-            .count();
-        if (lblPendientesConfirmacionHoy != null)
-            lblPendientesConfirmacionHoy.setText(String.valueOf(pendientes));
-
-        if (medicosActivos != null)
-            medicosActivos.setText(String.valueOf(nombresMedicos.size()));
+        if (lblTotalHoy != null) lblTotalHoy.setText(String.valueOf(citasHoy.size()));
+        
+        if (medicosActivos != null) medicosActivos.setText(String.valueOf(nombresMedicos.size()));
     }
 
     @FXML
     void onFiltrar(ActionEvent event) {
         LocalDate fecha = dpFechaFiltro.getValue();
-        MedicoTerapista medicoSeleccionado = cbDoctorFiltro.getValue();
-        Integer idMedico = (medicoSeleccionado != null) ? medicoSeleccionado.getIdPersona() : null;
-        cargarCitas(idMedico, fecha);
+        MedicoTerapista m = cbDoctorFiltro.getValue();
+        cargarCitas(m != null ? m.getIdPersona() : null, fecha);
+    }
+
+    @FXML
+    void onNuevaCita(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaAgendarCita.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) tblCitas.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
