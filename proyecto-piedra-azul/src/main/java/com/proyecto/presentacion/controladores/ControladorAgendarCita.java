@@ -4,9 +4,13 @@ import com.proyecto.logica.modelos.*;
 import com.proyecto.logica.servicios.ServicioAgendamiento;
 import com.proyecto.persistencia.repositorios.*;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-
+import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -62,7 +66,7 @@ public class ControladorAgendarCita {
 
         servicio = new ServicioAgendamiento(
                 new RepositorioCitas(),
-                new RepositorioJornadaLaboral());
+                new RepositorioJornadaLaboral(),repoMedico=new RepositorioMedicoTerapista());
 
         repoPaciente = new RepositorioPaciente();
         repoPersona = new RepositorioPersona();
@@ -278,7 +282,7 @@ public class ControladorAgendarCita {
         p.setCorreo(txtCorreo.getText());
         p.setCelular(txtCelular.getText());
         p.setFechaNacimiento(dpFechaNac.getValue());
-        p.setIdEstado(2); // Activo
+        p.setIdEstado(1); // Activo
 
         int id = repoPaciente.guardar(p);
         p.setIdPersona(id);
@@ -456,5 +460,17 @@ public class ControladorAgendarCita {
                 setDisable(date.isAfter(LocalDate.now()));
             }
         });
+    }
+
+    @FXML
+    private void onCancelar(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaAgendador.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) btnGuardar.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

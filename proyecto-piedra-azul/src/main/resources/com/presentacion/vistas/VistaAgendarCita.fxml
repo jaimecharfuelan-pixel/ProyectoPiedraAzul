@@ -44,7 +44,7 @@
                <!-- BOTONES -->
                <Button fx:id="btnGuardar" layoutX="445.0" layoutY="452.0" onAction="#onGuardarCita" prefWidth="130.0" text="+ Guardar Cita" />
 
-               <Button layoutX="307.0" layoutY="452.0" prefWidth="130.0" styleClass="button-logout" text="- Cancelar" />
+               <Button layoutX="307.0" layoutY="452.0" prefWidth="130.0" styleClass="button-logout" text="- Cancelar" onAction="#onCancelar" />
 
                <Label layoutX="14.0" styleClass="info-title" text="Agendar Cita" />
 

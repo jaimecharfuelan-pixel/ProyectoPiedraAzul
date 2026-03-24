@@ -3,7 +3,6 @@ package com.proyecto.presentacion.controladores;
 import com.proyecto.logica.interfaces.IServicioAgendamiento;
 import com.proyecto.logica.modelos.Cita;
 import com.proyecto.logica.modelos.MedicoTerapista;
-import com.proyecto.logica.modelos.Paciente;
 import com.proyecto.logica.servicios.ServicioAgendamiento;
 import com.proyecto.persistencia.interfaces.IRepositorioMedicoTerapista;
 import com.proyecto.persistencia.interfaces.IRepositorioPaciente;
@@ -11,6 +10,7 @@ import com.proyecto.persistencia.repositorios.RepositorioCitas;
 import com.proyecto.persistencia.repositorios.RepositorioJornadaLaboral;
 import com.proyecto.persistencia.repositorios.RepositorioMedicoTerapista;
 import com.proyecto.persistencia.repositorios.RepositorioPaciente;
+import com.proyecto.presentacion.SesionUsuario;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -22,7 +22,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -73,7 +72,8 @@ public class ControladorAgendador implements Initializable {
     }
 
     private void refrescarMapasDeNombres() {
-        nombresMedicos = repoMedico.listar().stream()
+        // Solo médicos activos (id_estado = 2)
+        nombresMedicos = repoMedico.listarActivos().stream()
             .collect(Collectors.toMap(m -> m.getIdPersona(), m -> m.getNombre() + " " + m.getApellido()));
 
         nombresPacientes = repoPaciente.listar().stream()
@@ -95,7 +95,7 @@ public class ControladorAgendador implements Initializable {
     }
 
     private void cargarMedicosEnComboBox() {
-        List<MedicoTerapista> medicos = repoMedico.listar();
+        List<MedicoTerapista> medicos = repoMedico.listarActivos();
         ObservableList<MedicoTerapista> items = FXCollections.observableArrayList();
         items.add(null); 
         items.addAll(medicos);
@@ -113,7 +113,11 @@ public class ControladorAgendador implements Initializable {
 
     private void cargarCitas(Integer idMedico, LocalDate fecha) {
         List<Cita> citas = servicioAgendamiento.listarCitas(idMedico, fecha);
-        tblCitas.setItems(FXCollections.observableArrayList(citas));
+        // Excluir citas cuyo médico esté inactivo (no aparece en el mapa de activos)
+        List<Cita> citasFiltradas = citas.stream()
+            .filter(c -> nombresMedicos.containsKey(c.getIdMedico()))
+            .collect(Collectors.toList());
+        tblCitas.setItems(FXCollections.observableArrayList(citasFiltradas));
     }
 
     private void actualizarContadores() {
@@ -134,6 +138,19 @@ public class ControladorAgendador implements Initializable {
     void onNuevaCita(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaAgendarCita.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) tblCitas.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void onCerrarSesion(ActionEvent event) {
+        SesionUsuario.getInstancia().limpiarSesion();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaLogin.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) tblCitas.getScene().getWindow();
             stage.setScene(new Scene(root));

@@ -1,9 +1,13 @@
 package com.proyecto.presentacion.controladores;
 
+import com.proyecto.logica.modelos.Rol;
 import com.proyecto.logica.servicios.ServicioUsuarios;
 import com.proyecto.logica.servicios.ServicioAuth;
+import com.proyecto.persistencia.repositorios.RepositorioRol;
 import com.proyecto.persistencia.repositorios.RepositorioUsuario;
 import com.proyecto.presentacion.SesionUsuario;
+import io.jsonwebtoken.Claims;
+import com.proyecto.seguridad.JwtUtil;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -15,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+
+import java.util.List;
 
 public class ControladorLogin {
 
@@ -104,20 +110,39 @@ public class ControladorLogin {
 
         if (token != null) {
 
-            System.out.println(" Token generado: " + token);
+            System.out.println("Token generado: " + token);
 
+            // Extraer id del usuario desde el token JWT
+            Claims claims = JwtUtil.validarToken(token);
+            int idUsuario = claims.get("id", Integer.class);
+
+            // Consultar el rol del usuario
+            RepositorioRol repoRol = new RepositorioRol();
+            List<Rol> roles = repoRol.listarPorUsuario(idUsuario);
+            String nombreRol = roles.isEmpty() ? "" : roles.get(0).getNombre().toLowerCase();
+
+            // Guardar en sesión
             SesionUsuario.getInstancia().setToken(token);
+            SesionUsuario.getInstancia().setIdUsuario(idUsuario);
+            SesionUsuario.getInstancia().setRol(nombreRol);
 
-            navegarAPanelPrincipal();
+            navegarSegunRol(nombreRol);
 
         } else {
             mostrarError("Acceso Denegado", "Usuario o contraseña incorrectos.");
         }
     }
 
-    private void navegarAPanelPrincipal() {
+    private void navegarSegunRol(String rol) {
+        String vista;
+        switch (rol) {
+            case "administrador" -> vista = "/com/presentacion/vistas/VistaAdmin.fxml";
+            case "agendador"     -> vista = "/com/presentacion/vistas/VistaAgendador.fxml";
+            case "paciente"      -> vista = "/com/presentacion/vistas/VistaPaciente.fxml";
+            default              -> vista = "/com/presentacion/vistas/VistaAgendador.fxml";
+        }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaAgendador.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
             Parent root = loader.load();
             Stage stage = (Stage) txtUsuario.getScene().getWindow();
             stage.setScene(new Scene(root));
