@@ -33,7 +33,7 @@
                               <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
                            </image>
                         </ImageView>
-                        <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" styleClass="button-logout" text="- Cerrar Sesión" />
+                        <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" styleClass="button-logout" text="- Cerrar Sesión" onAction="#onCerrarSesion" />
                      </children>
                   </Pane>
                </children>
@@ -89,8 +89,9 @@
                     <items>
                       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="602.0">
                            <children>
-                              <DatePicker layoutX="41.0" layoutY="10.0" prefHeight="57.0" prefWidth="283.0" styleClass="date-picker" />
-                              <ComboBox layoutX="347.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="57.0" prefWidth="242.0" promptText="Seleccione un Doctor" styleClass="combo-box" />
+                              <DatePicker fx:id="dpFechaFiltro" layoutX="41.0" layoutY="10.0" prefHeight="57.0" prefWidth="283.0" styleClass="date-picker" />
+                              <ComboBox fx:id="cbDoctorFiltro" layoutX="347.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="57.0" prefWidth="242.0" promptText="Seleccione un Doctor" styleClass="combo-box" />
+                              <Button layoutX="610.0" layoutY="22.0" mnemonicParsing="false" onAction="#onFiltrar" prefHeight="35.0" prefWidth="120.0" text="Filtrar" />
                            </children>
                         </AnchorPane>
                       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="182.0" prefWidth="766.0">

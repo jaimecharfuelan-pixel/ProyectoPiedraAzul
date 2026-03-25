@@ -13,4 +13,10 @@ public interface IServicioUsuarios {
      * Registra un nuevo usuario en el sistema.
      */
     boolean registrarUsuario(Usuario prmUsuario);
+
+    boolean editarUsuario(Usuario prmUsuario);
+
+    boolean eliminarUsuario(int prmIdUsuario);
+
+    java.util.List<Usuario> listarUsuarios();
 }
