@@ -6,6 +6,9 @@
 
 SET search_path TO esquemaprueba, public;
 
+-- Ejecutar antes para evitar problemas:
+TRUNCATE TABLE Cita, Jornada_Laboral, Paciente, Agendador, Medico_Terapista, Persona, Rol, Usuario, Dominio_Estado, Dominio_Genero, Dominio_Especialidad, Dominio_EstadoCita RESTART IDENTITY CASCADE;
+
 -- ============================================================
 -- 1. TABLAS DE DOMINIO
 -- ============================================================
