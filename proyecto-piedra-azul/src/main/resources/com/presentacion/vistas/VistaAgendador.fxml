@@ -4,121 +4,202 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../Estilos/estilos.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.proyecto.presentacion.controladores.ControladorAgendador">
-   <children>
-      <Pane layoutX="-3.0" layoutY="-5.0" prefHeight="609.0" prefWidth="806.0">
-         <children>
-            <Label layoutX="24.0" layoutY="67.0" prefHeight="59.0" prefWidth="180.0" styleClass="info-title" text="Panel Principal" />
-            <Label layoutX="21.0" layoutY="241.0" prefHeight="59.0" prefWidth="261.0" styleClass="info-title" text="Lista Citas" />
-            <VBox layoutX="7.0" layoutY="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="778.0" styleClass="main-login-card">
-               <children>
-                  <Pane prefHeight="105.0" prefWidth="778.0">
-                     <children>
-                         <Button layoutX="511.0" layoutY="16.0"
-                           mnemonicParsing="false"
-                           text="+ Nueva Cita "
-                           onAction="#onNuevaCita"/>
-                        <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="15.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
-                           </image>
+<StackPane xmlns="http://javafx.com/javafx/25"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.proyecto.presentacion.controladores.ControladorAgendador"
+           stylesheets="@../Estilos/estilos.css">
+
+    <children>
+        <!-- Contenedor principal con padding para separar del borde -->
+        <VBox spacing="20"
+              alignment="TOP_CENTER"
+              maxWidth="Infinity"
+              prefWidth="Infinity"
+              style="-fx-padding: 20;"
+              StackPane.alignment="CENTER">
+
+            <!-- Header con logo más grande -->
+            <HBox spacing="20"
+                  alignment="CENTER_RIGHT"
+                  styleClass="main-login-card"
+                  prefHeight="90"
+                  maxWidth="Infinity"
+                  prefWidth="Infinity">
+
+                <children>
+                    <ImageView fitHeight="70"
+                               fitWidth="160"
+                               preserveRatio="true">
+                        <image>
+                            <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png"/>
+                        </image>
+                    </ImageView>
+
+                    <Pane HBox.hgrow="ALWAYS"/>
+
+                    <Button text="+ Nueva Cita"
+                            prefWidth="160"
+                            prefHeight="48"
+                            style="-fx-font-size: 16px;"
+                            onAction="#onNuevaCita"/>
+
+                    <Button text="- Cerrar Sesión"
+                            prefWidth="160"
+                            prefHeight="48"
+                            styleClass="button-logout"
+                            style="-fx-font-size: 16px;"
+                            onAction="#onCerrarSesion"/>
+                </children>
+            </HBox>
+
+            <!-- Título con tamaño aumentado -->
+            <Label text="Panel Principal"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+
+            <!-- Tarjetas con imágenes arriba y texto abajo -->
+            <HBox spacing="20"
+                  alignment="CENTER"
+                  maxWidth="Infinity"
+                  prefWidth="Infinity">
+
+                <!-- Tarjeta 1: Citas para hoy -->
+                <VBox styleClass="main-login-card"
+                      HBox.hgrow="ALWAYS"
+                      prefHeight="160"
+                      alignment="CENTER"
+                      spacing="10">
+                    <children>
+                        <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
+                             <image>
+                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/calendario.png"/>
+                            </image>
                         </ImageView>
-                        <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="130.0" styleClass="button-logout" text="- Cerrar Sesión" onAction="#onCerrarSesion" />
-                     </children>
-                  </Pane>
-               </children>
-            </VBox>
-            <VBox layoutX="14.0" layoutY="126.0" prefHeight="120.0" prefWidth="241.0" styleClass="main-login-card">
-               <children>
-                  <Pane prefHeight="200.0" prefWidth="242.0">
-                     <children>
-                        <Label layoutX="14.0" layoutY="57.0" prefHeight="20.0" prefWidth="221.0" styleClass="label-grey-small" text="CITAS PARA HOY" />
-                        <Label fx:id="lblTotalHoy" layoutX="14.0" layoutY="74.0" prefHeight="44.0" prefWidth="50.0" styleClass="label-numero-grande" text="5" />
-                        <ImageView fitHeight="35.0" fitWidth="35.0" layoutX="15.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../icons/calendario.png" />
-                           </image>
+                        <Label text="CITAS PARA HOY"
+                               style="-fx-font-size: 16px; -fx-font-weight: normal;"/>
+                        <Label fx:id="lblTotalHoy"
+                               text="5"
+                               style="-fx-font-size: 40px; -fx-font-weight: bold;"/>
+                    </children>
+                </VBox>
+
+                <!-- Tarjeta 2: Pendientes de confirmación -->
+                <VBox styleClass="main-login-card"
+                      HBox.hgrow="ALWAYS"
+                      prefHeight="160"
+                      alignment="CENTER"
+                      spacing="10">
+                    <children>
+                        <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
+                             <image>
+                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/Pendiente.png"/>
+                            </image>
                         </ImageView>
-                     </children>
-                  </Pane>
-               </children>
-            </VBox>
-            <VBox layoutX="264.0" layoutY="126.0" prefHeight="120.0" prefWidth="241.0" styleClass="main-login-card">
-               <children>
-                  <Pane prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <Label layoutX="14.0" layoutY="56.0" styleClass="label-grey-small" text="PENDIENTES DE CONFIRMACIÓN" />
-                        <Label fx:id="lblPendientesConfirmacionHoy" layoutX="14.0" layoutY="72.0" prefHeight="44.0" prefWidth="50.0" styleClass="label-numero-grande" text="4" />
-                        <ImageView fitHeight="44.0" fitWidth="37.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../icons/Pendiente.png" />
-                           </image>
+                        <Label text="PENDIENTES DE CONFIRMACIÓN"
+                               style="-fx-font-size: 16px; -fx-font-weight: normal;"/>
+                        <Label fx:id="lblPendientesConfirmacionHoy"
+                               text="4"
+                               style="-fx-font-size: 40px; -fx-font-weight: bold;"/>
+                    </children>
+                </VBox>
+
+                <!-- Tarjeta 3: Médicos activos -->
+                <VBox styleClass="main-login-card"
+                      HBox.hgrow="ALWAYS"
+                      prefHeight="160"
+                      alignment="CENTER"
+                      spacing="10">
+                    <children>
+                        <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
+                             <image>
+                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/botiquin-medico.png"/>
+                            </image>
                         </ImageView>
-                     </children>
-                  </Pane>
-               </children>
+                        <Label text="MÉDICOS ACTIVOS"
+                               style="-fx-font-size: 16px; -fx-font-weight: normal;"/>
+                        <Label fx:id="medicosActivos"
+                               text="12"
+                               style="-fx-font-size: 40px; -fx-font-weight: bold;"/>
+                    </children>
+                </VBox>
+            </HBox>
+
+            <!-- Título lista con tamaño aumentado -->
+            <Label text="Lista Citas"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+
+            <!-- Filtros -->
+            <HBox spacing="20"
+                  alignment="CENTER_LEFT"
+                  maxWidth="Infinity"
+                  prefWidth="Infinity">
+
+                <children>
+                    <DatePicker fx:id="dpFechaFiltro"
+                                prefHeight="44"
+                                HBox.hgrow="ALWAYS"
+                                maxWidth="Infinity"/>
+
+                    <ComboBox fx:id="cbDoctorFiltro"
+                              prefHeight="44"
+                              promptText="Seleccione un Doctor"
+                              HBox.hgrow="ALWAYS"
+                              maxWidth="Infinity"/>
+
+                    <Button text="Filtrar"
+                            prefWidth="130"
+                            prefHeight="44"
+                            style="-fx-font-size: 14px;"
+                            onAction="#onFiltrar"/>
+                </children>
+            </HBox>
+
+            <!-- Tabla con redimensionamiento automático (CORREGIDO) -->
+            <VBox styleClass="main-login-card"
+                  maxWidth="Infinity"
+                  prefWidth="Infinity"
+                  VBox.vgrow="ALWAYS"
+                  alignment="CENTER">
+
+                <children>
+                    <TableView fx:id="tblCitas"
+                               VBox.vgrow="ALWAYS"
+                               maxWidth="Infinity"
+                               prefWidth="Infinity">
+
+                        <columns>
+                            <TableColumn fx:id="colPaciente"
+                                         text="Paciente"
+                                         prefWidth="200"
+                                         style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                            <TableColumn fx:id="colHora"
+                                         text="Hora"
+                                         prefWidth="100"
+                                         style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                            <TableColumn fx:id="colFecha"
+                                         text="Fecha"
+                                         prefWidth="150"
+                                         style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                            <TableColumn fx:id="colMedico"
+                                         text="Medico"
+                                         prefWidth="250"
+                                         style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                        </columns>
+                    </TableView>
+                </children>
             </VBox>
-            <VBox layoutX="511.0" layoutY="126.0" prefHeight="120.0" prefWidth="261.0" styleClass="main-login-card">
-               <children>
-                  <Pane prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <Label layoutX="15.0" layoutY="53.0" styleClass="label-grey-small" text="MÉDICOS ACTIVOS" />
-                        <Label fx:id="medicosActivos" layoutX="15.0" layoutY="72.0" prefHeight="44.0" prefWidth="50.0" styleClass="label-numero-grande" text="12" />
-                        <ImageView fitHeight="35.0" fitWidth="35.0" layoutX="19.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../../icons/botiquin-medico.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </Pane>
-               </children>
-            </VBox>
-            <VBox layoutX="16.0" layoutY="298.0" prefHeight="274.0" prefWidth="754.0" styleClass="main-login-card">
-               <children>
-                  <SplitPane dividerPositions="0.332378223495702" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="279.0" prefWidth="767.0" styleClass="main-login-card">
-                    <items>
-                      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="602.0">
-                           <children>
-                              <DatePicker fx:id="dpFechaFiltro" layoutX="41.0" layoutY="10.0" prefHeight="57.0" prefWidth="283.0" styleClass="date-picker" />
-                              <ComboBox fx:id="cbDoctorFiltro" layoutX="347.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="57.0" prefWidth="242.0" promptText="Seleccione un Doctor" styleClass="combo-box" />
-                              <Button layoutX="610.0" layoutY="22.0" mnemonicParsing="false" onAction="#onFiltrar" prefHeight="35.0" prefWidth="120.0" text="Filtrar" />
-                           </children>
-                        </AnchorPane>
-                      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="182.0" prefWidth="766.0">
-                           <children>
-                              <ScrollPane prefHeight="182.0" prefWidth="766.0">
-                                <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="175.0" prefWidth="743.0">
-                                       <children>
-                                          <TableView fx:id="tblCitas" layoutX="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="182.0" prefWidth="752.0">
-                                            <columns>
-                                              <TableColumn fx:id="colPaciente" prefWidth="233.60003048181534" text="Paciente" />
-                                              <TableColumn fx:id="colHora" minWidth="4.79998779296875" prefWidth="92.00003051757812" text="Hora" />
-                                                <TableColumn fx:id="colFecha" minWidth="6.4000244140625" prefWidth="143.2000732421875" text="Fecha" />
-                                                <TableColumn fx:id="colMedico" minWidth="0.0" prefWidth="288.0" text="Medico" />
-                                            </columns>
-                                          </TableView>
-                                       </children>
-                                    </AnchorPane>
-                                </content>
-                              </ScrollPane>
-                           </children>
-                        </AnchorPane>
-                    </items>
-                  </SplitPane>
-               </children>
-            </VBox>
-         </children>
-      </Pane>
-   </children>
-</AnchorPane>
+
+        </VBox>
+    </children>
+</StackPane>
