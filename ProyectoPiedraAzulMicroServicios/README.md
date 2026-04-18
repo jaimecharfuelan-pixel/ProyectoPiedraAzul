@@ -35,9 +35,9 @@ ProyectoPiedraAzulMicroServicios/
 docker compose up --build -d
 
 # 2. Cargar los datos de prueba en cada BD
-docker exec -i db_usuarios      psql -U piedrazul -d db_usuarios      < microservicio_usuarios/init-db.sql
-docker exec -i db_agendamiento  psql -U piedrazul -d db_agendamiento  < microservicio_agendamiento/init-db.sql
-docker exec -i db_configuracion psql -U piedrazul -d db_configuracion < microservicio_configuracion/init-db.sql
+Get-Content microservicio_usuarios/BD_MSUsuarios.sql | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
+Get-Content microservicio_agendamiento/BD_MSAgendamiento.sql | docker exec -i db_agendamiento psql -U piedrazul -d db_agendamiento
+Get-Content microservicio_configuracion/BD_MSConfiguracion.sql | docker exec -i db_configuracion psql -U piedrazul -d db_configuracion
 ```
 
 ### Uso normal
@@ -82,8 +82,8 @@ Panel RabbitMQ: http://localhost:15672
 
 ## Scripts SQL
 
-Cada microservicio tiene su propio `init-db.sql` con tablas y datos de prueba:
+Cada microservicio tiene su propio script SQL con tablas y datos de prueba:
 
-- `microservicio_usuarios/init-db.sql` — usuarios, personas, médicos, pacientes
-- `microservicio_agendamiento/init-db.sql` — citas
-- `microservicio_configuracion/init-db.sql` — jornadas laborales, especialidades
+- `microservicio_usuarios/BD_MSUsuarios.sql` — usuarios, personas, médicos, pacientes
+- `microservicio_agendamiento/BD_MSAgendamiento.sql` — citas
+- `microservicio_configuracion/BD_MSConfiguracion.sql` — jornadas laborales, especialidades
