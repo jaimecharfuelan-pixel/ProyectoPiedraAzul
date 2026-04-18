@@ -1,117 +1,89 @@
-# Proyecto Piedra Azul — Versión Microservicios
+# Proyecto Piedra Azul — Microservicios
 
-Sistema de gestión de citas médicas migrado a arquitectura de microservicios con Spring Boot, RabbitMQ y Docker.
-
----
-
-## Requisitos previos
-
-Instalar Docker Desktop para levantar todos los contenedores:
-https://www.docker.com
-
-Para correr el frontend JavaFX en tu PC instalar JDK 17:
-https://adoptium.net/es/temurin/releases?version=17
-
-Extensiones recomendadas en VS Code:
-- Extension Pack for Java
-- JavaFX Support
-- Spring Boot Extension Pack
-- Database Client (para ver las bases de datos)
-
-Scene Builder para editar las vistas FXML:
-https://gluonhq.com/products/scene-builder/
-
-Después de instalar Scene Builder, en VS Code buscar:
-`>SceneBuilder: Configure Path` y seleccionar el ejecutable.
+Sistema de citas médicas migrado de monolito a arquitectura de microservicios.
 
 ---
 
-## Estructura del proyecto
+## Requisitos
+
+- [Docker Desktop](https://www.docker.com) — para levantar todos los contenedores
+- [JDK 21](https://adoptium.net/es/temurin/releases?version=21) — para desarrollo local
+- Extensión **Database Client** en VS Code — para ver las BDs desde el editor
+
+---
+
+## Estructura
 
 ```
 ProyectoPiedraAzulMicroServicios/
-├── microservicio_usuarios/       → Gestión de personas, usuarios y autenticación  (puerto 8081)
-├── microservicio_agendamiento/   → Citas y disponibilidad horaria                 (puerto 8082)
-├── microservicio_configuracion/  → Jornadas laborales y especialidades            (puerto 8083)
-├── api_gateway/                  → Punto de entrada único, valida JWT             (puerto 8080)
-├── frontend/                     → Interfaz JavaFX, se conecta al gateway
-└── docker-compose.yml            → Levanta todo el sistema
+├── api_gateway/              → Puerta de entrada, puerto 8080
+├── microservicio_usuarios/   → Personas, auth, roles, puerto 8081
+├── microservicio_agendamiento/  → Citas, puerto 8082
+├── microservicio_configuracion/ → Jornadas, especialidades, puerto 8083
+├── frontend/                 → Interfaz de usuario
+└── docker-compose.yml        → Orquesta todo
 ```
 
 ---
 
-## Levantar el sistema por primera vez
+## Levantar el proyecto
 
-Abrir una terminal en la carpeta `ProyectoPiedraAzulMicroServicios` y ejecutar:
+### Primera vez
 
 ```bash
-docker-compose up --build -d
+# 1. Construir y levantar todos los contenedores
+docker compose up --build -d
+
+# 2. Cargar los datos de prueba en cada BD
+docker exec -i db_usuarios      psql -U piedrazul -d db_usuarios      < microservicio_usuarios/init-db.sql
+docker exec -i db_agendamiento  psql -U piedrazul -d db_agendamiento  < microservicio_agendamiento/init-db.sql
+docker exec -i db_configuracion psql -U piedrazul -d db_configuracion < microservicio_configuracion/init-db.sql
 ```
 
-El `--build` compila todos los microservicios dentro de Docker.
-El `-d` los corre en segundo plano.
+### Uso normal
 
-Esto levanta:
-- 3 bases de datos PostgreSQL (puertos 5433, 5434, 5435)
-- RabbitMQ con panel web (puerto 5672 / panel en 15672)
-- microservicio_usuarios (puerto 8081)
-- microservicio_agendamiento (puerto 8082)
-- microservicio_configuracion (puerto 8083)
-- api_gateway (puerto 8080)
-
----
-
-## Comandos del día a día
-
-Apagar todos los contenedores:
 ```bash
-docker-compose down
-```
+# Encender
+docker compose up -d
 
-Encender los contenedores (sin recompilar):
-```bash
-docker-compose up -d
-```
-
-Ver los logs de un microservicio:
-```bash
-docker logs microservicio_usuarios
-docker logs microservicio_agendamiento
-docker logs microservicio_configuracion
-```
-
-Ver si todos los contenedores están corriendo:
-```bash
-docker ps
+# Apagar
+docker compose down
 ```
 
 ---
 
-## Panel de administración RabbitMQ
+## Puertos
 
-Una vez levantado el sistema, entrar a:
-http://localhost:15672
-
-Usuario: `admin`
-Contraseña: `admin123`
-
-Desde ahí se pueden ver los exchanges, queues y mensajes en tiempo real.
-
----
-
-## Documentación de las APIs (Swagger)
-
-Con los contenedores corriendo, abrir en el navegador:
-
-- Usuarios:       http://localhost:8081/swagger-ui/index.html
-- Agendamiento:   http://localhost:8082/swagger-ui/index.html
-- Configuración:  http://localhost:8083/swagger-ui/index.html
+| Servicio              | Puerto local |
+|-----------------------|-------------|
+| API Gateway           | 8080        |
+| ms-usuarios           | 8081        |
+| ms-agendamiento       | 8082        |
+| ms-configuracion      | 8083        |
+| db_usuarios (Postgres)| 5433        |
+| db_agendamiento       | 5434        |
+| db_configuracion      | 5435        |
+| RabbitMQ (AMQP)       | 5672        |
+| RabbitMQ (Panel web)  | 15672       |
 
 ---
 
-## Correr el frontend
+## Credenciales
 
-El frontend JavaFX se corre directamente desde VS Code o IntelliJ (no va en Docker).
-Asegurarse de tener JDK 17 instalado y los contenedores levantados antes de abrirlo.
+| Recurso       | Usuario    | Contraseña    |
+|---------------|------------|---------------|
+| Bases de datos| piedrazul  | piedrazul123  |
+| RabbitMQ      | admin      | admin123      |
+| Usuario admin | admin      | admin123      |
 
-El frontend se conecta al gateway en: `http://localhost:8080`
+Panel RabbitMQ: http://localhost:15672
+
+---
+
+## Scripts SQL
+
+Cada microservicio tiene su propio `init-db.sql` con tablas y datos de prueba:
+
+- `microservicio_usuarios/init-db.sql` — usuarios, personas, médicos, pacientes
+- `microservicio_agendamiento/init-db.sql` — citas
+- `microservicio_configuracion/init-db.sql` — jornadas laborales, especialidades
