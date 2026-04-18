@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1592px" preserveAspectRatio="none" style="width:10051px;height:1592px;background:#FFFFFF;" version="1.1" viewBox="0 0 10051 1592" width="10051px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="26.2969" id="_title" style="stroke:none;stroke-width:1.0;" width="469" x="4784" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="459" x="4789" y="22.9951">Estructura Arquitectónica Final - Sistema de Citas Médicas</text><!--MD5=[f2462e8f23782e1e1ed458db92c30088]
+cluster Proyecto--><g id="cluster_Proyecto"><path d="M3157.5,212.2969 L3229.5,212.2969 A3.75,3.75 0 0 1 3232,214.7969 L3239,234.5938 L10041.5,234.5938 A2.5,2.5 0 0 1 10044,237.0938 L10044,1582.7969 A2.5,2.5 0 0 1 10041.5,1585.2969 L3157.5,1585.2969 A2.5,2.5 0 0 1 3155,1582.7969 L3155,214.7969 A2.5,2.5 0 0 1 3157.5,212.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="3155" x2="3239" y1="234.5938" y2="234.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="71" x="3159" y="227.292">Proyecto</text></g><!--MD5=[0e078a54db5d2daac402d4fed3eb9a7b]
+cluster presentacion--><g id="cluster_presentacion"><path d="M3181.5,255.2969 L3286.5,255.2969 A3.75,3.75 0 0 1 3289,257.7969 L3296,277.5938 L6525.5,277.5938 A2.5,2.5 0 0 1 6528,280.0938 L6528,774.2969 A2.5,2.5 0 0 1 6525.5,776.7969 L3181.5,776.7969 A2.5,2.5 0 0 1 3179,774.2969 L3179,257.7969 A2.5,2.5 0 0 1 3181.5,255.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="3179" x2="3296" y1="277.5938" y2="277.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="104" x="3183" y="270.292">presentacion</text></g><!--MD5=[c504da6496d067f01eb7da2615bc9bff]
+cluster controladores--><g id="cluster_controladores"><path d="M3511.5,306.2969 L3623.5,306.2969 A3.75,3.75 0 0 1 3626,308.7969 L3633,328.5938 L6493.5,328.5938 A2.5,2.5 0 0 1 6496,331.0938 L6496,742.2969 A2.5,2.5 0 0 1 6493.5,744.7969 L3511.5,744.7969 A2.5,2.5 0 0 1 3509,742.2969 L3509,308.7969 A2.5,2.5 0 0 1 3511.5,306.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="3509" x2="3633" y1="328.5938" y2="328.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="111" x="3513" y="321.292">controladores</text></g><!--MD5=[4cb6fc9f3a8fdac58ba3f509cb150abc]
+cluster logica--><g id="cluster_logica"><path d="M6554.5,512.2969 L6601.5,512.2969 A3.75,3.75 0 0 1 6604,514.7969 L6611,534.5938 L8356.5,534.5938 A2.5,2.5 0 0 1 8359,537.0938 L8359,1425.7969 A2.5,2.5 0 0 1 8356.5,1428.2969 L6554.5,1428.2969 A2.5,2.5 0 0 1 6552,1425.7969 L6552,514.7969 A2.5,2.5 0 0 1 6554.5,512.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="6552" x2="6611" y1="534.5938" y2="534.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="46" x="6556" y="527.292">logica</text></g><!--MD5=[848e5075dd62080c2ac1576951898166]
+cluster modelos--><g id="cluster_modelos"><path d="M6586.5,1009.2969 L6654.5,1009.2969 A3.75,3.75 0 0 1 6657,1011.7969 L6664,1031.5938 L7295.5,1031.5938 A2.5,2.5 0 0 1 7298,1034.0938 L7298,1393.7969 A2.5,2.5 0 0 1 7295.5,1396.2969 L6586.5,1396.2969 A2.5,2.5 0 0 1 6584,1393.7969 L6584,1011.7969 A2.5,2.5 0 0 1 6586.5,1009.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="6584" x2="6664" y1="1031.5938" y2="1031.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="67" x="6588" y="1024.292">modelos</text></g><!--MD5=[19bf8a0467fea19af0d6db6c9a353799]
+cluster int_log--><g id="cluster_int_log"><path d="M6586.5,563.2969 L6667.5,563.2969 A3.75,3.75 0 0 1 6670,565.7969 L6677,585.5938 L8306.5,585.5938 A2.5,2.5 0 0 1 8309,588.0938 L8309,732.7969 A2.5,2.5 0 0 1 8306.5,735.2969 L6586.5,735.2969 A2.5,2.5 0 0 1 6584,732.7969 L6584,565.7969 A2.5,2.5 0 0 1 6586.5,563.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="6584" x2="6677" y1="585.5938" y2="585.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="80" x="6588" y="578.292">interfaces</text></g><!--MD5=[91dda6a79fa602052e1f3d094637cbf1]
+cluster servicios--><g id="cluster_servicios"><path d="M6586.5,808.7969 L6658.5,808.7969 A3.75,3.75 0 0 1 6661,811.2969 L6668,831.0938 L8324.5,831.0938 A2.5,2.5 0 0 1 8327,833.5938 L8327,964.2969 A2.5,2.5 0 0 1 8324.5,966.7969 L6586.5,966.7969 A2.5,2.5 0 0 1 6584,964.2969 L6584,811.2969 A2.5,2.5 0 0 1 6586.5,808.7969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="6584" x2="6668" y1="831.0938" y2="831.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="71" x="6588" y="823.792">servicios</text></g><!--MD5=[28c69129388dff730ab9e9dd2f0fc346]
+cluster persistencia--><g id="cluster_persistencia"><path d="M8385.5,998.7969 L8483.5,998.7969 A3.75,3.75 0 0 1 8486,1001.2969 L8493,1021.0938 L10017.5,1021.0938 A2.5,2.5 0 0 1 10020,1023.5938 L10020,1558.7969 A2.5,2.5 0 0 1 10017.5,1561.2969 L8385.5,1561.2969 A2.5,2.5 0 0 1 8383,1558.7969 L8383,1001.2969 A2.5,2.5 0 0 1 8385.5,998.7969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="8383" x2="8493" y1="1021.0938" y2="1021.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="97" x="8387" y="1013.792">persistencia</text></g><!--MD5=[13c665cb491621f9ca8dabd6d5eaca47]
+cluster int_per--><g id="cluster_int_per"><path d="M8418.5,1049.7969 L8499.5,1049.7969 A3.75,3.75 0 0 1 8502,1052.2969 L8509,1072.0938 L9926.5,1072.0938 A2.5,2.5 0 0 1 9929,1074.5938 L9929,1203.2969 A2.5,2.5 0 0 1 9926.5,1205.7969 L8418.5,1205.7969 A2.5,2.5 0 0 1 8416,1203.2969 L8416,1052.2969 A2.5,2.5 0 0 1 8418.5,1049.7969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="8416" x2="8509" y1="1072.0938" y2="1072.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="80" x="8420" y="1064.792">interfaces</text></g><!--MD5=[e9f5050240ca249be2b91d4b81b1de8c]
+cluster repositorios--><g id="cluster_repositorios"><path d="M8417.5,1246.2969 L8514.5,1246.2969 A3.75,3.75 0 0 1 8517,1248.7969 L8524,1268.5938 L9985.5,1268.5938 A2.5,2.5 0 0 1 9988,1271.0938 L9988,1417.7969 A2.5,2.5 0 0 1 9985.5,1420.2969 L8417.5,1420.2969 A2.5,2.5 0 0 1 8415,1417.7969 L8415,1248.7969 A2.5,2.5 0 0 1 8417.5,1246.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="8415" x2="8524" y1="1268.5938" y2="1268.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="96" x="8419" y="1261.292">repositorios</text></g><!--MD5=[3c8d8437f1db667369a8e50babd62f04]
+cluster Recursos--><g id="cluster_Recursos"><path d="M8.5,43.2969 L83.5,43.2969 A3.75,3.75 0 0 1 86,45.7969 L93,65.5938 L3128.5,65.5938 A2.5,2.5 0 0 1 3131,68.0938 L3131,485.7969 A2.5,2.5 0 0 1 3128.5,488.2969 L8.5,488.2969 A2.5,2.5 0 0 1 6,485.7969 L6,45.7969 A2.5,2.5 0 0 1 8.5,43.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="6" x2="93" y1="65.5938" y2="65.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="74" x="10" y="58.292">Recursos</text></g><!--MD5=[54dc291db1fc51d56c6be491574bff1d]
+cluster vistas--><g id="cluster_vistas"><path d="M114.5,94.2969 L161.5,94.2969 A3.75,3.75 0 0 1 164,96.7969 L171,116.5938 L3096.5,116.5938 A2.5,2.5 0 0 1 3099,119.0938 L3099,453.7969 A2.5,2.5 0 0 1 3096.5,456.2969 L114.5,456.2969 A2.5,2.5 0 0 1 112,453.7969 L112,96.7969 A2.5,2.5 0 0 1 114.5,94.2969 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="112" x2="171" y1="116.5938" y2="116.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="46" x="116" y="109.292">vistas</text></g><!--MD5=[a73dbffff4394e05a62db5a9d105a3d5]
+class SesionUsuario--><g id="elem_SesionUsuario"><rect codeLine="40" fill="#F1F1F1" height="137.75" id="SesionUsuario" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="290" x="3195" y="325.7969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="73" x="3303.5" y="341.9355">«Singleton»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="3290.5" y="357.7607">SesionUsuario</text><line style="stroke:#181818;stroke-width:0.5;" x1="3196" x2="3484" y1="366.0625" y2="366.0625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="192" x="3201" y="383.0576">-attInstancia: SesionUsuario</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="183" x="3201" y="399.3545">-attUsuarioActual: Persona</text><line style="stroke:#181818;stroke-width:0.5;" x1="3196" x2="3484" y1="406.6563" y2="406.6563"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="214" x="3201" y="423.6514">+getInstancia(): SesionUsuario</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="278" x="3201" y="439.9482">+setUsuario(prmUsuario: Persona): void</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163" x="3201" y="456.2451">+getUsuario(): Persona</text></g><!--MD5=[7b0397e1f89a011e293c583a1751bfcc]
+class ControladorLogin--><g id="elem_ControladorLogin"><rect codeLine="14" fill="#F1F1F1" height="91.1875" id="ControladorLogin" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="406" x="4111" y="349.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118" x="4255" y="367.292">ControladorLogin</text><line style="stroke:#181818;stroke-width:0.5;" x1="4112" x2="4516" y1="375.5938" y2="375.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="261" x="4117" y="392.5889">-attServicioUsuarios: IServicioUsuarios</text><line style="stroke:#181818;stroke-width:0.5;" x1="4112" x2="4516" y1="399.8906" y2="399.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="345" x="4117" y="416.8857">+ControladorLogin(prmServicio: IServicioUsuarios)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="394" x="4117" y="433.1826">+iniciarSesion(prmUsuario: String, prmClave: String): void</text></g><!--MD5=[91003da130896b5863ee21d73f354ea4]
+class ControladorPaciente--><g id="elem_ControladorPaciente"><rect codeLine="19" fill="#F1F1F1" height="91.1875" id="ControladorPaciente" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="589" x="4552.5" y="349.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="141" x="4776.5" y="367.292">ControladorPaciente</text><line style="stroke:#181818;stroke-width:0.5;" x1="4553.5" x2="5140.5" y1="375.5938" y2="375.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209" x="4558.5" y="392.5889">-attServicioCitas: IServicioCitas</text><line style="stroke:#181818;stroke-width:0.5;" x1="4553.5" x2="5140.5" y1="399.8906" y2="399.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="342" x="4558.5" y="416.8857">+ControladorPaciente(prmServicio: IServicioCitas)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="577" x="4558.5" y="433.1826">+agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void</text></g><!--MD5=[134bc66c42a1d6943961fc446aa2a026]
+class ControladorAdmin--><g id="elem_ControladorAdmin"><rect codeLine="24" fill="#F1F1F1" height="123.7813" id="ControladorAdmin" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="1562" x="3533" y="596.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124" x="4252" y="614.792">ControladorAdmin</text><line style="stroke:#181818;stroke-width:0.5;" x1="3534" x2="5094" y1="623.0938" y2="623.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="331" x="3539" y="640.0889">-attServicioConfiguracion: IServicioConfiguracion</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="261" x="3539" y="656.3857">-attServicioUsuarios: IServicioUsuarios</text><line style="stroke:#181818;stroke-width:0.5;" x1="3534" x2="5094" y1="663.6875" y2="663.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="703" x="3539" y="680.6826">+ControladorAdmin(prmServicioConfig: IServicioConfiguracion, prmServicioUsuarios: IServicioUsuarios)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1550" x="3539" y="696.9795">+gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1107" x="3539" y="713.2764">+configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void</text></g><!--MD5=[267689e32977119ca72c01041b456e6c]
+class ControladorAgendador--><g id="elem_ControladorAgendador"><rect codeLine="31" fill="#F1F1F1" height="123.7813" id="ControladorAgendador" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="1334" x="5130" y="596.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="157" x="5718.5" y="614.792">ControladorAgendador</text><line style="stroke:#181818;stroke-width:0.5;" x1="5131" x2="6463" y1="623.0938" y2="623.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209" x="5136" y="640.0889">-attServicioCitas: IServicioCitas</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="261" x="5136" y="656.3857">-attServicioUsuarios: IServicioUsuarios</text><line style="stroke:#181818;stroke-width:0.5;" x1="5131" x2="6463" y1="663.6875" y2="663.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="665" x="5136" y="680.6826">+ControladorAgendador(prmServicioCitas: IServicioCitas, prmServicioUsuarios: IServicioUsuarios)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="415" x="5136" y="696.9795">+listarCitas(prmMedico: Medico, prmFecha: LocalDate): void</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1322" x="5136" y="713.2764">+agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void</text></g><!--MD5=[8f63dadf5c643e74a34e53c8f0a15d23]
+class Persona--><g id="elem_Persona"><rect codeLine="52" fill="#F1F1F1" height="170.3438" id="Persona" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="231" x="7043.5" y="1052.2969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="67" x="7125.5" y="1068.4355">«abstract»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="57" x="7130.5" y="1084.2607">Persona</text><line style="stroke:#181818;stroke-width:0.5;" x1="7044.5" x2="7273.5" y1="1092.5625" y2="1092.5625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="154" x="7049.5" y="1109.5576">-attDocumento: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="7049.5" y="1125.8545">-attNombre: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="126" x="7049.5" y="1142.1514">-attApellido: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="119" x="7049.5" y="1158.4482">-attCelular: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124" x="7049.5" y="1174.7451">-attGenero: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219" x="7049.5" y="1191.042">-attFechaNacimiento: LocalDate</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="108" x="7049.5" y="1207.3389">-attEmail: String</text><line style="stroke:#181818;stroke-width:0.5;" x1="7044.5" x2="7273.5" y1="1214.6406" y2="1214.6406"/></g><!--MD5=[e58b328d98718587d2cf25b4c2010115]
+class Paciente--><g id="elem_Paciente"><rect codeLine="61" fill="#F1F1F1" height="42.2969" id="Paciente" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="66" x="6749" y="1321.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="6752" y="1339.792">Paciente</text><line style="stroke:#181818;stroke-width:0.5;" x1="6750" x2="6814" y1="1348.0938" y2="1348.0938"/><line style="stroke:#181818;stroke-width:0.5;" x1="6750" x2="6814" y1="1356.0938" y2="1356.0938"/></g><!--MD5=[5b0945d094f0812fdd8c9a06da7a670d]
+class Medico--><g id="elem_Medico"><rect codeLine="62" fill="#F1F1F1" height="58.5938" id="Medico" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="170" x="6850" y="1313.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="50" x="6910" y="1331.292">Medico</text><line style="stroke:#181818;stroke-width:0.5;" x1="6851" x2="7019" y1="1339.5938" y2="1339.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="158" x="6856" y="1356.5889">-attEspecialidad: String</text><line style="stroke:#181818;stroke-width:0.5;" x1="6851" x2="7019" y1="1363.8906" y2="1363.8906"/></g><!--MD5=[3cadf8080a9f6db1ea2bd863d280e83d]
+class Agendador--><g id="elem_Agendador"><rect codeLine="65" fill="#F1F1F1" height="42.2969" id="Agendador" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="82" x="7055" y="1321.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="76" x="7058" y="1339.792">Agendador</text><line style="stroke:#181818;stroke-width:0.5;" x1="7056" x2="7136" y1="1348.0938" y2="1348.0938"/><line style="stroke:#181818;stroke-width:0.5;" x1="7056" x2="7136" y1="1356.0938" y2="1356.0938"/></g><!--MD5=[fdcda49d453d44c676d62f3f6af62207]
+class Administrador--><g id="elem_Administrador"><rect codeLine="66" fill="#F1F1F1" height="42.2969" id="Administrador" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="101" x="7172.5" y="1321.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="95" x="7175.5" y="1339.792">Administrador</text><line style="stroke:#181818;stroke-width:0.5;" x1="7173.5" x2="7272.5" y1="1348.0938" y2="1348.0938"/><line style="stroke:#181818;stroke-width:0.5;" x1="7173.5" x2="7272.5" y1="1356.0938" y2="1356.0938"/></g><!--MD5=[a0e26133449989a638b0b6a4b7a1b218]
+class Cita--><g id="elem_Cita"><rect codeLine="67" fill="#F1F1F1" height="107.4844" id="Cita" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="164" x="6844" y="1083.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="6913" y="1101.792">Cita</text><line style="stroke:#181818;stroke-width:0.5;" x1="6845" x2="7007" y1="1110.0938" y2="1110.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142" x="6850" y="1127.0889">-attFecha: LocalDate</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="133" x="6850" y="1143.3857">-attHora: LocalTime</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132" x="6850" y="1159.6826">-attMedico: Medico</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152" x="6850" y="1175.9795">-attPaciente: Paciente</text><line style="stroke:#181818;stroke-width:0.5;" x1="6845" x2="7007" y1="1183.2813" y2="1183.2813"/></g><!--MD5=[109d0a5f955c6180f9aac1fb86048470]
+class ConfiguracionAgenda--><g id="elem_ConfiguracionAgenda"><rect codeLine="73" fill="#F1F1F1" height="140.0781" id="ConfiguracionAgenda" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="182" x="6627" y="1067.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="148" x="6644" y="1085.292">ConfiguracionAgenda</text><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="6808" y1="1093.5938" y2="1093.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134" x="6633" y="1110.5889">-attIdMedico: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="170" x="6633" y="1126.8857">-attVentanaSemanas: int</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163" x="6633" y="1143.1826">-attDiasAtencion: String</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="168" x="6633" y="1159.4795">-attHoraInicio: LocalTime</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="153" x="6633" y="1175.7764">-attHoraFin: LocalTime</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162" x="6633" y="1192.0732">-attIntervaloMinutos: int</text><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="6808" y1="1199.375" y2="1199.375"/></g><!--MD5=[0d97f7564518b094576ec82e37b0f9eb]
+class IServicioUsuarios--><g id="elem_IServicioUsuarios"><rect codeLine="84" fill="#F1F1F1" height="105.1563" id="IServicioUsuarios" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="418" x="7867" y="606.2969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="8041" y="622.4355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="116" x="8018" y="638.2607">IServicioUsuarios</text><line style="stroke:#181818;stroke-width:0.5;" x1="7868" x2="8284" y1="646.5625" y2="646.5625"/><line style="stroke:#181818;stroke-width:0.5;" x1="7868" x2="8284" y1="654.5625" y2="654.5625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="360" x="7873" y="671.5576">+registrarPaciente(prmPaciente: Paciente): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="398" x="7873" y="687.8545">+buscarPorDocumento(prmDocumento: String): Persona</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="406" x="7873" y="704.1514">+autenticar(prmUsuario: String, prmClave: String): Persona</text></g><!--MD5=[a14bb05d2d3e80fd714840c33c20c9d1]
+class IServicioCitas--><g id="elem_IServicioCitas"><rect codeLine="89" fill="#F1F1F1" height="105.1563" id="IServicioCitas" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="644" x="7188" y="606.2969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="7475" y="622.4355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="90" x="7465" y="638.2607">IServicioCitas</text><line style="stroke:#181818;stroke-width:0.5;" x1="7189" x2="7831" y1="646.5625" y2="646.5625"/><line style="stroke:#181818;stroke-width:0.5;" x1="7189" x2="7831" y1="654.5625" y2="654.5625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="258" x="7194" y="671.5576">+agendarCita(prmCita: Cita): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="512" x="7194" y="687.8545">+listarCitasMedico(prmIdMedico: String, prmFecha: LocalDate): List&lt;Cita&gt;</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="632" x="7194" y="704.1514">+obtenerHorariosDisponibles(prmIdMedico: String, prmFecha: LocalDate): List&lt;LocalTime&gt;</text></g><!--MD5=[a1a6519ed946df2c376c98bce32845fa]
+class IServicioConfiguracion--><g id="elem_IServicioConfiguracion"><rect codeLine="94" fill="#F1F1F1" height="88.8594" id="IServicioConfiguracion" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="526" x="6627" y="614.2969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="6855" y="630.4355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="151" x="6814.5" y="646.2607">IServicioConfiguracion</text><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="7152" y1="654.5625" y2="654.5625"/><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="7152" y1="662.5625" y2="662.5625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="514" x="6633" y="679.5576">+guardarConfiguracion(prmConfiguracion: ConfiguracionAgenda): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="467" x="6633" y="695.8545">+obtenerConfiguracion(prmIdMedico: String): ConfiguracionAgenda</text></g><!--MD5=[304ae13e6cae48f5eb2b72d6e1406dab]
+class ServicioUsuariosImpl--><g id="elem_ServicioUsuariosImpl"><rect codeLine="101" fill="#F1F1F1" height="74.8906" id="ServicioUsuariosImpl" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="429" x="7873.5" y="859.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="141" x="8017.5" y="877.792">ServicioUsuariosImpl</text><line style="stroke:#181818;stroke-width:0.5;" x1="7874.5" x2="8301.5" y1="886.0938" y2="886.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="307" x="7879.5" y="903.0889">-attRepositorioPersona: IRepositorioPersona</text><line style="stroke:#181818;stroke-width:0.5;" x1="7874.5" x2="8301.5" y1="910.3906" y2="910.3906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="417" x="7879.5" y="927.3857">+ServicioUsuariosImpl(prmRepositorio: IRepositorioPersona)</text></g><!--MD5=[499a0b0b0719511cf6e347c0534be924]
+class ServicioCitasImpl--><g id="elem_ServicioCitasImpl"><rect codeLine="105" fill="#F1F1F1" height="91.1875" id="ServicioCitasImpl" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="674" x="7164" y="851.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="115" x="7443.5" y="869.792">ServicioCitasImpl</text><line style="stroke:#181818;stroke-width:0.5;" x1="7165" x2="7837" y1="878.0938" y2="878.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219" x="7170" y="895.0889">-attRepoCitas: IRepositorioCitas</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="341" x="7170" y="911.3857">-attRepoConfiguracion: IRepositorioConfiguracion</text><line style="stroke:#181818;stroke-width:0.5;" x1="7165" x2="7837" y1="918.6875" y2="918.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="662" x="7170" y="935.6826">+ServicioCitasImpl(prmRepoCitas: IRepositorioCitas, prmRepoConfig: IRepositorioConfiguracion)</text></g><!--MD5=[25866f5e249be697beb5fa46ce95b41a]
+class ServicioConfiguracionImpl--><g id="elem_ServicioConfiguracionImpl"><rect codeLine="110" fill="#F1F1F1" height="74.8906" id="ServicioConfiguracionImpl" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="502" x="6627" y="859.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="176" x="6790" y="877.792">ServicioConfiguracionImpl</text><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="7128" y1="886.0938" y2="886.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="332" x="6633" y="903.0889">-attRepositorioConfig: IRepositorioConfiguracion</text><line style="stroke:#181818;stroke-width:0.5;" x1="6628" x2="7128" y1="910.3906" y2="910.3906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="490" x="6633" y="927.3857">+ServicioConfiguracionImpl(prmRepositorio: IRepositorioConfiguracion)</text></g><!--MD5=[ea63c1503dc8cf2c135af106f39cacb5]
+class ConexionBD--><g id="elem_ConexionBD"><rect codeLine="155" fill="#F1F1F1" height="88.8594" id="ConexionBD" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="239" x="8398.5" y="1456.2969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="73" x="8481.5" y="1472.4355">«Singleton»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="8475" y="1488.2607">ConexionBD</text><line style="stroke:#181818;stroke-width:0.5;" x1="8399.5" x2="8636.5" y1="1496.5625" y2="1496.5625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="179" x="8404.5" y="1513.5576">-attInstancia: ConexionBD</text><line style="stroke:#181818;stroke-width:0.5;" x1="8399.5" x2="8636.5" y1="1520.8594" y2="1520.8594"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="227" x="8404.5" y="1537.8545">+obtenerInstancia(): Connection</text></g><!--MD5=[d16557ed4cdc7bd0de72d32041299631]
+class IRepositorioPersona--><g id="elem_IRepositorioPersona"><rect codeLine="120" fill="#F1F1F1" height="88.8594" id="IRepositorioPersona" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="356" x="9549" y="1092.7969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="9692" y="1108.9355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="139" x="9657.5" y="1124.7607">IRepositorioPersona</text><line style="stroke:#181818;stroke-width:0.5;" x1="9550" x2="9904" y1="1133.0625" y2="1133.0625"/><line style="stroke:#181818;stroke-width:0.5;" x1="9550" x2="9904" y1="1141.0625" y2="1141.0625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="290" x="9555" y="1158.0576">+guardar(prmPersona: Persona): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="344" x="9555" y="1174.3545">+buscarPorDoc(prmDocumento: String): Persona</text></g><!--MD5=[7d062964efde29c9a7800223f9311e3c]
+class IRepositorioCitas--><g id="elem_IRepositorioCitas"><rect codeLine="124" fill="#F1F1F1" height="88.8594" id="IRepositorioCitas" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="570" x="8944" y="1092.7969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="9194" y="1108.9355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="116" x="9171" y="1124.7607">IRepositorioCitas</text><line style="stroke:#181818;stroke-width:0.5;" x1="8945" x2="9513" y1="1133.0625" y2="1133.0625"/><line style="stroke:#181818;stroke-width:0.5;" x1="8945" x2="9513" y1="1141.0625" y2="1141.0625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="228" x="8950" y="1158.0576">+guardar(prmCita: Cita): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="558" x="8950" y="1174.3545">+buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List&lt;Cita&gt;</text></g><!--MD5=[b8b24ef915230c5cd9feb83090bb158b]
+class IRepositorioConfiguracion--><g id="elem_IRepositorioConfiguracion"><rect codeLine="128" fill="#F1F1F1" height="88.8594" id="IRepositorioConfiguracion" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="449" x="8459.5" y="1092.7969"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="70" x="8649" y="1108.9355">«interface»</text><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="177" x="8595.5" y="1124.7607">IRepositorioConfiguracion</text><line style="stroke:#181818;stroke-width:0.5;" x1="8460.5" x2="8907.5" y1="1133.0625" y2="1133.0625"/><line style="stroke:#181818;stroke-width:0.5;" x1="8460.5" x2="8907.5" y1="1141.0625" y2="1141.0625"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="419" x="8465.5" y="1158.0576">+guardar(prmConfiguracion: ConfiguracionAgenda): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="437" x="8465.5" y="1174.3545">+buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda</text></g><!--MD5=[eb38fe2543636c462b803b5f21e680d9]
+class RepositorioPersonaPostgres--><g id="elem_RepositorioPersonaPostgres"><rect codeLine="135" fill="#F1F1F1" height="107.4844" id="RepositorioPersonaPostgres" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="413" x="9550.5" y="1289.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="198" x="9658" y="1307.292">RepositorioPersonaPostgres</text><line style="stroke:#181818;stroke-width:0.5;" x1="9551.5" x2="9962.5" y1="1315.5938" y2="1315.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177" x="9556.5" y="1332.5889">-attConexion: Connection</text><line style="stroke:#181818;stroke-width:0.5;" x1="9551.5" x2="9962.5" y1="1339.8906" y2="1339.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="401" x="9556.5" y="1356.8857">+RepositorioPersonaPostgres(prmConexion: Connection)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="290" x="9556.5" y="1373.1826">+guardar(prmPersona: Persona): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="344" x="9556.5" y="1389.4795">+buscarPorDoc(prmDocumento: String): Persona</text></g><!--MD5=[1b73a3b614f5d79774541303927715ce]
+class RepositorioCitasPostgres--><g id="elem_RepositorioCitasPostgres"><rect codeLine="141" fill="#F1F1F1" height="107.4844" id="RepositorioCitasPostgres" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="570" x="8945" y="1289.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="175" x="9142.5" y="1307.292">RepositorioCitasPostgres</text><line style="stroke:#181818;stroke-width:0.5;" x1="8946" x2="9514" y1="1315.5938" y2="1315.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177" x="8951" y="1332.5889">-attConexion: Connection</text><line style="stroke:#181818;stroke-width:0.5;" x1="8946" x2="9514" y1="1339.8906" y2="1339.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="378" x="8951" y="1356.8857">+RepositorioCitasPostgres(prmConexion: Connection)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="228" x="8951" y="1373.1826">+guardar(prmCita: Cita): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="558" x="8951" y="1389.4795">+buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List&lt;Cita&gt;</text></g><!--MD5=[a68f1a138fe77c22ace2d727324b2f75]
+class RepositorioConfiguracionPostgres--><g id="elem_RepositorioConfiguracionPostgres"><rect codeLine="147" fill="#F1F1F1" height="107.4844" id="RepositorioConfiguracionPostgres" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="451" x="8458.5" y="1289.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="236" x="8566" y="1307.292">RepositorioConfiguracionPostgres</text><line style="stroke:#181818;stroke-width:0.5;" x1="8459.5" x2="8908.5" y1="1315.5938" y2="1315.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177" x="8464.5" y="1332.5889">-attConexion: Connection</text><line style="stroke:#181818;stroke-width:0.5;" x1="8459.5" x2="8908.5" y1="1339.8906" y2="1339.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="439" x="8464.5" y="1356.8857">+RepositorioConfiguracionPostgres(prmConexion: Connection)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="419" x="8464.5" y="1373.1826">+guardar(prmConfiguracion: ConfiguracionAgenda): boolean</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="437" x="8464.5" y="1389.4795">+buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda</text></g><path d="M25,140.2969 L71,140.2969 A3.75,3.75 0 0 1 73.5,142.7969 L80.5,162.5938 L85,162.5938 A2.5,2.5 0 0 1 87.5,165.0938 L87.5,190.3906 A2.5,2.5 0 0 1 85,192.8906 L25,192.8906 A2.5,2.5 0 0 1 22.5,190.3906 L22.5,142.7969 A2.5,2.5 0 0 1 25,140.2969 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="22.5" x2="80.5" y1="162.5938" y2="162.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="45" x="26.5" y="155.292">Estilos</text><!--MD5=[0791ec9fec91a821153a486d7081f249]
+class VistaLogin--><g id="elem_VistaLogin"><rect codeLine="167" fill="#F1F1F1" height="58.5938" id="VistaLogin" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="406" x="714" y="137.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70" x="882" y="155.292">VistaLogin</text><line style="stroke:#181818;stroke-width:0.5;" x1="715" x2="1119" y1="163.5938" y2="163.5938"/><line style="stroke:#181818;stroke-width:0.5;" x1="715" x2="1119" y1="171.5938" y2="171.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="394" x="720" y="188.5889">+iniciarSesion(prmUsuario: String, prmClave: String): void</text></g><!--MD5=[fb4043b8f7b701a7f2717425b5606236]
+class VistaPaciente--><g id="elem_VistaPaciente"><rect codeLine="170" fill="#F1F1F1" height="58.5938" id="VistaPaciente" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="589" x="1155.5" y="137.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="93" x="1403.5" y="155.292">VistaPaciente</text><line style="stroke:#181818;stroke-width:0.5;" x1="1156.5" x2="1743.5" y1="163.5938" y2="163.5938"/><line style="stroke:#181818;stroke-width:0.5;" x1="1156.5" x2="1743.5" y1="171.5938" y2="171.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="577" x="1161.5" y="188.5889">+agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void</text></g><!--MD5=[5e5917725f38c45257cc834db91eb7e0]
+class VistaAdmin--><g id="elem_VistaAdmin"><rect codeLine="173" fill="#F1F1F1" height="74.8906" id="VistaAdmin" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="1562" x="136" y="357.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="76" x="879" y="375.292">VistaAdmin</text><line style="stroke:#181818;stroke-width:0.5;" x1="137" x2="1697" y1="383.5938" y2="383.5938"/><line style="stroke:#181818;stroke-width:0.5;" x1="137" x2="1697" y1="391.5938" y2="391.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1550" x="142" y="408.5889">+gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1107" x="142" y="424.8857">+configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void</text></g><!--MD5=[4f797f23b55c5ec223ba5df5e59215d2]
+class VistaAgendador--><g id="elem_VistaAgendador"><rect codeLine="177" fill="#F1F1F1" height="74.8906" id="VistaAgendador" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="1334" x="1733" y="357.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="109" x="2345.5" y="375.292">VistaAgendador</text><line style="stroke:#181818;stroke-width:0.5;" x1="1734" x2="3066" y1="383.5938" y2="383.5938"/><line style="stroke:#181818;stroke-width:0.5;" x1="1734" x2="3066" y1="391.5938" y2="391.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="415" x="1739" y="408.5889">+listarCitas(prmMedico: Medico, prmFecha: LocalDate): void</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="1322" x="1739" y="424.8857">+agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void</text></g><!--MD5=[a66d949850b81509b90997cc8ae11fb3]
+reverse link Persona to Paciente--><g id="link_Persona_Paciente"><path d="M7023.31,1219.8969 C6967.9,1226.3869 6848.52,1219.8669 6833,1230.2969 C6802.08,1251.0769 6789.6,1295.5469 6784.8,1321.6169 " fill="none" id="Persona-backto-Paciente" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="7022.19,1212.9769,7043.15,1216.0569,7024.85,1226.7269,7022.19,1212.9769" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[ca09bb5b5e0256c4f766412d655c1ac1]
+reverse link Persona to Medico--><g id="link_Persona_Medico"><path d="M7031.91,1236.2569 C7001.14,1265.4069 6976.47,1292.8769 6959.11,1313.0069 " fill="none" id="Persona-backto-Medico" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="7027.55,1230.7569,7046.99,1222.3069,7037.06,1241.0269,7027.55,1230.7569" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[4b39045f8be20d0c12e232ccf1906c1f]
+reverse link Persona to Agendador--><g id="link_Persona_Agendador"><path d="M7126.94,1241.8569 C7117.55,1272.1769 7108.23,1302.2869 7102.31,1321.3969 " fill="none" id="Persona-backto-Agendador" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="7120.32,1239.5769,7132.92,1222.5369,7133.69,1243.7169,7120.32,1239.5769" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c978160c1dbf3ba316a1a1b157351471]
+reverse link Persona to Administrador--><g id="link_Persona_Administrador"><path d="M7191.57,1241.8569 C7201.11,1272.1769 7210.57,1302.2869 7216.59,1321.3969 " fill="none" id="Persona-backto-Administrador" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="7184.82,1243.7169,7185.49,1222.5369,7198.17,1239.5169,7184.82,1243.7169" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[5f8bf40046b39933bdb18843f9762d10]
+reverse link IServicioUsuarios to ServicioUsuariosImpl--><g id="link_IServicioUsuarios_ServicioUsuariosImpl"><path d="M8079.64,731.5569 C8081.78,773.7669 8084.4,825.3769 8086.13,859.4569 " fill="none" id="IServicioUsuarios-backto-ServicioUsuariosImpl" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="8072.64,731.7369,8078.62,711.4069,8086.62,731.0269,8072.64,731.7369" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[56f1ecc87b3b595261ce6497c367cae4]
+reverse link IServicioCitas to ServicioCitasImpl--><g id="link_IServicioCitas_ServicioCitasImpl"><path d="M7507.27,731.5669 C7505.78,770.6369 7503.99,817.7469 7502.7,851.5669 " fill="none" id="IServicioCitas-backto-ServicioCitasImpl" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="7500.28,731.1269,7508.04,711.4069,7514.27,731.6569,7500.28,731.1269" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[3eb44faa60801c921716768615dc38b4]
+reverse link IServicioConfiguracion to ServicioConfiguracionImpl--><g id="link_IServicioConfiguracion_ServicioConfiguracionImpl"><path d="M6886.76,723.6669 C6884.55,767.1769 6881.71,823.2669 6879.87,859.4969 " fill="none" id="IServicioConfiguracion-backto-ServicioConfiguracionImpl" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="6879.78,723.0669,6887.79,703.4469,6893.76,723.7769,6879.78,723.0669" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[e874c9f38855cde7c58a30e23f76f54e]
+reverse link IRepositorioPersona to RepositorioPersonaPostgres--><g id="link_IRepositorioPersona_RepositorioPersonaPostgres"><path d="M9736.38,1201.8869 C9740.51,1229.9469 9745.31,1262.5269 9749.24,1289.1869 " fill="none" id="IRepositorioPersona-backto-RepositorioPersonaPostgres" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="9729.43,1202.7569,9733.44,1181.9569,9743.28,1200.7169,9729.43,1202.7569" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[81bcd0024d166a853fb65bdc3e319334]
+reverse link IRepositorioCitas to RepositorioCitasPostgres--><g id="link_IRepositorioCitas_RepositorioCitasPostgres"><path d="M9229.31,1202.2969 C9229.45,1230.2669 9229.61,1262.6569 9229.74,1289.1869 " fill="none" id="IRepositorioCitas-backto-RepositorioCitasPostgres" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="9222.31,1201.9869,9229.21,1181.9569,9236.31,1201.9169,9222.31,1201.9869" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[02339d80bd0c6ed2445e739608e6c460]
+reverse link IRepositorioConfiguracion to RepositorioConfiguracionPostgres--><g id="link_IRepositorioConfiguracion_RepositorioConfiguracionPostgres"><path d="M8684,1202.2969 C8684,1230.2669 8684,1262.6569 8684,1289.1869 " fill="none" id="IRepositorioConfiguracion-backto-RepositorioConfiguracionPostgres" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="8677,1201.9569,8684,1181.9569,8691,1201.9569,8677,1201.9569" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[769a42aaf6aa5f22307b42019a0fc988]
+link vistas to controladores--><g id="link_vistas_controladores"><path d="M3100.5579,167.8084 C3101.3458,167.8094 3102.1814,167.8105 3103.0643,167.8116 C3110.1272,167.8208 3120.2145,167.8344 3133.1248,167.8532 C3158.9453,167.891 3196.0579,167.9497 3242.8514,168.0355 C3336.4384,168.2071 3468.7492,168.487 3626.8959,168.9241 C3943.1894,169.7981 4362.8263,171.3006 4782.7025,173.8219 C5622.455,178.8644 6463.165,187.9819 6480,204.2969 C6509.795,233.1719 6512.1975,279.5294 6506.955,319.1644 C6505.6444,329.0731 6503.8559,338.5617 6501.8982,347.252 C6500.9194,351.5971 6499.8982,355.7426 6498.8733,359.6413 C6498.3609,361.5906 6497.8475,363.4782 6497.338,365.2982 C6497.0832,366.2082 6496.8294,367.1013 6496.5772,367.9767 C6496.4511,368.4144 6496.3254,368.8478 6496.2002,369.2766 C6496.1376,369.491 6496.0751,369.7042 6496.0127,369.9164 " fill="none" id="vistas-to-controladores" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="6496.0127,369.9164,6502.3891,362.4103,6497.4232,365.1194,6494.714,360.1535,6496.0127,369.9164" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c673282248d9ada8593eec2ca7514650]
+link controladores to int_log--><g id="link_controladores_int_log"><path d="M6496.278,416.6484 C6496.3925,416.9369 6496.5081,417.228 6496.6246,417.5215 C6497.0907,418.6957 6497.5727,419.91 6498.0699,421.1624 C6500.0584,426.1719 6502.2892,431.7916 6504.7138,437.8994 C6514.4119,462.3306 6527.21,494.5719 6540.0075,526.8119 C6552.805,559.0519 6565.6019,591.2906 6575.2975,615.7169 C6577.7214,621.8234 6579.9515,627.4417 6581.9393,632.4497 C6582.4362,633.7017 6582.918,634.9155 6583.384,636.0893 C6583.5004,636.3827 6583.6159,636.6737 6583.7304,636.9621 C6583.7876,637.1063 6583.8446,637.2499 6583.9014,637.3928 " fill="none" id="controladores-to-int_log" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="6583.9014,637.3928,6584.2988,627.552,6582.0567,632.7455,6576.8632,630.5034,6583.9014,637.3928" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[31be999494edbe8dd98e36994a7e6d0e]
+link servicios to int_per--><g id="link_servicios_int_per"><path d="M6598.671,967.0899 C6598.8025,967.3511 6598.9358,967.6112 6599.071,967.8701 C6599.3414,968.388 6599.6194,968.9012 6599.9052,969.4093 C6600.4767,970.4257 6601.0794,971.4219 6601.7147,972.3952 C6604.2558,976.2886 6607.3188,979.8156 6611,982.7969 C6618.33,988.7369 7280.59,990.1369 7290,990.7969 C7541.47,1008.3519 7822.5225,1044.2969 8041.9175,1076.0656 C8151.615,1091.95 8245.8981,1106.7903 8313.3619,1117.7658 C8347.0938,1123.2535 8374.1208,1127.775 8393.0173,1130.9778 C8402.4656,1132.5791 8409.8813,1133.8508 8415.0861,1134.7486 " fill="none" id="servicios-to-int_per" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="8415.0861,1134.7486,8406.8971,1129.2769,8410.1589,1133.8987,8405.5371,1137.1604,8415.0861,1134.7486" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[7236972813e951526053c5d1634c5e13]
+link servicios to modelos--><g id="link_servicios_modelos"><path d="M6592,967.8837 C6592,968.3043 6592,968.7259 6592,969.1484 C6592,970.8386 6592,972.5444 6592,974.264 C6592,981.1425 6592,988.2427 6592,995.4537 C6592,999.0591 6592,1002.6923 6592,1006.3394 C6592,1007.2511 6592,1008.1637 6592,1009.077 C6592,1009.1341 6592,1009.1912 6592,1009.2483 " fill="none" id="servicios-to-modelos" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="6592,1009.2483,6596,1000.2483,6592,1004.2483,6588,1000.2483,6592,1009.2483" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[bd50dd3f881d0219de3bcb800a7f44d3]
+link repositorios to ConexionBD--><g id="link_repositorios_ConexionBD"><path codeLine="188" d="M8435.3871,1420.617 C8435.6257,1421.2253 8435.8689,1421.8314 8436.1167,1422.4349 C8438.0991,1427.2633 8440.3788,1431.9294 8443,1436.2969 C8446.36,1441.8969 8450.39,1447.2369 8454.81,1452.2669 " fill="none" id="repositorios-to-ConexionBD" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="8458.27,1456.0669,8455.1469,1446.7263,8454.8953,1452.3775,8449.244,1452.1259,8458.27,1456.0669" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[bf35ffbcb8676aff595c2d5dc79a6a14]
+@startuml
+skinparam style strictuml
+skinparam packageStyle folder
+skinparam stereotypeCBackgroundColor #White
+skinparam stereotypeIBackgroundColor #LawnGreen
+skinparam classAttributeIconSize 0
+
+title Estructura Arquitectónica Final - Sistema de Citas Médicas
+package "Proyecto"{
+' - - - CAPA DE PRESENTACIÓN - - -
+package "presentacion" {
+    
+
+    package "controladores" {
+        class ControladorLogin {
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorLogin(prmServicio: IServicioUsuarios)
+            + iniciarSesion(prmUsuario: String, prmClave: String): void
+        }
+        class ControladorPaciente {
+            - attServicioCitas: IServicioCitas
+            + ControladorPaciente(prmServicio: IServicioCitas)
+            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
+        }
+        class ControladorAdmin {
+            - attServicioConfiguracion: IServicioConfiguracion
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorAdmin(prmServicioConfig: IServicioConfiguracion, prmServicioUsuarios: IServicioUsuarios)
+            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
+            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
+        }
+        class ControladorAgendador {
+            - attServicioCitas: IServicioCitas
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorAgendador(prmServicioCitas: IServicioCitas, prmServicioUsuarios: IServicioUsuarios)
+            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
+            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
+        }
+    }
+
+    class SesionUsuario << (S,#FF7700) Singleton >> {
+        - {static} attInstancia: SesionUsuario
+        - attUsuarioActual: Persona
+        + {static} getInstancia(): SesionUsuario
+        + setUsuario(prmUsuario: Persona): void
+        + getUsuario(): Persona
+    }
+}
+
+' - - - CAPA DE LÓGICA - - -
+package "logica" {
+    package "modelos" {
+        abstract class Persona <<abstract>> {
+            - attDocumento: String
+            - attNombre: String
+            - attApellido: String
+            - attCelular: String
+            - attGenero: String
+            - attFechaNacimiento: LocalDate
+            - attEmail: String
+        }
+        class Paciente extends Persona
+        class Medico extends Persona {
+            - attEspecialidad: String
+        }
+        class Agendador extends Persona
+        class Administrador extends Persona
+        class Cita {
+            - attFecha: LocalDate
+            - attHora: LocalTime
+            - attMedico: Medico
+            - attPaciente: Paciente
+        }
+        class ConfiguracionAgenda {
+            - attIdMedico: String
+            - attVentanaSemanas: int
+            - attDiasAtencion: String
+            - attHoraInicio: LocalTime
+            - attHoraFin: LocalTime
+            - attIntervaloMinutos: int
+        }
+    }
+
+    package "interfaces" as int_log {
+        interface IServicioUsuarios <<interface>> {
+            + registrarPaciente(prmPaciente: Paciente): boolean
+            + buscarPorDocumento(prmDocumento: String): Persona
+            + autenticar(prmUsuario: String, prmClave: String): Persona
+        }
+        interface IServicioCitas <<interface>> {
+            + agendarCita(prmCita: Cita): boolean
+            + listarCitasMedico(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+            + obtenerHorariosDisponibles(prmIdMedico: String, prmFecha: LocalDate): List<LocalTime>
+        }
+        interface IServicioConfiguracion <<interface>> {
+            + guardarConfiguracion(prmConfiguracion: ConfiguracionAgenda): boolean
+            + obtenerConfiguracion(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+
+    package "servicios" {
+        class ServicioUsuariosImpl implements IServicioUsuarios {
+            - attRepositorioPersona: IRepositorioPersona
+            + ServicioUsuariosImpl(prmRepositorio: IRepositorioPersona)
+        }
+        class ServicioCitasImpl implements IServicioCitas {
+            - attRepoCitas: IRepositorioCitas
+            - attRepoConfiguracion: IRepositorioConfiguracion
+            + ServicioCitasImpl(prmRepoCitas: IRepositorioCitas, prmRepoConfig: IRepositorioConfiguracion)
+        }
+        class ServicioConfiguracionImpl implements IServicioConfiguracion {
+            - attRepositorioConfig: IRepositorioConfiguracion
+            + ServicioConfiguracionImpl(prmRepositorio: IRepositorioConfiguracion)
+        }
+    }
+}
+
+' - - - CAPA DE PERSISTENCIA - - -
+package "persistencia" {
+    package "interfaces" as int_per {
+        interface IRepositorioPersona <<interface>> {
+            + guardar(prmPersona: Persona): boolean
+            + buscarPorDoc(prmDocumento: String): Persona
+        }
+        interface IRepositorioCitas <<interface>> {
+            + guardar(prmCita: Cita): boolean
+            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+        }
+        interface IRepositorioConfiguracion <<interface>> {
+            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
+            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+
+    package "repositorios" {
+        class RepositorioPersonaPostgres implements IRepositorioPersona {
+            - attConexion: Connection
+            + RepositorioPersonaPostgres(prmConexion: Connection)
+            + guardar(prmPersona: Persona): boolean
+            + buscarPorDoc(prmDocumento: String): Persona
+        }
+        class RepositorioCitasPostgres implements IRepositorioCitas {
+            - attConexion: Connection
+            + RepositorioCitasPostgres(prmConexion: Connection)
+            + guardar(prmCita: Cita): boolean
+            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+        }
+        class RepositorioConfiguracionPostgres implements IRepositorioConfiguracion {
+            - attConexion: Connection
+            + RepositorioConfiguracionPostgres(prmConexion: Connection)
+            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
+            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+    
+    class ConexionBD << (S,#FF7700) Singleton >> {
+        - {static} attInstancia: ConexionBD
+        + {static} obtenerInstancia(): Connection
+    }
+}
+}
+package "Recursos"{
+  
+  package "Estilos"{
+  }
+  
+  package "vistas" {
+        class VistaLogin {
+            + iniciarSesion(prmUsuario: String, prmClave: String): void
+        }
+        class VistaPaciente {
+            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
+        }
+        class VistaAdmin {
+            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
+            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
+        }
+        class VistaAgendador {
+            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
+            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
+        }
+    }
+}  
+' - - - RELACIONES - - -
+vistas - -> controladores
+controladores ..> int_log
+servicios - -> int_per
+servicios ..> modelos
+repositorios - -> ConexionBD
+@enduml
+
+@startuml
+skinparam style strictuml
+skinparam packageStyle folder
+skinparam stereotypeCBackgroundColor #White
+skinparam stereotypeIBackgroundColor #LawnGreen
+skinparam classAttributeIconSize 0
+
+title Estructura Arquitectónica Final - Sistema de Citas Médicas
+package "Proyecto"{
+package "presentacion" {
+    
+
+    package "controladores" {
+        class ControladorLogin {
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorLogin(prmServicio: IServicioUsuarios)
+            + iniciarSesion(prmUsuario: String, prmClave: String): void
+        }
+        class ControladorPaciente {
+            - attServicioCitas: IServicioCitas
+            + ControladorPaciente(prmServicio: IServicioCitas)
+            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
+        }
+        class ControladorAdmin {
+            - attServicioConfiguracion: IServicioConfiguracion
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorAdmin(prmServicioConfig: IServicioConfiguracion, prmServicioUsuarios: IServicioUsuarios)
+            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
+            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
+        }
+        class ControladorAgendador {
+            - attServicioCitas: IServicioCitas
+            - attServicioUsuarios: IServicioUsuarios
+            + ControladorAgendador(prmServicioCitas: IServicioCitas, prmServicioUsuarios: IServicioUsuarios)
+            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
+            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
+        }
+    }
+
+    class SesionUsuario << (S,#FF7700) Singleton >> {
+        - {static} attInstancia: SesionUsuario
+        - attUsuarioActual: Persona
+        + {static} getInstancia(): SesionUsuario
+        + setUsuario(prmUsuario: Persona): void
+        + getUsuario(): Persona
+    }
+}
+
+package "logica" {
+    package "modelos" {
+        abstract class Persona <<abstract>> {
+            - attDocumento: String
+            - attNombre: String
+            - attApellido: String
+            - attCelular: String
+            - attGenero: String
+            - attFechaNacimiento: LocalDate
+            - attEmail: String
+        }
+        class Paciente extends Persona
+        class Medico extends Persona {
+            - attEspecialidad: String
+        }
+        class Agendador extends Persona
+        class Administrador extends Persona
+        class Cita {
+            - attFecha: LocalDate
+            - attHora: LocalTime
+            - attMedico: Medico
+            - attPaciente: Paciente
+        }
+        class ConfiguracionAgenda {
+            - attIdMedico: String
+            - attVentanaSemanas: int
+            - attDiasAtencion: String
+            - attHoraInicio: LocalTime
+            - attHoraFin: LocalTime
+            - attIntervaloMinutos: int
+        }
+    }
+
+    package "interfaces" as int_log {
+        interface IServicioUsuarios <<interface>> {
+            + registrarPaciente(prmPaciente: Paciente): boolean
+            + buscarPorDocumento(prmDocumento: String): Persona
+            + autenticar(prmUsuario: String, prmClave: String): Persona
+        }
+        interface IServicioCitas <<interface>> {
+            + agendarCita(prmCita: Cita): boolean
+            + listarCitasMedico(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+            + obtenerHorariosDisponibles(prmIdMedico: String, prmFecha: LocalDate): List<LocalTime>
+        }
+        interface IServicioConfiguracion <<interface>> {
+            + guardarConfiguracion(prmConfiguracion: ConfiguracionAgenda): boolean
+            + obtenerConfiguracion(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+
+    package "servicios" {
+        class ServicioUsuariosImpl implements IServicioUsuarios {
+            - attRepositorioPersona: IRepositorioPersona
+            + ServicioUsuariosImpl(prmRepositorio: IRepositorioPersona)
+        }
+        class ServicioCitasImpl implements IServicioCitas {
+            - attRepoCitas: IRepositorioCitas
+            - attRepoConfiguracion: IRepositorioConfiguracion
+            + ServicioCitasImpl(prmRepoCitas: IRepositorioCitas, prmRepoConfig: IRepositorioConfiguracion)
+        }
+        class ServicioConfiguracionImpl implements IServicioConfiguracion {
+            - attRepositorioConfig: IRepositorioConfiguracion
+            + ServicioConfiguracionImpl(prmRepositorio: IRepositorioConfiguracion)
+        }
+    }
+}
+
+package "persistencia" {
+    package "interfaces" as int_per {
+        interface IRepositorioPersona <<interface>> {
+            + guardar(prmPersona: Persona): boolean
+            + buscarPorDoc(prmDocumento: String): Persona
+        }
+        interface IRepositorioCitas <<interface>> {
+            + guardar(prmCita: Cita): boolean
+            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+        }
+        interface IRepositorioConfiguracion <<interface>> {
+            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
+            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+
+    package "repositorios" {
+        class RepositorioPersonaPostgres implements IRepositorioPersona {
+            - attConexion: Connection
+            + RepositorioPersonaPostgres(prmConexion: Connection)
+            + guardar(prmPersona: Persona): boolean
+            + buscarPorDoc(prmDocumento: String): Persona
+        }
+        class RepositorioCitasPostgres implements IRepositorioCitas {
+            - attConexion: Connection
+            + RepositorioCitasPostgres(prmConexion: Connection)
+            + guardar(prmCita: Cita): boolean
+            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
+        }
+        class RepositorioConfiguracionPostgres implements IRepositorioConfiguracion {
+            - attConexion: Connection
+            + RepositorioConfiguracionPostgres(prmConexion: Connection)
+            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
+            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
+        }
+    }
+    
+    class ConexionBD << (S,#FF7700) Singleton >> {
+        - {static} attInstancia: ConexionBD
+        + {static} obtenerInstancia(): Connection
+    }
+}
+}
+package "Recursos"{
+  
+  package "Estilos"{
+  }
+  
+  package "vistas" {
+        class VistaLogin {
+            + iniciarSesion(prmUsuario: String, prmClave: String): void
+        }
+        class VistaPaciente {
+            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
+        }
+        class VistaAdmin {
+            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
+            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
+        }
+        class VistaAgendador {
+            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
+            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
+        }
+    }
+}  
+vistas - -> controladores
+controladores ..> int_log
+servicios - -> int_per
+servicios ..> modelos
+repositorios - -> ConexionBD
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 17:01:30 UTC 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: null
+--></g></svg>
