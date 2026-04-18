@@ -16,12 +16,15 @@ Sistema de citas médicas migrado de monolito a arquitectura de microservicios.
 
 ```
 ProyectoPiedraAzulMicroServicios/
-├── api_gateway/              → Puerta de entrada, puerto 8080
-├── microservicio_usuarios/   → Personas, auth, roles, puerto 8081
-├── microservicio_agendamiento/  → Citas, puerto 8082
-├── microservicio_configuracion/ → Jornadas, especialidades, puerto 8083
-├── frontend/                 → Interfaz de usuario
-└── docker-compose.yml        → Orquesta todo
+├── api_gateway/                        → Puerta de entrada, puerto 8080
+├── microservicio_usuarios/             → Personas, auth, roles, puerto 8081
+│   └── BD_MSUsarios.sql               → Script tablas + datos de prueba
+├── microservicio_agendamiento/         → Citas, puerto 8082
+│   └── BD_MSAgendamiento.sql          → Script tablas + datos de prueba
+├── microservicio_configuracion/        → Jornadas, especialidades, puerto 8083
+│   └── BD_MSConfiguracion.sql         → Script tablas + datos de prueba
+├── frontend/                           → Interfaz de usuario
+└── docker-compose.yml                  → Orquesta todo
 ```
 
 ---
@@ -31,14 +34,11 @@ ProyectoPiedraAzulMicroServicios/
 ### Primera vez
 
 ```bash
-# 1. Construir y levantar todos los contenedores
 docker compose up --build -d
-
-# 2. Cargar los datos de prueba en cada BD
-docker exec -i db_usuarios      psql -U piedrazul -d db_usuarios      < microservicio_usuarios/init-db.sql
-docker exec -i db_agendamiento  psql -U piedrazul -d db_agendamiento  < microservicio_agendamiento/init-db.sql
-docker exec -i db_configuracion psql -U piedrazul -d db_configuracion < microservicio_configuracion/init-db.sql
 ```
+
+Los scripts SQL se ejecutan **automáticamente** al crear los contenedores.
+No necesitas correr nada más — Docker carga las tablas y datos de prueba solo.
 
 ### Uso normal
 
@@ -50,40 +50,39 @@ docker compose up -d
 docker compose down
 ```
 
+### Si necesitas resetear las bases de datos desde cero
+
+```bash
+docker compose down -v
+docker compose up --build -d
+```
+
+> `-v` elimina los volúmenes, forzando que los scripts SQL se ejecuten de nuevo.
+
 ---
 
 ## Puertos
 
-| Servicio              | Puerto local |
-|-----------------------|-------------|
-| API Gateway           | 8080        |
-| ms-usuarios           | 8081        |
-| ms-agendamiento       | 8082        |
-| ms-configuracion      | 8083        |
-| db_usuarios (Postgres)| 5433        |
-| db_agendamiento       | 5434        |
-| db_configuracion      | 5435        |
-| RabbitMQ (AMQP)       | 5672        |
-| RabbitMQ (Panel web)  | 15672       |
+| Servicio               | Puerto local |
+|------------------------|-------------|
+| API Gateway            | 8080        |
+| ms-usuarios            | 8081        |
+| ms-agendamiento        | 8082        |
+| ms-configuracion       | 8083        |
+| db_usuarios (Postgres) | 5433        |
+| db_agendamiento        | 5434        |
+| db_configuracion       | 5435        |
+| RabbitMQ (AMQP)        | 5672        |
+| RabbitMQ (Panel web)   | 15672       |
 
 ---
 
 ## Credenciales
 
-| Recurso       | Usuario    | Contraseña    |
-|---------------|------------|---------------|
-| Bases de datos| piedrazul  | piedrazul123  |
-| RabbitMQ      | admin      | admin123      |
-| Usuario admin | admin      | admin123      |
+| Recurso        | Usuario   | Contraseña   |
+|----------------|-----------|--------------|
+| Bases de datos | piedrazul | piedrazul123 |
+| RabbitMQ       | admin     | admin123     |
+| Usuario admin  | admin     | admin123     |
 
 Panel RabbitMQ: http://localhost:15672
-
----
-
-## Scripts SQL
-
-Cada microservicio tiene su propio `init-db.sql` con tablas y datos de prueba:
-
-- `microservicio_usuarios/init-db.sql` — usuarios, personas, médicos, pacientes
-- `microservicio_agendamiento/init-db.sql` — citas
-- `microservicio_configuracion/init-db.sql` — jornadas laborales, especialidades

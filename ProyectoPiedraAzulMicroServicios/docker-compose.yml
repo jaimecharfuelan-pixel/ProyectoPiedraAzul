@@ -17,6 +17,7 @@ services:
       - "5433:5432"
     volumes:
       - vol_db_usuarios:/var/lib/postgresql/data
+      - ./microservicio_usuarios/BD_MSUsarios.sql:/docker-entrypoint-initdb.d/BD_MSUsarios.sql
     networks:
       - piedrazul-net
     healthcheck:
@@ -36,6 +37,7 @@ services:
       - "5434:5432"
     volumes:
       - vol_db_agendamiento:/var/lib/postgresql/data
+      - ./microservicio_agendamiento/BD_MSAgendamiento.sql:/docker-entrypoint-initdb.d/BD_MSAgendamiento.sql
     networks:
       - piedrazul-net
     healthcheck:
@@ -55,6 +57,7 @@ services:
       - "5435:5432"
     volumes:
       - vol_db_configuracion:/var/lib/postgresql/data
+      - ./microservicio_configuracion/BD_MSConfiguracion.sql:/docker-entrypoint-initdb.d/BD_MSConfiguracion.sql
     networks:
       - piedrazul-net
     healthcheck:
