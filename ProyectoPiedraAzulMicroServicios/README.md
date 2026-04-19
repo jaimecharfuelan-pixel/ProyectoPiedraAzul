@@ -35,9 +35,13 @@ ProyectoPiedraAzulMicroServicios/
 docker compose up --build -d
 
 # 2. Cargar los datos de prueba en cada BD
-Get-Content microservicio_usuarios/BD_MSUsuarios.sql | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
-Get-Content microservicio_agendamiento/BD_MSAgendamiento.sql | docker exec -i db_agendamiento psql -U piedrazul -d db_agendamiento
-Get-Content microservicio_configuracion/BD_MSConfiguracion.sql | docker exec -i db_configuracion psql -U piedrazul -d db_configuracion
+# Use este bloque desde la raíz de ProyectoPiedraAzulMicroServicios en PowerShell
+Get-Content .\microservicio_usuarios\BD_MSUsuarios.sql -Raw | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
+Get-Content .\microservicio_agendamiento\BD_MSAgendamiento.sql -Raw | docker exec -i db_agendamiento psql -U piedrazul -d db_agendamiento
+Get-Content .\microservicio_configuracion\BD_MSConfiguracion.sql -Raw | docker exec -i db_configuracion psql -U piedrazul -d db_configuracion
+
+# Si ya está dentro de un directorio de microservicio, use la ruta relativa directa, por ejemplo:
+# Get-Content .\BD_MSUsuarios.sql -Raw | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
 ```
 
 ### Uso normal
