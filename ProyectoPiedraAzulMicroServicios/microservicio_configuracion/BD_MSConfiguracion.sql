@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS dominio_especialidad (
     nombre          VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS jornada_laboral (
+DROP TABLE IF EXISTS jornada_laboral;
+CREATE TABLE jornada_laboral (
     id_jornada                  SERIAL PRIMARY KEY,
     id_usuario                  INT NOT NULL,   -- id del médico en ms-usuarios
     dia_semana                  VARCHAR(20) NOT NULL,

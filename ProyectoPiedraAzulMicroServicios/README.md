@@ -18,7 +18,7 @@ Sistema de citas médicas migrado de monolito a arquitectura de microservicios.
 ProyectoPiedraAzulMicroServicios/
 ├── api_gateway/                        → Puerta de entrada, puerto 8080
 ├── microservicio_usuarios/             → Personas, auth, roles, puerto 8081
-│   └── BD_MSUsarios.sql               → Script tablas + datos de prueba
+│   └── BD_MSUsuarios.sql              → Script tablas + datos de prueba
 ├── microservicio_agendamiento/         → Citas, puerto 8082
 │   └── BD_MSAgendamiento.sql          → Script tablas + datos de prueba
 ├── microservicio_configuracion/        → Jornadas, especialidades, puerto 8083
@@ -61,6 +61,29 @@ docker compose up --build -d
 
 ---
 
+## Cargar scripts SQL manualmente (PowerShell)
+
+Si por alguna razón necesitas cargar los scripts a mano:
+
+```powershell
+# Asegúrate de estar en la carpeta ProyectoPiedraAzulMicroServicios
+docker compose up -d
+
+Get-Content .\microservicio_usuarios\BD_MSUsuarios.sql -Raw | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
+Get-Content .\microservicio_agendamiento\BD_MSAgendamiento.sql -Raw | docker exec -i db_agendamiento psql -U piedrazul -d db_agendamiento
+Get-Content .\microservicio_configuracion\BD_MSConfiguracion.sql -Raw | docker exec -i db_configuracion psql -U piedrazul -d db_configuracion
+```
+
+---
+
+## Scripts SQL
+
+- `microservicio_usuarios/BD_MSUsuarios.sql` — usuarios, personas, médicos, pacientes
+- `microservicio_agendamiento/BD_MSAgendamiento.sql` — citas
+- `microservicio_configuracion/BD_MSConfiguracion.sql` — jornadas laborales, especialidades
+
+---
+
 ## Puertos
 
 | Servicio               | Puerto local |
@@ -86,3 +109,15 @@ docker compose up --build -d
 | Usuario admin  | admin     | admin123     |
 
 Panel RabbitMQ: http://localhost:15672
+
+---
+
+## Comandos útiles
+
+```bash
+# Reconstruir un microservicio específico
+docker compose build microservicio-configuracion
+
+# Reiniciar un microservicio específico
+docker compose up -d microservicio-configuracion
+```
