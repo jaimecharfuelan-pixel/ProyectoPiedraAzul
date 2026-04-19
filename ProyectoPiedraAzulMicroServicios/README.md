@@ -36,6 +36,13 @@ docker compose up --build -d
 
 # 2. Cargar los datos de prueba en cada BD
 # Use este bloque desde la raíz de ProyectoPiedraAzulMicroServicios en PowerShell
+# 2.1 Asegúrese de que los contenedores estén arrancados
+docker compose up -d
+# 2.2 Verifique que el contenedor de la base de datos exista y esté en ejecución
+docker compose ps
+# Si el contenedor `db_usuarios` no está en ejecución, puede iniciarlo con:
+# docker start db_usuarios
+
 Get-Content .\microservicio_usuarios\BD_MSUsuarios.sql -Raw | docker exec -i db_usuarios psql -U piedrazul -d db_usuarios
 Get-Content .\microservicio_agendamiento\BD_MSAgendamiento.sql -Raw | docker exec -i db_agendamiento psql -U piedrazul -d db_agendamiento
 Get-Content .\microservicio_configuracion\BD_MSConfiguracion.sql -Raw | docker exec -i db_configuracion psql -U piedrazul -d db_configuracion
