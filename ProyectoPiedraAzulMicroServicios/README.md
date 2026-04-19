@@ -98,3 +98,14 @@ Cada microservicio tiene su propio script SQL con tablas y datos de prueba:
 - `microservicio_usuarios/BD_MSUsuarios.sql` — usuarios, personas, médicos, pacientes
 - `microservicio_agendamiento/BD_MSAgendamiento.sql` — citas
 - `microservicio_configuracion/BD_MSConfiguracion.sql` — jornadas laborales, especialidades
+
+
+
+
+
+# CDCS
+- Reconstruir contenedor 
+docker compose build microservicio-configuracion
+
+-Reiniciar Servicio 
+docker compose up -d microservicio-configuracion
