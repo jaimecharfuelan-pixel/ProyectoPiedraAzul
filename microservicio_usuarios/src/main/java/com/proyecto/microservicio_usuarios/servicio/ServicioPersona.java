@@ -1,10 +1,13 @@
 package com.proyecto.microservicio_usuarios.servicio;
 
 import com.proyecto.microservicio_usuarios.modelo.MedicoTerapista;
+import com.proyecto.microservicio_usuarios.modelo.Paciente;
 import com.proyecto.microservicio_usuarios.modelo.Persona;
 import com.proyecto.microservicio_usuarios.repositorio.RepositorioMedicoTerapista;
+import com.proyecto.microservicio_usuarios.repositorio.RepositorioPaciente;
 import com.proyecto.microservicio_usuarios.repositorio.RepositorioPersona;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,10 +16,14 @@ public class ServicioPersona {
 
     private final RepositorioPersona repoPersona;
     private final RepositorioMedicoTerapista repoMedico;
+    private final RepositorioPaciente repoPaciente;
 
-    public ServicioPersona(RepositorioPersona repoPersona, RepositorioMedicoTerapista repoMedico) {
+    public ServicioPersona(RepositorioPersona repoPersona,
+                           RepositorioMedicoTerapista repoMedico,
+                           RepositorioPaciente repoPaciente) {
         this.repoPersona = repoPersona;
         this.repoMedico = repoMedico;
+        this.repoPaciente = repoPaciente;
     }
 
     public Persona crearPersona(Persona persona) {
@@ -38,7 +45,7 @@ public class ServicioPersona {
         Optional<Persona> opt = repoPersona.findById(idPersona);
         if (opt.isEmpty()) return false;
         Persona p = opt.get();
-        p.setIdEstado(0); // inactivo
+        p.setIdEstado(1); // 1 = Inactivo según BD
         repoPersona.save(p);
         return true;
     }
@@ -51,8 +58,11 @@ public class ServicioPersona {
         return repoPersona.findByCedulaCiudadania(cedula);
     }
 
+    // ─── Médicos ─────────────────────────────────────────────────────────────
+
+    /** RF1/RF2: Lista médicos activos (id_estado = 2 = Activo según datos de prueba). */
     public List<MedicoTerapista> listarMedicosActivos() {
-        return repoMedico.findByIdEstado(1); // 1 = activo
+        return repoMedico.findByIdEstado(2);
     }
 
     public boolean asignarEspecialidad(int idMedico, int idEspecialidad) {
@@ -62,5 +72,11 @@ public class ServicioPersona {
         medico.setIdEspecialidad(idEspecialidad);
         repoMedico.save(medico);
         return true;
+    }
+
+    // ─── Pacientes ───────────────────────────────────────────────────────────
+
+    public Optional<Paciente> buscarPacientePorId(int idPaciente) {
+        return repoPaciente.findById(idPaciente);
     }
 }

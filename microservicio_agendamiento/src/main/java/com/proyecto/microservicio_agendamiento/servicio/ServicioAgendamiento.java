@@ -1,6 +1,7 @@
 package com.proyecto.microservicio_agendamiento.servicio;
 
 import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
+import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
 import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,16 @@ public class ServicioAgendamiento {
 
     private final RepositorioCitas repoCitas;
     private final RestTemplate restTemplate;
+    private final PublicadorCitas publicador;
 
-    // URL del ms-configuracion (configurable via application.properties)
-    private static final String URL_JORNADAS = "http://ms-configuracion:8083/api/configuracion/jornadas";
+    private static final String URL_JORNADAS = "http://ms-configuracion:8083/api/jornadas";
 
-    public ServicioAgendamiento(RepositorioCitas repoCitas, RestTemplate restTemplate) {
-        this.repoCitas = repoCitas;
+    public ServicioAgendamiento(RepositorioCitas repoCitas,
+                                RestTemplate restTemplate,
+                                PublicadorCitas publicador) {
+        this.repoCitas   = repoCitas;
         this.restTemplate = restTemplate;
+        this.publicador  = publicador;
     }
 
     /**
@@ -73,11 +77,13 @@ public class ServicioAgendamiento {
         cita.setHoraFin(hora.plusMinutes(30));
         cita.setIdEstadoCita(2); // Pendiente
         repoCitas.save(cita);
+        publicador.publicarCitaCreada(cita); // avisa a ms-usuarios que se creó la cita
         return true;
     }
 
     public boolean crearCitaManual(Cita cita) {
         repoCitas.save(cita);
+        publicador.publicarCitaCreada(cita); // avisa también en cita manual
         return true;
     }
 
@@ -114,6 +120,7 @@ public class ServicioAgendamiento {
     public boolean cancelarCita(int idCita) {
         if (!repoCitas.existsById(idCita)) return false;
         repoCitas.deleteById(idCita);
+        publicador.publicarCitaCancelada(idCita); // avisa a ms-usuarios que se canceló
         return true;
     }
 

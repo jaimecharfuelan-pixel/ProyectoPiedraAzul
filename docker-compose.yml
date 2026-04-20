@@ -181,7 +181,7 @@ services:
 
   api-gateway:
     build:
-      context: ./api_gateway
+      context: ./APIGateWay
       dockerfile: Dockerfile
     container_name: api_gateway
     ports:

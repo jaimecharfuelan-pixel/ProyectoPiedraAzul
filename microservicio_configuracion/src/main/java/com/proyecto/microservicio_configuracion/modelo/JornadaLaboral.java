@@ -27,6 +27,9 @@ public class JornadaLaboral {
     @Column(name = "id_usuario", nullable = false)
     private int idUsuario;
 
+    @Column(name = "duracion_estimada_atencion")
+    private int duracionEstimadaAtencion;
+
     public JornadaLaboral() {}
 
     public int getIdJornada() { return idJornada; }
@@ -46,4 +49,7 @@ public class JornadaLaboral {
 
     public int getIdUsuario() { return idUsuario; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+
+    public int getDuracionEstimadaAtencion() { return duracionEstimadaAtencion; }
+    public void setDuracionEstimadaAtencion(int duracionEstimadaAtencion) { this.duracionEstimadaAtencion = duracionEstimadaAtencion; }
 }
