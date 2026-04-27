@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-// DEBES agregar "extends Application" después del nombre de la clase
 public class App extends Application { 
 
     @Override

@@ -1,191 +1,456 @@
-@startuml
-skinparam style strictuml
-skinparam packageStyle folder
-skinparam stereotypeCBackgroundColor #White
-skinparam stereotypeIBackgroundColor #LawnGreen
+@startuml ProyectoPiedraAzul
+
 skinparam classAttributeIconSize 0
+skinparam classFontSize 10
+skinparam packageFontSize 11
+hide empty members
+left to right direction
 
-title Estructura Arquitectónica Final - Sistema de Citas Médicas
-package "Proyecto"{
-' --- CAPA DE PRESENTACIÓN ---
-package "presentacion" {
-    
+' ══════════════════════════════════════════════
+' MODELOS
+' ══════════════════════════════════════════════
+package "logica.modelos" {
 
-    package "controladores" {
-        class ControladorLogin {
-            - attServicioUsuarios: IServicioUsuarios
-            + ControladorLogin(prmServicio: IServicioUsuarios)
-            + iniciarSesion(prmUsuario: String, prmClave: String): void
-        }
-        class ControladorPaciente {
-            - attServicioCitas: IServicioCitas
-            + ControladorPaciente(prmServicio: IServicioCitas)
-            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
-        }
-        class ControladorAdmin {
-            - attServicioConfiguracion: IServicioConfiguracion
-            - attServicioUsuarios: IServicioUsuarios
-            + ControladorAdmin(prmServicioConfig: IServicioConfiguracion, prmServicioUsuarios: IServicioUsuarios)
-            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
-            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
-        }
-        class ControladorAgendador {
-            - attServicioCitas: IServicioCitas
-            - attServicioUsuarios: IServicioUsuarios
-            + ControladorAgendador(prmServicioCitas: IServicioCitas, prmServicioUsuarios: IServicioUsuarios)
-            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
-            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
-        }
+    abstract class Persona {
+        - attIdPersona : int
+        - attNombre : String
+        - attCedulaCiudadania : String
+        - attApellido : String
+        - attCelular : String
+        - attIdGenero : Integer
+        - attFechaNacimiento : LocalDate
+        - attCorreo : String
+        - attIdUsuario : Integer
+        - attIdEstado : Integer
     }
 
-    class SesionUsuario << (S,#FF7700) Singleton >> {
-        - {static} attInstancia: SesionUsuario
-        - attUsuarioActual: Persona
-        + {static} getInstancia(): SesionUsuario
-        + setUsuario(prmUsuario: Persona): void
-        + getUsuario(): Persona
-    }
-}
-
-' --- CAPA DE LÓGICA ---
-package "logica" {
-    package "modelos" {
-        abstract class Persona <<abstract>> {
-            - attDocumento: String
-            - attNombre: String
-            - attApellido: String
-            - attCelular: String
-            - attGenero: String
-            - attFechaNacimiento: LocalDate
-            - attEmail: String
-        }
-        class Paciente extends Persona
-        class Medico extends Persona {
-            - attEspecialidad: String
-        }
-        class Agendador extends Persona
-        class Administrador extends Persona
-        class Cita {
-            - attFecha: LocalDate
-            - attHora: LocalTime
-            - attMedico: Medico
-            - attPaciente: Paciente
-        }
-        class ConfiguracionAgenda {
-            - attIdMedico: String
-            - attVentanaSemanas: int
-            - attDiasAtencion: String
-            - attHoraInicio: LocalTime
-            - attHoraFin: LocalTime
-            - attIntervaloMinutos: int
-        }
+    class Paciente {
     }
 
-    package "interfaces" as int_log {
-        interface IServicioUsuarios <<interface>> {
-            + registrarPaciente(prmPaciente: Paciente): boolean
-            + buscarPorDocumento(prmDocumento: String): Persona
-            + autenticar(prmUsuario: String, prmClave: String): Persona
-        }
-        interface IServicioCitas <<interface>> {
-            + agendarCita(prmCita: Cita): boolean
-            + listarCitasMedico(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
-            + obtenerHorariosDisponibles(prmIdMedico: String, prmFecha: LocalDate): List<LocalTime>
-        }
-        interface IServicioConfiguracion <<interface>> {
-            + guardarConfiguracion(prmConfiguracion: ConfiguracionAgenda): boolean
-            + obtenerConfiguracion(prmIdMedico: String): ConfiguracionAgenda
-        }
+    class MedicoTerapista {
+        - attIdEspecialidad : int
     }
 
-    package "servicios" {
-        class ServicioUsuariosImpl implements IServicioUsuarios {
-            - attRepositorioPersona: IRepositorioPersona
-            + ServicioUsuariosImpl(prmRepositorio: IRepositorioPersona)
-        }
-        class ServicioCitasImpl implements IServicioCitas {
-            - attRepoCitas: IRepositorioCitas
-            - attRepoConfiguracion: IRepositorioConfiguracion
-            + ServicioCitasImpl(prmRepoCitas: IRepositorioCitas, prmRepoConfig: IRepositorioConfiguracion)
-        }
-        class ServicioConfiguracionImpl implements IServicioConfiguracion {
-            - attRepositorioConfig: IRepositorioConfiguracion
-            + ServicioConfiguracionImpl(prmRepositorio: IRepositorioConfiguracion)
-        }
+    class Agendador {
+    }
+
+    class Usuario {
+        - attIdUsuario : int
+        - attUsuario : String
+        - attContrasena : String
+    }
+
+    class Cita {
+        - attIdCita : int
+        - attIdPaciente : int
+        - attIdMedico : int
+        - attFecha : LocalDate
+        - attHoraInicio : LocalTime
+        - attHoraFin : LocalTime
+        - attIdEstadoCita : Integer
+    }
+
+    class JornadaLaboral {
+        - attIdJornada : int
+        - attDiaSemana : String
+        - attHoraInicio : LocalTime
+        - attHoraFin : LocalTime
+        - attIdEstado : int
+        - attIdUsuario : int
+    }
+
+    class DominioEspecialidad {
+        - attIdEspecialidad : int
+        - attNombre : String
+    }
+
+    class Rol {
+        - attIdRol : int
+        - attNombre : String
+        - attIdUsuario : int
+    }
+
+    class SesionToken {
+        - attIdToken : int
+        - attTokenHash : String
+        - attFechaCreacion : LocalDateTime
+        - attFechaExpiracion : LocalDateTime
+        - attIdEstado : int
+        - attIdUsuario : int
     }
 }
 
-' --- CAPA DE PERSISTENCIA ---
+' ══════════════════════════════════════════════
+' INTERFACES DE SERVICIO
+' ══════════════════════════════════════════════
+package "logica.interfaces" {
+
+    interface IServicioAgendamiento {
+        + crearCitaManual(Cita) : boolean
+        + consultarDisponibilidad(int, LocalDate) : List
+        + agendarCitaWeb(int, int, LocalDate, LocalTime) : boolean
+        + listarCitas(Integer, LocalDate) : List
+        + listarTodasLasCitas() : List
+        + editarCita(Cita) : boolean
+        + cancelarCita(int) : boolean
+    }
+
+    interface IServicioConfiguracion {
+        + configurarDisponibilidadMedico(JornadaLaboral) : boolean
+        + obtenerTodasLasJornadas() : List
+    }
+
+    interface IServicioPaciente {
+        + registrarPaciente(Paciente, Usuario) : boolean
+        + obtenerHistorialCitas(int) : List
+        + obtenerCitasFuturas(int) : List
+    }
+
+    interface IServicioPersona {
+        + crearPersona(Persona) : int
+        + editarPersona(Persona) : boolean
+        + inactivarPersona(int) : boolean
+        + listarPersonas() : List
+        + buscarPorDocumento(String) : Persona
+        + listarMedicosActivos() : List
+        + asignarEspecialidad(MedicoTerapista, int) : boolean
+        + listarEspecialidades() : List
+    }
+
+    interface IServicioUsuarios {
+        + autenticar(String, String) : Usuario
+        + registrarUsuario(Usuario) : boolean
+        + editarUsuario(Usuario) : boolean
+        + eliminarUsuario(int) : boolean
+        + listarUsuarios() : List
+    }
+}
+
+' ══════════════════════════════════════════════
+' SERVICIOS
+' ══════════════════════════════════════════════
+package "logica.servicios" {
+
+    class ServicioAgendamiento {
+        - repoCitas : IRepositorioCitas
+        - repoJornada : IRepositorioJornadaLaboral
+        - repoMedico : IRepositorioMedicoTerapista
+        + consultarDisponibilidad(int, LocalDate) : List
+        + agendarCitaWeb(int, int, LocalDate, LocalTime) : boolean
+        + crearCitaManual(Cita) : boolean
+        + listarCitas(Integer, LocalDate) : List
+        + editarCita(Cita) : boolean
+        + cancelarCita(int) : boolean
+    }
+
+    class ServicioConfiguracion {
+        - repoJornada : IRepositorioJornadaLaboral
+        + configurarDisponibilidadMedico(JornadaLaboral) : boolean
+        + obtenerTodasLasJornadas() : List
+        + editarTurno(JornadaLaboral) : boolean
+        + eliminarTurno(int) : boolean
+    }
+
+    class ServicioPaciente {
+        - repoUsuario : IRepositorioUsuario
+        - repoCitas : IRepositorioCitas
+        + registrarPaciente(Paciente, Usuario) : boolean
+        + obtenerHistorialCitas(int) : List
+        + obtenerCitasFuturas(int) : List
+    }
+
+    class ServicioPersona {
+        - repoPersona : IRepositorioPersona
+        - repoMedico : IRepositorioMedicoTerapista
+        - repoEspecialidad : IRepositorioDominioEspecialidad
+        + crearPersona(Persona) : int
+        + editarPersona(Persona) : boolean
+        + inactivarPersona(int) : boolean
+        + listarPersonas() : List
+        + buscarPorDocumento(String) : Persona
+        + listarMedicosActivos() : List
+        + asignarEspecialidad(MedicoTerapista, int) : boolean
+        + listarEspecialidades() : List
+    }
+
+    class ServicioUsuarios {
+        - repoUsuario : IRepositorioUsuario
+        + autenticar(String, String) : Usuario
+        + registrarUsuario(Usuario) : boolean
+        + editarUsuario(Usuario) : boolean
+        + eliminarUsuario(int) : boolean
+        + listarUsuarios() : List
+    }
+
+    class ServicioAuth {
+        - servicioUsuarios : ServicioUsuarios
+        - repoToken : RepositorioSesionToken
+        + login(String, String) : String
+    }
+}
+
+' ══════════════════════════════════════════════
+' INTERFACES DE REPOSITORIO
+' ══════════════════════════════════════════════
+package "persistencia.interfaces" {
+
+    interface IRepositorioAgendador {
+        + guardar(Agendador) : int
+        + buscarPorId(int) : Agendador
+        + listar() : List
+        + actualizar(Agendador) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioCitas {
+        + guardar(Cita) : int
+        + buscarPorId(int) : Cita
+        + listar() : List
+        + actualizar(Cita) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioDominioEspecialidad {
+        + guardar(DominioEspecialidad) : boolean
+        + buscar(int) : DominioEspecialidad
+        + listar() : List
+        + actualizar(DominioEspecialidad) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioJornadaLaboral {
+        + guardar(JornadaLaboral) : boolean
+        + buscar(int) : JornadaLaboral
+        + listar() : List
+        + actualizar(JornadaLaboral) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioMedicoTerapista {
+        + guardar(MedicoTerapista) : boolean
+        + buscar(int) : MedicoTerapista
+        + listar() : List
+        + listarActivos() : List
+        + actualizar(MedicoTerapista) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioPaciente {
+        + guardar(Paciente) : int
+        + buscarPorId(int) : Paciente
+        + listar() : List
+        + actualizar(Paciente) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioPersona {
+        + guardar(Persona) : int
+        + buscarPorId(int) : Persona
+        + buscarPorDocumento(String) : Persona
+        + listar() : List
+        + listarPorEstado(int) : List
+        + actualizar(Persona) : boolean
+        + inactivar(int) : boolean
+    }
+
+    interface IRepositorioRol {
+        + guardar(Rol) : int
+        + buscarPorId(int) : Rol
+        + listarPorUsuario(int) : List
+        + listarTodo() : List
+        + actualizar(Rol) : boolean
+        + inactivar(int) : boolean
+        + eliminarPorUsuario(int) : boolean
+    }
+
+    interface IRepositorioSesionToken {
+        + guardar(SesionToken) : int
+        + buscarPorHash(String) : SesionToken
+        + buscarActivoPorUsuario(int) : SesionToken
+        + listarPorUsuario(int) : List
+        + actualizarEstado(int, int) : boolean
+        + inactivarExpirados() : boolean
+        + esTokenValido(String) : boolean
+    }
+
+    interface IRepositorioUsuario {
+        + guardar(Usuario) : int
+        + buscarPorId(int) : Usuario
+        + buscarPorNombreUsuario(String) : Usuario
+        + listar() : List
+        + actualizar(Usuario) : boolean
+        + inactivar(int) : boolean
+        + validarCredenciales(String, String) : boolean
+    }
+}
+
+' ══════════════════════════════════════════════
+' REPOSITORIOS
+' ══════════════════════════════════════════════
+package "persistencia.repositorios" {
+    class RepositorioAgendador
+    class RepositorioCitas
+    class RepositorioDominioEspecialidad
+    class RepositorioJornadaLaboral
+    class RepositorioMedicoTerapista
+    class RepositorioPaciente
+    class RepositorioPersona
+    class RepositorioRol
+    class RepositorioSesionToken
+    class RepositorioUsuario
+}
+
 package "persistencia" {
-    package "interfaces" as int_per {
-        interface IRepositorioPersona <<interface>> {
-            + guardar(prmPersona: Persona): boolean
-            + buscarPorDoc(prmDocumento: String): Persona
-        }
-        interface IRepositorioCitas <<interface>> {
-            + guardar(prmCita: Cita): boolean
-            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
-        }
-        interface IRepositorioConfiguracion <<interface>> {
-            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
-            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
-        }
+    class ConexionBD <<Singleton>> {
+        - instancia : Connection
+        + getInstance() : Connection
+    }
+}
+
+' ══════════════════════════════════════════════
+' PRESENTACION
+' ══════════════════════════════════════════════
+package "seguridad" {
+    class JwtUtil {
+        + generarToken(int, String) : String
+        + validarToken(String) : Claims
+    }
+}
+
+package "presentacion" {
+    class SesionUsuario <<Singleton>> {
+        - token : String
+        - idUsuario : int
+        - rol : String
+        - idPacienteActual : int
+        + getInstancia() : SesionUsuario
+        + limpiarSesion() : void
+    }
+}
+
+package "presentacion.controladores" {
+
+    class ControladorLogin {
+        - servicioAuth : ServicioAuth
+        + initialize() : void
+        + onBtnIniciarSesionClicked() : void
     }
 
-    package "repositorios" {
-        class RepositorioPersonaPostgres implements IRepositorioPersona {
-            - attConexion: Connection
-            + RepositorioPersonaPostgres(prmConexion: Connection)
-            + guardar(prmPersona: Persona): boolean
-            + buscarPorDoc(prmDocumento: String): Persona
-        }
-        class RepositorioCitasPostgres implements IRepositorioCitas {
-            - attConexion: Connection
-            + RepositorioCitasPostgres(prmConexion: Connection)
-            + guardar(prmCita: Cita): boolean
-            + buscarPorMedicoFecha(prmIdMedico: String, prmFecha: LocalDate): List<Cita>
-        }
-        class RepositorioConfiguracionPostgres implements IRepositorioConfiguracion {
-            - attConexion: Connection
-            + RepositorioConfiguracionPostgres(prmConexion: Connection)
-            + guardar(prmConfiguracion: ConfiguracionAgenda): boolean
-            + buscarPorMedico(prmIdMedico: String): ConfiguracionAgenda
-        }
+    class ControladorAdmin {
+        - repoMedico : RepositorioMedicoTerapista
+        - repoPersona : RepositorioPersona
+        - repoUsuario : RepositorioUsuario
+        - repoCitas : RepositorioCitas
+        - repoEspecialidad : RepositorioDominioEspecialidad
+        - servicioUsuarios : ServicioUsuarios
+        + initialize(URL, ResourceBundle) : void
+        + onAsignarRol(ActionEvent) : void
+        + onAsignarEspecialidad(ActionEvent) : void
+        + onCerrarSesion(ActionEvent) : void
     }
-    
-    class ConexionBD << (S,#FF7700) Singleton >> {
-        - {static} attInstancia: ConexionBD
-        + {static} obtenerInstancia(): Connection
+
+    class ControladorAgendador {
+        - servicioAgendamiento : IServicioAgendamiento
+        - repoMedico : IRepositorioMedicoTerapista
+        - repoPaciente : IRepositorioPaciente
+        + initialize(URL, ResourceBundle) : void
+        + onFiltrar(ActionEvent) : void
+        + onNuevaCita(ActionEvent) : void
+        + onCerrarSesion(ActionEvent) : void
+    }
+
+    class ControladorAgendarCita {
+        - servicio : ServicioAgendamiento
+        - repoPaciente : RepositorioPaciente
+        - repoPersona : RepositorioPersona
+        - repoMedico : RepositorioMedicoTerapista
+        + initialize() : void
+        + setModoPaciente(int) : void
+        - onGuardarCita() : void
+        - onBuscarPaciente() : void
+    }
+
+    class ControladorPaciente {
+        - servicioPaciente : ServicioPaciente
+        - repoPersona : RepositorioPersona
+        - idPaciente : int
+        + initialize(URL, ResourceBundle) : void
+        + onAgendarCita(ActionEvent) : void
+        + onCerrarSesion(ActionEvent) : void
     }
 }
-}
-package "Recursos"{
-  
-  package "Estilos"{
-  }
-  
-  package "vistas" {
-        class VistaLogin {
-            + iniciarSesion(prmUsuario: String, prmClave: String): void
-        }
-        class VistaPaciente {
-            + agendarCita(prmFecha: LocalDate, prmHora: LocalTime, prmMedico: Medico): void
-        }
-        class VistaAdmin {
-            + gestionarUsuario(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmEmail: String, prmUsuario: String, prmClave: String, prmRol: String): void
-            + configurarParametros(prmMedico: Medico, prmSemanas: int, prmDiasAtencion: String, prmHoraInicio: LocalTime, prmHoraFin: LocalTime, prmIntervalo: int): void
-        }
-        class VistaAgendador {
-            + listarCitas(prmMedico: Medico, prmFecha: LocalDate): void
-            + agendarCita(prmDocumento: String, prmNombre: String, prmApellido: String, prmCelular: String, prmGenero: String, prmNacimiento: LocalDate, prmMedico: Medico, prmHora: LocalTime): void
-        }
-    }
-}  
-' --- RELACIONES ---
-vistas --> controladores
-controladores ..> int_log
-servicios --> int_per
-servicios ..> modelos
-repositorios --> ConexionBD
+
+' ══════════════════════════════════════════════
+' RELACIONES - HERENCIA
+' ══════════════════════════════════════════════
+Persona <|-- Paciente
+Persona <|-- MedicoTerapista
+Persona <|-- Agendador
+
+' ══════════════════════════════════════════════
+' RELACIONES - MODELOS
+' ══════════════════════════════════════════════
+MedicoTerapista --> DominioEspecialidad : idEspecialidad
+Cita --> Paciente : idPaciente
+Cita --> MedicoTerapista : idMedico
+JornadaLaboral --> MedicoTerapista : idUsuario
+Rol --> Usuario : idUsuario
+SesionToken --> Usuario : idUsuario
+Persona --> Usuario : idUsuario
+
+' ══════════════════════════════════════════════
+' RELACIONES - SERVICIOS IMPLEMENTAN INTERFACES
+' ══════════════════════════════════════════════
+ServicioAgendamiento ..|> IServicioAgendamiento
+ServicioConfiguracion ..|> IServicioConfiguracion
+ServicioPaciente ..|> IServicioPaciente
+ServicioPersona ..|> IServicioPersona
+ServicioUsuarios ..|> IServicioUsuarios
+ServicioAuth --> ServicioUsuarios
+
+' ══════════════════════════════════════════════
+' RELACIONES - REPOSITORIOS IMPLEMENTAN INTERFACES
+' ══════════════════════════════════════════════
+RepositorioAgendador ..|> IRepositorioAgendador
+RepositorioCitas ..|> IRepositorioCitas
+RepositorioDominioEspecialidad ..|> IRepositorioDominioEspecialidad
+RepositorioJornadaLaboral ..|> IRepositorioJornadaLaboral
+RepositorioMedicoTerapista ..|> IRepositorioMedicoTerapista
+RepositorioPaciente ..|> IRepositorioPaciente
+RepositorioPersona ..|> IRepositorioPersona
+RepositorioRol ..|> IRepositorioRol
+RepositorioSesionToken ..|> IRepositorioSesionToken
+RepositorioUsuario ..|> IRepositorioUsuario
+
+RepositorioAgendador --> RepositorioPersona : delega
+RepositorioPaciente --> RepositorioPersona : delega
+RepositorioMedicoTerapista --> RepositorioPersona : delega
+
+RepositorioAgendador --> ConexionBD
+RepositorioCitas --> ConexionBD
+RepositorioDominioEspecialidad --> ConexionBD
+RepositorioJornadaLaboral --> ConexionBD
+RepositorioMedicoTerapista --> ConexionBD
+RepositorioPaciente --> ConexionBD
+RepositorioPersona --> ConexionBD
+RepositorioRol --> ConexionBD
+RepositorioSesionToken --> ConexionBD
+RepositorioUsuario --> ConexionBD
+
+' ══════════════════════════════════════════════
+' RELACIONES - CONTROLADORES
+' ══════════════════════════════════════════════
+ControladorLogin --> SesionUsuario
+ControladorAdmin --> SesionUsuario
+ControladorAgendador --> SesionUsuario
+ControladorAgendarCita --> SesionUsuario
+ControladorPaciente --> SesionUsuario
+
+ControladorLogin ..> ServicioAuth
+ControladorAdmin ..> ServicioUsuarios
+ControladorAgendador ..> IServicioAgendamiento
+ControladorAgendarCita ..> ServicioAgendamiento
+ControladorPaciente ..> ServicioPaciente
+ServicioAuth ..> JwtUtil
 
 @enduml
