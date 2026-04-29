@@ -56,7 +56,7 @@
                      <children>
                         <ImageView fitHeight="108.0" fitWidth="249.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
+                              <Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" />
                            </image>
                         </ImageView>
                      </children>

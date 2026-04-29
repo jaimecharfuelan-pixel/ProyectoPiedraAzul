@@ -29,7 +29,7 @@
                                 text="+ Agendar Cita" onAction="#onAgendarCita" />
                         <ImageView fitHeight="57.0" fitWidth="109.0" layoutX="15.0" layoutY="4.0"
                                    pickOnBounds="true" preserveRatio="true">
-                           <image><Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" /></image>
+                           <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
                         </ImageView>
                         <Button layoutX="629.0" layoutY="16.0" mnemonicParsing="false"
                                 prefHeight="28.0" prefWidth="130.0" styleClass="button-logout"

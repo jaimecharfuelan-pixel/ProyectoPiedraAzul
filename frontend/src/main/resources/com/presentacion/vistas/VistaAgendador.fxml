@@ -40,7 +40,7 @@
                                fitWidth="160"
                                preserveRatio="true">
                         <image>
-                            <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png"/>
+                            <Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png"/>
                         </image>
                     </ImageView>
 
@@ -80,7 +80,7 @@
                     <children>
                         <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
                              <image>
-                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/calendario.png"/>
+                                <Image url="@/com/presentacion/icons/calendario.png"/>
                             </image>
                         </ImageView>
                         <Label text="CITAS PARA HOY"
@@ -100,7 +100,7 @@
                     <children>
                         <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
                              <image>
-                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/Pendiente.png"/>
+                                <Image url="@/com/presentacion/icons/Pendiente.png"/>
                             </image>
                         </ImageView>
                         <Label text="PENDIENTES DE CONFIRMACIÓN"
@@ -120,7 +120,7 @@
                     <children>
                         <ImageView fitHeight="56" fitWidth="56" preserveRatio="true">
                              <image>
-                                <Image url="file:C:/Users/dv602/OneDrive/Escritorio/Documentos/LAB IS II/Proyecti/ProyectoPiedraAzul/proyecto-piedra-azul/src/main/resources/icons/botiquin-medico.png"/>
+                                <Image url="@/com/presentacion/icons/botiquin-medico.png"/>
                             </image>
                         </ImageView>
                         <Label text="MÉDICOS ACTIVOS"
