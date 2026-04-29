@@ -1,8 +1,8 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.dto.LoginResponseDTO;
+import com.proyecto.presentacion.facade.BackendFacade;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,14 +11,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.util.Map;
-
 public class ControladorLogin {
 
     @FXML private TextField     txtUsuario;
     @FXML private PasswordField txtContrasena;
     @FXML private Label         lblErrorUsuario;
     @FXML private Button        btnLogin;
+    private final BackendFacade backendFacade = new BackendFacade();
 
     // ─── Validación en vivo ───────────────────────────────────────────────────
 
@@ -61,11 +60,7 @@ public class ControladorLogin {
         String pass = txtContrasena.getText();
 
         try {
-            // POST http://localhost:8080/api/auth/login
-            String respuesta = ClienteHttp.post("/api/auth/login",
-                    Map.of("usuario", user, "contrasena", pass));
-
-            LoginResponseDTO dto = ClienteHttp.parsear(respuesta, LoginResponseDTO.class);
+            LoginResponseDTO dto = backendFacade.login(user, pass);
 
             if (dto.getToken() == null) {
                 mostrarError("Acceso Denegado", "Usuario o contraseña incorrectos.");

@@ -5,6 +5,7 @@ import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
+import com.proyecto.presentacion.facade.BackendFacade;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,6 +40,7 @@ public class ControladorAgendarCita {
     @FXML private Label              lblErrorCorreo;
     @FXML private Label              lblErrorCelular;
     @FXML private Label              lblErrorMotivo;
+    private final BackendFacade backendFacade = new BackendFacade();
 
     @FXML
     public void initialize() {
@@ -55,9 +57,7 @@ public class ControladorAgendarCita {
 
     private void cargarMedicos() {
         try {
-            // GET http://localhost:8080/api/medicos/activos
-            String json = ClienteHttp.get("/api/medicos/activos");
-            List<MedicoDTO> lista = ClienteHttp.parsearLista(json, MedicoDTO.class);
+            List<MedicoDTO> lista = backendFacade.listarMedicosActivos();
             cbMedico.getItems().addAll(lista);
             cbMedico.setCellFactory(p -> new ListCell<>() {
                 protected void updateItem(MedicoDTO m, boolean empty) {
@@ -91,9 +91,7 @@ public class ControladorAgendarCita {
         String cedula = txtCedula.getText();
         if (cedula == null || cedula.isEmpty()) { mostrarError("Ingrese una cédula para buscar"); return; }
         try {
-            // GET http://localhost:8080/api/pacientes/documento/{cedula}
-            String json = ClienteHttp.get("/api/pacientes/documento/" + cedula);
-            PersonaDTO persona = ClienteHttp.parsear(json, PersonaDTO.class);
+            PersonaDTO persona = backendFacade.buscarPacientePorDocumento(cedula);
             if (persona.getIdPersona() == 0) { mostrarError("No se encontró ninguna persona con esa cédula"); return; }
             precargarPersona(persona);
             mostrarInfo("Paciente cargado correctamente");
@@ -119,8 +117,7 @@ public class ControladorAgendarCita {
         if (!validar()) return;
         try {
             // Buscar si el paciente ya existe
-            String jsonPersona = ClienteHttp.get("/api/pacientes/documento/" + txtCedula.getText());
-            PersonaDTO persona = ClienteHttp.parsear(jsonPersona, PersonaDTO.class);
+            PersonaDTO persona = backendFacade.buscarPacientePorDocumento(txtCedula.getText());
 
             int idPaciente;
             if (persona.getIdPersona() > 0) {
@@ -128,7 +125,7 @@ public class ControladorAgendarCita {
             } else {
                 // RF2: registrar paciente nuevo
                 // POST http://localhost:8080/api/pacientes
-                String jsonNuevo = ClienteHttp.post("/api/pacientes", Map.of(
+                PersonaDTO nuevo = backendFacade.registrarPaciente(Map.of(
                         "paciente", Map.of(
                                 "nombre", txtNombre.getText(),
                                 "apellido", txtApellido.getText(),
@@ -143,18 +140,17 @@ public class ControladorAgendarCita {
                                 "contrasena", txtCedula.getText()
                         )
                 ));
-                PersonaDTO nuevo = ClienteHttp.parsear(jsonNuevo, PersonaDTO.class);
                 idPaciente = nuevo.getIdPersona();
             }
 
             // RF2/RF3: agendar cita
             // POST http://localhost:8080/api/citas/web
-            String respuesta = ClienteHttp.post("/api/citas/web", Map.of(
-                    "idPaciente", String.valueOf(idPaciente),
-                    "idMedico",   String.valueOf(cbMedico.getValue().getIdMedico()),
-                    "fecha",      dpFecha.getValue().toString(),
-                    "hora",       cbHora.getValue().toString()
-            ));
+            String respuesta = backendFacade.agendarCitaWeb(
+                    idPaciente,
+                    cbMedico.getValue().getIdMedico(),
+                    dpFecha.getValue(),
+                    cbHora.getValue()
+            );
 
             if (respuesta.contains("agendada")) {
                 mostrarInfo("Cita agendada correctamente");

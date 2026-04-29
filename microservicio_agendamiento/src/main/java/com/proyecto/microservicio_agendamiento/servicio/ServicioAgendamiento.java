@@ -4,6 +4,7 @@ import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
 import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
 import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
+import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.time.*;
@@ -18,6 +19,18 @@ public class ServicioAgendamiento {
     private final RepositorioCitas repoCitas;
     private final RestTemplate restTemplate;
     private final PublicadorCitas publicador;
+    private final CitaProcesoTemplate flujoWeb = new CitaProcesoTemplate() {
+        @Override
+        protected void despuesDeGuardar(Cita cita) {
+            // Hook para futuras acciones especificas del flujo web.
+        }
+    };
+    private final CitaProcesoTemplate flujoManual = new CitaProcesoTemplate() {
+        @Override
+        protected void despuesDeGuardar(Cita cita) {
+            // Hook para futuras acciones especificas del flujo manual.
+        }
+    };
 
     private static final String URL_JORNADAS = "http://ms-configuracion:8083/api/jornadas";
 
@@ -69,22 +82,19 @@ public class ServicioAgendamiento {
         List<LocalTime> disponibles = consultarDisponibilidad(idMedico, fecha);
         if (!disponibles.contains(hora)) return false;
 
-        Cita cita = new Cita();
-        cita.setIdPaciente(idPaciente);
-        cita.setIdMedico(idMedico);
-        cita.setFecha(fecha);
-        cita.setHoraInicio(hora);
-        cita.setHoraFin(hora.plusMinutes(30));
-        cita.setIdEstadoCita(2); // Pendiente
-        repoCitas.save(cita);
-        publicador.publicarCitaCreada(cita); // avisa a ms-usuarios que se creó la cita
-        return true;
+        Cita cita = Cita.builder()
+                .idPaciente(idPaciente)
+                .idMedico(idMedico)
+                .fecha(fecha)
+                .horaInicio(hora)
+                .horaFin(hora.plusMinutes(30))
+                .idEstadoCita(2)
+                .build();
+        return flujoWeb.guardarYPublicar(cita, repoCitas, publicador);
     }
 
     public boolean crearCitaManual(Cita cita) {
-        repoCitas.save(cita);
-        publicador.publicarCitaCreada(cita); // avisa también en cita manual
-        return true;
+        return flujoManual.guardarYPublicar(cita, repoCitas, publicador);
     }
 
     public List<Cita> listarCitas(Integer idMedico, LocalDate fecha) {

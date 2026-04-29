@@ -53,4 +53,46 @@ public class Cita {
 
     public Integer getIdEstadoCita() { return idEstadoCita; }
     public void setIdEstadoCita(Integer idEstadoCita) { this.idEstadoCita = idEstadoCita; }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final Cita cita = new Cita();
+
+        public Builder idPaciente(int idPaciente) {
+            cita.setIdPaciente(idPaciente);
+            return this;
+        }
+
+        public Builder idMedico(int idMedico) {
+            cita.setIdMedico(idMedico);
+            return this;
+        }
+
+        public Builder fecha(LocalDate fecha) {
+            cita.setFecha(fecha);
+            return this;
+        }
+
+        public Builder horaInicio(LocalTime horaInicio) {
+            cita.setHoraInicio(horaInicio);
+            return this;
+        }
+
+        public Builder horaFin(LocalTime horaFin) {
+            cita.setHoraFin(horaFin);
+            return this;
+        }
+
+        public Builder idEstadoCita(Integer idEstadoCita) {
+            cita.setIdEstadoCita(idEstadoCita);
+            return this;
+        }
+
+        public Cita build() {
+            return cita;
+        }
+    }
 }

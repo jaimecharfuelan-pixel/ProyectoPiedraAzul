@@ -32,22 +32,13 @@ public class ClienteHttp {
     // ─── GET ─────────────────────────────────────────────────────────────────
 
     public static String get(String path) throws Exception {
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
+        HttpRequest req = HttpRequestFactory.crearGet(path, null);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
 
     public static String getConToken(String path, String token) throws Exception {
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + token)
-                .GET()
-                .build();
+        HttpRequest req = HttpRequestFactory.crearGet(path, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
@@ -56,23 +47,14 @@ public class ClienteHttp {
 
     public static String post(String path, Object body) throws Exception {
         String json = mapper.writeValueAsString(body);
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+        HttpRequest req = HttpRequestFactory.crearPost(path, json, null);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
 
     public static String postConToken(String path, Object body, String token) throws Exception {
         String json = mapper.writeValueAsString(body);
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + token)
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+        HttpRequest req = HttpRequestFactory.crearPost(path, json, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
@@ -81,12 +63,7 @@ public class ClienteHttp {
 
     public static String put(String path, Object body, String token) throws Exception {
         String json = mapper.writeValueAsString(body);
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + token)
-                .PUT(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+        HttpRequest req = HttpRequestFactory.crearPut(path, json, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
@@ -94,12 +71,7 @@ public class ClienteHttp {
     // ─── DELETE ──────────────────────────────────────────────────────────────
 
     public static String delete(String path, String token) throws Exception {
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + token)
-                .DELETE()
-                .build();
+        HttpRequest req = HttpRequestFactory.crearDelete(path, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
         return resp.body();
     }
@@ -113,5 +85,40 @@ public class ClienteHttp {
     public static <T> java.util.List<T> parsearLista(String json, Class<T> clase) throws Exception {
         return mapper.readValue(json,
                 mapper.getTypeFactory().constructCollectionType(java.util.List.class, clase));
+    }
+
+    /**
+     * Factory Method para centralizar la creación de HttpRequest.
+     */
+    private static class HttpRequestFactory {
+        private static HttpRequest.Builder baseBuilder(String path, String token) {
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + path))
+                    .header("Content-Type", "application/json");
+            if (token != null && !token.isBlank()) {
+                builder.header("Authorization", "Bearer " + token);
+            }
+            return builder;
+        }
+
+        private static HttpRequest crearGet(String path, String token) {
+            return baseBuilder(path, token).GET().build();
+        }
+
+        private static HttpRequest crearPost(String path, String jsonBody, String token) {
+            return baseBuilder(path, token)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+        }
+
+        private static HttpRequest crearPut(String path, String jsonBody, String token) {
+            return baseBuilder(path, token)
+                    .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+        }
+
+        private static HttpRequest crearDelete(String path, String token) {
+            return baseBuilder(path, token).DELETE().build();
+        }
     }
 }

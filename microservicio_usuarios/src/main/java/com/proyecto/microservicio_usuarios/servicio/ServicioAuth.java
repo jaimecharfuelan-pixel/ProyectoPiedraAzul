@@ -6,10 +6,10 @@ import com.proyecto.microservicio_usuarios.modelo.SesionToken;
 import com.proyecto.microservicio_usuarios.modelo.Usuario;
 import com.proyecto.microservicio_usuarios.repositorio.RepositorioRol;
 import com.proyecto.microservicio_usuarios.repositorio.RepositorioSesionToken;
+import com.proyecto.microservicio_usuarios.servicio.strategy.TokenGenerationStrategy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 @Service
 public class ServicioAuth {
@@ -17,13 +17,16 @@ public class ServicioAuth {
     private final ServicioUsuarios servicioUsuarios;
     private final RepositorioSesionToken repoToken;
     private final RepositorioRol repoRol;
+    private final TokenGenerationStrategy tokenGenerationStrategy;
 
     public ServicioAuth(ServicioUsuarios servicioUsuarios,
                         RepositorioSesionToken repoToken,
-                        RepositorioRol repoRol) {
+                        RepositorioRol repoRol,
+                        TokenGenerationStrategy tokenGenerationStrategy) {
         this.servicioUsuarios = servicioUsuarios;
         this.repoToken = repoToken;
         this.repoRol = repoRol;
+        this.tokenGenerationStrategy = tokenGenerationStrategy;
     }
 
     /**
@@ -34,9 +37,7 @@ public class ServicioAuth {
         Usuario usuario = servicioUsuarios.autenticar(nombreUsuario, contrasena);
         if (usuario == null) return null;
 
-        String token = Base64.getEncoder().encodeToString(
-                (usuario.getIdUsuario() + ":" + usuario.getUsuario() + ":" + System.currentTimeMillis()).getBytes()
-        );
+        String token = tokenGenerationStrategy.generarToken(usuario);
 
         SesionToken sesion = new SesionToken();
         sesion.setTokenHash(token);
