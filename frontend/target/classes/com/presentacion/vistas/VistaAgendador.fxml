@@ -20,16 +20,16 @@
       <VBox maxWidth="Infinity" maxHeight="Infinity">
 
          <!-- HEADER -->
-         <StackPane styleClass="main-login-card" minHeight="80" maxWidth="Infinity" style="-fx-padding: 12 20 12 20;">
-            <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+         <HBox styleClass="main-login-card" minHeight="80" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 20 12 20;">
+            <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true">
                <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png"/></image>
             </ImageView>
-            <Label styleClass="info-title" text="Panel Agendador" style="-fx-font-size: 26px; -fx-padding: 0 0 0 160;" StackPane.alignment="CENTER_LEFT"/>
-            <HBox spacing="12" StackPane.alignment="CENTER_RIGHT">
+            <Label styleClass="info-title" text="Panel Agendador" style="-fx-font-size: 26px;" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER"/>
+            <HBox spacing="12" alignment="CENTER_RIGHT">
                <Button text="+ Nueva Cita" prefHeight="46" prefWidth="170" onAction="#onNuevaCita"/>
                <Button text="- Cerrar Sesión" prefHeight="46" prefWidth="170" styleClass="button-logout" onAction="#onCerrarSesion"/>
             </HBox>
-         </StackPane>
+         </HBox>
 
          <VBox spacing="16" VBox.vgrow="ALWAYS" style="-fx-padding: 16;">
 
