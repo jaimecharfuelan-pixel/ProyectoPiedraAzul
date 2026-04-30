@@ -1,0 +1,16 @@
+# Archivos compilados Java
+**/target/
+**/*.class
+
+# Archivos temporales y zips descargados
+*.zip
+ProyectoPiedraAzul-main/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

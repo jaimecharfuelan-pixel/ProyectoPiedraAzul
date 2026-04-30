@@ -15,6 +15,7 @@ public class PersonaDTO {
     private LocalDate fechaNacimiento;
     private Integer   idUsuario;
     private Integer   idEstado;
+    private boolean   activo;
 
     public PersonaDTO() {}
 
@@ -38,6 +39,8 @@ public class PersonaDTO {
     public void      setIdUsuario(Integer v)         { this.idUsuario = v; }
     public Integer   getIdEstado()                   { return idEstado; }
     public void      setIdEstado(Integer v)          { this.idEstado = v; }
+    public boolean   isActivo()                      { return activo; }
+    public void      setActivo(boolean v)            { this.activo = v; }
 
     @Override
     public String toString() { return nombre + " " + apellido; }

@@ -35,11 +35,22 @@ public class PersonaController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Persona no encontrada."));
     }
 
+    @Operation(summary = "Crear persona (admin)", description = "Crea una persona con usuario asociado desde el panel admin.")
+    @PostMapping
+    public ResponseEntity<?> crear(@RequestBody com.proyecto.microservicio_usuarios.dto.CrearPersonaAdminDTO dto) {
+        try {
+            Persona creada = servicioPersona.crearPersonaAdmin(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Operation(summary = "Editar persona")
     @PutMapping("/{id}")
-    public ResponseEntity<String> editar(@PathVariable int id, @RequestBody Persona persona) {
-        persona.setIdPersona(id);
-        if (servicioPersona.editarPersona(persona)) {
+    public ResponseEntity<String> editar(@PathVariable int id,
+                                          @RequestBody java.util.Map<String, Object> campos) {
+        if (servicioPersona.editarPersonaCampos(id, campos)) {
             return ResponseEntity.ok("Persona actualizada.");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Persona no encontrada.");

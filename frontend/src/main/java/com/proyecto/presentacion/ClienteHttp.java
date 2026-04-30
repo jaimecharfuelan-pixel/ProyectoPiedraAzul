@@ -49,6 +49,9 @@ public class ClienteHttp {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPost(path, json, null);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 
@@ -56,6 +59,9 @@ public class ClienteHttp {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPost(path, json, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 
@@ -65,6 +71,19 @@ public class ClienteHttp {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPut(path, json, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
+        return resp.body();
+    }
+
+    /** PUT sin body (útil para endpoints con query params como asignar especialidad). */
+    public static String putSinBody(String path, String token) throws Exception {
+        HttpRequest req = HttpRequestFactory.crearPut(path, "", token);
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 
@@ -73,6 +92,9 @@ public class ClienteHttp {
     public static String delete(String path, String token) throws Exception {
         HttpRequest req = HttpRequestFactory.crearDelete(path, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 
