@@ -3,6 +3,7 @@ package com.proyecto.microservicio_agendamiento.servicio;
 import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
 import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
+import com.proyecto.microservicio_agendamiento.modelo.EstadoCita;
 import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
 import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoTemplate;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,8 @@ public class ServicioAgendamiento {
         }
     };
 
-    private static final String URL_JORNADAS = "http://ms-configuracion:8083/api/jornadas";
+    @org.springframework.beans.factory.annotation.Value("${ms.configuracion.url:http://microservicio-configuracion:8080}")
+    private String msConfiguracionUrl;
 
     public ServicioAgendamiento(RepositorioCitas repoCitas,
                                 RestTemplate restTemplate,
@@ -51,7 +53,7 @@ public class ServicioAgendamiento {
 
         // Llamada HTTP a ms-configuracion
         JornadaResumenDTO[] jornadas = restTemplate.getForObject(
-                URL_JORNADAS + "?medicoId=" + idMedico, JornadaResumenDTO[].class);
+                msConfiguracionUrl + "/api/jornadas?medicoId=" + idMedico, JornadaResumenDTO[].class);
 
         if (jornadas == null) return horariosLibres;
 
@@ -62,7 +64,8 @@ public class ServicioAgendamiento {
 
         if (jornadaHoy == null) return horariosLibres;
 
-        List<Cita> citasOcupadas = repoCitas.findByIdMedicoAndFecha(idMedico, fecha);
+        List<Cita> citasOcupadas = repoCitas.findByIdMedicoAndFechaAndIdEstadoCitaNot(
+                idMedico, fecha, EstadoCita.CANCELADA);
 
         LocalTime actual = jornadaHoy.getHoraInicio();
         while (actual.isBefore(jornadaHoy.getHoraFin())) {
@@ -127,11 +130,42 @@ public class ServicioAgendamiento {
         return true;
     }
 
+    /**
+     * Cancela una cita cambiando su estado a 1 (Cancelada).
+     * No elimina el registro de la BD.
+     */
     public boolean cancelarCita(int idCita) {
-        if (!repoCitas.existsById(idCita)) return false;
-        repoCitas.deleteById(idCita);
-        publicador.publicarCitaCancelada(idCita); // avisa a ms-usuarios que se canceló
-        return true;
+        return repoCitas.findById(idCita).map(cita -> {
+            cita.setIdEstadoCita(EstadoCita.CANCELADA);
+            repoCitas.save(cita);
+            publicador.publicarCitaCancelada(idCita);
+            return true;
+        }).orElse(false);
+    }
+
+    /**
+     * Reagenda una cita existente a una nueva fecha y hora.
+     * No valida disponibilidad — solo cambia fecha/hora y vuelve el estado a Pendiente.
+     */
+    public ReagendamientoResultado reagendarCita(int idCita, LocalDate nuevaFecha, LocalTime nuevaHora) {
+        Cita cita = repoCitas.findById(idCita).orElse(null);
+        if (cita == null) {
+            return ReagendamientoResultado.NO_ENCONTRADA;
+        }
+        if (cita.getIdEstadoCita() != null && cita.getIdEstadoCita() == EstadoCita.CANCELADA) {
+            return ReagendamientoResultado.CITA_CANCELADA;
+        }
+
+        cita.setFecha(nuevaFecha);
+        cita.setHoraInicio(nuevaHora);
+        cita.setHoraFin(nuevaHora.plusMinutes(30));
+        cita.setIdEstadoCita(EstadoCita.PENDIENTE);
+        repoCitas.save(cita);
+        return ReagendamientoResultado.OK;
+    }
+
+    public enum ReagendamientoResultado {
+        OK, NO_ENCONTRADA, CITA_CANCELADA
     }
 
     private String traducirDia(DayOfWeek day) {
