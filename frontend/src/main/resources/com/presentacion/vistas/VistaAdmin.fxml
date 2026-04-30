@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.proyecto.presentacion.controladores.ControladorAdmin"
+           stylesheets="@../Estilos/estilos.css">
+   <children>
+
+      <!-- ===== PANEL PRINCIPAL ===== -->
+      <VBox fx:id="panelPrincipal"
+            spacing="14"
+            maxWidth="Infinity"
+            maxHeight="Infinity"
+            style="-fx-padding: 14;">
+
+         <!-- Header -->
+         <HBox styleClass="main-login-card"
+               alignment="CENTER_LEFT"
+               spacing="16"
+               style="-fx-padding: 10 16 10 16;"
+               minHeight="64"
+               maxWidth="Infinity">
+            <ImageView fitHeight="50" fitWidth="100"
+                       pickOnBounds="true" preserveRatio="true">
+               <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
+            </ImageView>
+            <Label styleClass="info-title" text="Hola Admin" HBox.hgrow="ALWAYS"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false"
+                    styleClass="button-logout"
+                    text="- Cerrar Sesión"
+                    onAction="#onCerrarSesion"/>
+         </HBox>
+
+         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                     style="-fx-background-color: transparent;">
+            <content>
+               <VBox spacing="14" style="-fx-padding: 4 0 4 0;">
+
+                  <!-- TURNOS -->
+                  <VBox styleClass="main-login-card" style="-fx-padding: 16;">
+                     <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label styleClass="info-title" text="Turnos" HBox.hgrow="ALWAYS"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <ComboBox fx:id="cbDoctorTurno"
+                                  prefHeight="48"
+                                  prefWidth="260"
+                                  promptText="Seleccione un Doctor"
+                                  styleClass="combo-box"/>
+                        <Button prefHeight="48" prefWidth="170"
+                                text="Crear/Editar Turno"
+                                onAction="#onAbrirTurnos"/>
+                     </HBox>
+                  </VBox>
+
+                  <!-- PERSONA -->
+                  <VBox styleClass="main-login-card" style="-fx-padding: 16;">
+                     <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label styleClass="info-title" text="Persona" HBox.hgrow="ALWAYS"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button prefHeight="48" prefWidth="170"
+                                text="Crear/Editar Persona"
+                                onAction="#onAbrirPersonas"/>
+                     </HBox>
+                  </VBox>
+
+                  <!-- USUARIO -->
+                  <VBox styleClass="main-login-card" style="-fx-padding: 16;">
+                     <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label styleClass="info-title" text="Usuario" HBox.hgrow="ALWAYS"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button prefHeight="48" prefWidth="170"
+                                text="Crear/Editar Usuario"
+                                onAction="#onAbrirUsuarios"/>
+                     </HBox>
+                  </VBox>
+
+                  <!-- ASIGNAR ROL -->
+                  <Label styleClass="info-title"
+                         text="Asignar Rol (Agendador, Medico, Paciente)"/>
+                  <VBox styleClass="main-login-card" style="-fx-padding: 16;">
+                     <HBox alignment="CENTER_LEFT" spacing="16">
+                        <ComboBox fx:id="cbPersonaRol"
+                                  prefHeight="48"
+                                  HBox.hgrow="ALWAYS"
+                                  maxWidth="Infinity"
+                                  promptText="Persona"
+                                  styleClass="combo-box"/>
+                        <ComboBox fx:id="cbRol"
+                                  prefHeight="48"
+                                  HBox.hgrow="ALWAYS"
+                                  maxWidth="Infinity"
+                                  promptText="Rol"
+                                  styleClass="combo-box"/>
+                        <Button prefHeight="48" prefWidth="170"
+                                text="Asignar Rol"
+                                onAction="#onAsignarRol"/>
+                     </HBox>
+                  </VBox>
+
+                  <!-- ASIGNAR ESPECIALIDAD -->
+                  <Label styleClass="info-title" text="Asignar Especialidad"/>
+                  <VBox styleClass="main-login-card" style="-fx-padding: 16;">
+                     <HBox alignment="CENTER_LEFT" spacing="16">
+                        <ComboBox fx:id="cbMedicoEspecialidad"
+                                  prefHeight="48"
+                                  HBox.hgrow="ALWAYS"
+                                  maxWidth="Infinity"
+                                  promptText="Medico"
+                                  styleClass="combo-box"/>
+                        <ComboBox fx:id="cbEspecialidad"
+                                  prefHeight="48"
+                                  HBox.hgrow="ALWAYS"
+                                  maxWidth="Infinity"
+                                  promptText="Especialidad"
+                                  styleClass="combo-box"/>
+                        <Button prefHeight="48" prefWidth="180"
+                                text="Asignar Especialidad"
+                                onAction="#onAsignarEspecialidad"/>
+                     </HBox>
+                  </VBox>
+
+               </VBox>
+            </content>
+         </ScrollPane>
+      </VBox>
+
+
+      <!-- ===== PANEL TURNOS ===== -->
+      <VBox fx:id="panelTurnos"
+            spacing="14"
+            maxWidth="Infinity"
+            maxHeight="Infinity"
+            style="-fx-padding: 14;"
+            visible="false">
+
+         <!-- Header -->
+         <HBox styleClass="main-login-card"
+               alignment="CENTER_LEFT"
+               spacing="16"
+               style="-fx-padding: 10 16 10 16;"
+               minHeight="64"
+               maxWidth="Infinity">
+            <ImageView fitHeight="50" fitWidth="100"
+                       pickOnBounds="true" preserveRatio="true">
+               <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
+            </ImageView>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false"
+                    styleClass="button-logout"
+                    text="- Volver"
+                    onAction="#onVolverDesdePanel"/>
+         </HBox>
+
+         <Label styleClass="info-title" text="Lista de Turnos"/>
+
+         <!-- Tabla turnos -->
+         <VBox styleClass="main-login-card"
+               VBox.vgrow="ALWAYS"
+               maxWidth="Infinity"
+               style="-fx-padding: 8;">
+            <TableView fx:id="tblTurnos"
+                       VBox.vgrow="ALWAYS"
+                       maxWidth="Infinity"
+                       maxHeight="Infinity">
+               <columns>
+                  <TableColumn fx:id="colTurnoCedPaciente" prefWidth="160" text="Cédula Paciente"/>
+                  <TableColumn fx:id="colTurnoNomPaciente" prefWidth="160" text="Nombre Paciente"/>
+                  <TableColumn fx:id="colTurnoCedMedico"   prefWidth="130" text="Cédula Medico"/>
+                  <TableColumn fx:id="colTurnoNomMedico"   prefWidth="200" text="Nombre Medico"/>
+                  <TableColumn fx:id="colTurnoFecha"       prefWidth="150" text="Fecha del Turno"/>
+                  <TableColumn fx:id="colTurnoHoraInicio"  prefWidth="100" text="Hora Inicio"/>
+                  <TableColumn fx:id="colTurnoHoraFin"     prefWidth="100" text="Hora Final"/>
+                  <TableColumn fx:id="colTurnoEstado"      prefWidth="140" text="Estado de la Cita"/>
+               </columns>
+            </TableView>
+         </VBox>
+
+         <Label styleClass="info-title" text="Información Turno"/>
+
+         <!-- Formulario turno -->
+         <VBox styleClass="main-login-card"
+               VBox.vgrow="ALWAYS"
+               maxWidth="Infinity"
+               style="-fx-padding: 16;">
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+               <content>
+                  <GridPane hgap="20" vgap="12" maxWidth="Infinity">
+                     <columnConstraints>
+                        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                     </columnConstraints>
+                     <Label text="Cédula Paciente *"       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                     <TextField fx:id="txtTurnoCedPaciente" prefHeight="44" maxWidth="Infinity" promptText="Cédula Paciente"  GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                     <Label text="Nombre Paciente *"       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                     <TextField fx:id="txtTurnoNomPaciente" prefHeight="44" maxWidth="Infinity" promptText="Nombre Paciente"  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                     <Label text="Cédula Medico *"         GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                     <TextField fx:id="txtTurnoCedMedico"   prefHeight="44" maxWidth="Infinity" promptText="Cédula Medico"    GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                     <Label text="Nombre Medico *"         GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                     <TextField fx:id="txtTurnoNomMedico"   prefHeight="44" maxWidth="Infinity" promptText="Nombre Medico"    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                     <Label text="Fecha del Turno *"       GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                     <DatePicker fx:id="dpTurnoFecha"       prefHeight="44" maxWidth="Infinity" styleClass="date-picker"      GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                     <Label text="Hora Inicio"             GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                     <ComboBox fx:id="cbTurnoHoraInicio"   prefHeight="44" maxWidth="Infinity"                                GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                     <Label text="Hora Final"              GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                     <ComboBox fx:id="cbTurnoHoraFin"      prefHeight="44" maxWidth="Infinity"                                GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                     <Label text="Estado de la Cita"       GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                     <CheckBox fx:id="chkTurnoActivo"       prefHeight="44" text="Activo"                                     GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </VBox>
+
+         <!-- Botones turno -->
+         <HBox spacing="12" alignment="CENTER_RIGHT">
+            <Button prefHeight="40" prefWidth="130"
+                    styleClass="btn-amarillo-vivo"
+                    text="Editar Turno"
+                    onAction="#onEditarTurno"/>
+            <Button prefHeight="40" prefWidth="130"
+                    text="Crear Turno"
+                    onAction="#onCrearTurno"/>
+            <Button prefHeight="40" prefWidth="140"
+                    styleClass="button-logout"
+                    text="Eliminar Turno"
+                    onAction="#onEliminarTurno"/>
+         </HBox>
+      </VBox>
+
+
+      <!-- ===== PANEL PERSONAS ===== -->
+      <VBox fx:id="panelPersonas"
+            spacing="14"
+            maxWidth="Infinity"
+            maxHeight="Infinity"
+            style="-fx-padding: 14;"
+            visible="false">
+
+         <!-- Header -->
+         <HBox styleClass="main-login-card"
+               alignment="CENTER_LEFT"
+               spacing="16"
+               style="-fx-padding: 10 16 10 16;"
+               minHeight="64"
+               maxWidth="Infinity">
+            <ImageView fitHeight="50" fitWidth="100"
+                       pickOnBounds="true" preserveRatio="true">
+               <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
+            </ImageView>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false"
+                    styleClass="button-logout"
+                    text="- Volver"
+                    onAction="#onVolverDesdePanel"/>
+         </HBox>
+
+         <Label styleClass="info-title" text="Lista de Personas"/>
+
+         <!-- Tabla personas -->
+         <VBox styleClass="main-login-card"
+               VBox.vgrow="ALWAYS"
+               maxWidth="Infinity"
+               style="-fx-padding: 8;">
+            <TableView fx:id="tblPersonas"
+                       VBox.vgrow="ALWAYS"
+                       maxWidth="Infinity"
+                       maxHeight="Infinity">
+               <columns>
+                  <TableColumn fx:id="colPerCedula"   prefWidth="180" text="Cedula de Ciudadania"/>
+                  <TableColumn fx:id="colPerNombre"   prefWidth="140" text="Nombre"/>
+                  <TableColumn fx:id="colPerApellido" prefWidth="140" text="Apellido"/>
+                  <TableColumn fx:id="colPerCelular"  prefWidth="120" text="Celular"/>
+                  <TableColumn fx:id="colPerFechaNac" prefWidth="160" text="Fecha de Nacimiento"/>
+                  <TableColumn fx:id="colPerCorreo"   prefWidth="180" text="Correo Electrónico"/>
+                  <TableColumn fx:id="colPerGenero"   prefWidth="100" text="Genero"/>
+               </columns>
+            </TableView>
+         </VBox>
+
+         <Label styleClass="info-title" text="Información Persona"/>
+
+         <!-- Formulario persona -->
+         <VBox styleClass="main-login-card"
+               VBox.vgrow="ALWAYS"
+               maxWidth="Infinity"
+               style="-fx-padding: 16;">
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+               <content>
+                  <GridPane hgap="20" vgap="12" maxWidth="Infinity">
+                     <columnConstraints>
+                        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                     </columnConstraints>
+                     <Label text="Cédula de Ciudadanía *"  GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                     <TextField fx:id="txtPerCedula"    prefHeight="44" maxWidth="Infinity" promptText="Cédula de Ciudadanía"  GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                     <Label text="Nombre *"              GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                     <TextField fx:id="txtPerNombre"    prefHeight="44" maxWidth="Infinity" promptText="Nombre"                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                     <Label text="Apellido *"            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                     <TextField fx:id="txtPerApellido"  prefHeight="44" maxWidth="Infinity" promptText="Apellido"              GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                     <Label text="Celular (Opcional)"    GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                     <TextField fx:id="txtPerCelular"   prefHeight="44" maxWidth="Infinity" promptText="Celular"               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                     <Label text="Fecha de Nacimiento *" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                     <DatePicker fx:id="dpPerFechaNac"  prefHeight="44" maxWidth="Infinity" styleClass="date-picker"           GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                     <Label text="Correo Electrónico (Opcional)" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                     <TextField fx:id="txtPerCorreo"    prefHeight="44" maxWidth="Infinity" promptText="Correo Electrónico"    GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                     <Label text="Género *"              GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                     <ChoiceBox fx:id="cbPerGenero"     prefHeight="44" maxWidth="Infinity" styleClass="combo-box"             GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </VBox>
+
+         <!-- Botones persona -->
+         <HBox spacing="12" alignment="CENTER_RIGHT">
+            <Button prefHeight="40" prefWidth="140"
+                    styleClass="btn-amarillo-vivo"
+                    text="Editar Persona"
+                    onAction="#onEditarPersona"/>
+            <Button prefHeight="40" prefWidth="130"
+                    text="Crear Persona"
+                    onAction="#onCrearPersona"/>
+            <Button prefHeight="40" prefWidth="150"
+                    styleClass="button-logout"
+                    text="Eliminar Persona"
+                    onAction="#onEliminarPersona"/>
+         </HBox>
+      </VBox>
+
+
+      <!-- ===== PANEL USUARIOS ===== -->
+      <VBox fx:id="panelUsuarios"
+            spacing="14"
+            maxWidth="Infinity"
+            maxHeight="Infinity"
+            style="-fx-padding: 14;"
+            visible="false">
+
+         <!-- Header -->
+         <HBox styleClass="main-login-card"
+               alignment="CENTER_LEFT"
+               spacing="16"
+               style="-fx-padding: 10 16 10 16;"
+               minHeight="64"
+               maxWidth="Infinity">
+            <ImageView fitHeight="50" fitWidth="100"
+                       pickOnBounds="true" preserveRatio="true">
+               <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
+            </ImageView>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false"
+                    styleClass="button-logout"
+                    text="- Volver"
+                    onAction="#onVolverDesdePanel"/>
+         </HBox>
+
+         <Label styleClass="info-title" text="Lista de Usuarios"/>
+
+         <!-- Tabla usuarios -->
+         <VBox styleClass="main-login-card"
+               VBox.vgrow="ALWAYS"
+               maxWidth="Infinity"
+               style="-fx-padding: 8;">
+            <TableView fx:id="tblUsuarios"
+                       VBox.vgrow="ALWAYS"
+                       maxWidth="Infinity"
+                       maxHeight="Infinity">
+               <columns>
+                  <TableColumn fx:id="colUsuNombre"     prefWidth="380" text="Nombre Usuario"/>
+                  <TableColumn fx:id="colUsuContrasena" prefWidth="360" text="Contraseña"/>
+               </columns>
+            </TableView>
+         </VBox>
+
+         <Label styleClass="info-title" text="Información Usuario"/>
+
+         <!-- Formulario usuario -->
+         <VBox styleClass="main-login-card"
+               maxWidth="Infinity"
+               style="-fx-padding: 16;">
+            <GridPane hgap="20" vgap="12" maxWidth="Infinity">
+               <columnConstraints>
+                  <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                  <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+               </columnConstraints>
+               <Label text="Usuario *"     GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+               <TextField fx:id="txtUsuNombre"      prefHeight="44" maxWidth="Infinity" promptText="Nombre de Usuario" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+               <Label text="Contraseña *"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+               <TextField fx:id="txtUsuContrasena"  prefHeight="44" maxWidth="Infinity" promptText="Contraseña"        GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+         </VBox>
+
+         <!-- Botones usuario -->
+         <HBox spacing="12" alignment="CENTER_RIGHT">
+            <Button prefHeight="40" prefWidth="140"
+                    styleClass="btn-amarillo-vivo"
+                    text="Editar Usuario"
+                    onAction="#onEditarUsuario"/>
+            <Button prefHeight="40" prefWidth="130"
+                    text="Crear Usuario"
+                    onAction="#onCrearUsuario"/>
+            <Button prefHeight="40" prefWidth="150"
+                    styleClass="button-logout"
+                    text="Eliminar Usuario"
+                    onAction="#onEliminarUsuario"/>
+         </HBox>
+      </VBox>
+
+   </children>
+</StackPane>
