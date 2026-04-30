@@ -3,6 +3,7 @@ package com.proyecto.presentacion.controladores;
 import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.dto.CitaDTO;
+import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -54,6 +55,11 @@ public class ControladorAgendador implements Initializable {
         filtroFecha = LocalDate.now();
         cargarCitas(null, filtroFecha);
         actualizarContadores();
+        // Calendario inicial: días con jornada de cualquier médico
+        actualizarCalendarioFiltro(null);
+        // Cuando cambia el médico, actualizar el calendario del filtro
+        cbDoctorFiltro.valueProperty().addListener((obs, old, nuevo) ->
+                actualizarCalendarioFiltro(nuevo));
     }
 
     // ─── Configuración de tabla ───────────────────────────────────────────────
@@ -116,6 +122,50 @@ public class ControladorAgendador implements Initializable {
                 public MedicoDTO fromString(String s) { return null; }
             });
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    /**
+     * Actualiza el DayCellFactory del DatePicker de filtro según el médico seleccionado.
+     * Si no hay médico, deshabilita solo fechas sin jornada de ningún médico.
+     * Si hay médico, deshabilita días sin jornada de ese médico.
+     */
+    private void actualizarCalendarioFiltro(MedicoDTO medico) {
+        List<String> diasHabilitados;
+        try {
+            if (medico != null) {
+                // Días con jornada del médico específico
+                String json = ClienteHttp.get("/api/jornadas/medico/" + medico.getIdMedico() + "/dias");
+                diasHabilitados = ClienteHttp.parsearLista(json, String.class);
+            } else {
+                // Todos los días que tienen jornada de cualquier médico
+                String json = ClienteHttp.get("/api/jornadas");
+                List<JornadaDTO> jornadas = ClienteHttp.parsearLista(json, JornadaDTO.class);
+                diasHabilitados = jornadas.stream()
+                        .map(JornadaDTO::getDiaSemana)
+                        .filter(d -> d != null)
+                        .distinct()
+                        .toList();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            diasHabilitados = List.of();
+        }
+
+        final List<String> dias = diasHabilitados;
+        dpFechaFiltro.setDayCellFactory(p -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                if (dias.isEmpty()) return; // sin info, no deshabilitar
+                String nombreDia = traducirDia(d.getDayOfWeek().name());
+                boolean sinJornada = dias.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
+                setDisable(sinJornada);
+                if (sinJornada)
+                    setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #bbb;");
+                else
+                    setStyle("");
+            }
+        });
     }
 
     /**

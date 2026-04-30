@@ -3,6 +3,7 @@ com\proyecto\presentacion\controladores\ControladorAgendarCita$4.class
 com\proyecto\presentacion\controladores\ControladorAgendador$1.class
 com\proyecto\presentacion\controladores\ControladorAgendarCita$2.class
 com\proyecto\presentacion\dto\CitaDTO.class
+com\proyecto\presentacion\dto\JornadaDTO.class
 com\proyecto\presentacion\controladores\ControladorLogin$1.class
 com\proyecto\presentacion\ClienteHttp$HttpRequestFactory.class
 com\proyecto\presentacion\controladores\ControladorAdmin$2.class
@@ -12,6 +13,7 @@ com\proyecto\presentacion\controladores\ControladorAgendarCita$3.class
 com\proyecto\presentacion\controladores\ControladorLogin.class
 com\proyecto\presentacion\controladores\ControladorAdmin.class
 com\proyecto\presentacion\facade\BackendFacade.class
+com\proyecto\presentacion\controladores\ControladorAgendador$4.class
 com\proyecto\presentacion\SesionUsuario.class
 com\proyecto\presentacion\controladores\ControladorAgendarCita$5.class
 com\proyecto\presentacion\controladores\ControladorLogin$TipoNoti.class
