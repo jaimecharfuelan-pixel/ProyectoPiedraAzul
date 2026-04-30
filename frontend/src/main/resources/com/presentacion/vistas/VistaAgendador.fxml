@@ -23,6 +23,7 @@
         <VBox spacing="20"
               alignment="TOP_CENTER"
               maxWidth="Infinity"
+              maxHeight="Infinity"
               prefWidth="Infinity"
               style="-fx-padding: 20;"
               StackPane.alignment="CENTER">

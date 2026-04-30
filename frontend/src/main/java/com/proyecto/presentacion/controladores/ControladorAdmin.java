@@ -15,7 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -28,10 +28,10 @@ import java.util.ResourceBundle;
 public class ControladorAdmin implements Initializable {
 
     // ── Paneles ──────────────────────────────────────────────
-    @FXML private AnchorPane panelPrincipal;
-    @FXML private AnchorPane panelTurnos;
-    @FXML private AnchorPane panelPersonas;
-    @FXML private AnchorPane panelUsuarios;
+    @FXML private VBox panelPrincipal;
+    @FXML private VBox panelTurnos;
+    @FXML private VBox panelPersonas;
+    @FXML private VBox panelUsuarios;
 
     // ── Panel principal ───────────────────────────────────────
     @FXML private ComboBox<MedicoDTO>  cbDoctorTurno;
@@ -95,7 +95,7 @@ public class ControladorAdmin implements Initializable {
 
     // ── Navegación ────────────────────────────────────────────
 
-    private void mostrarPanel(AnchorPane panel) {
+    private void mostrarPanel(VBox panel) {
         panelPrincipal.setVisible(false); panelTurnos.setVisible(false);
         panelPersonas.setVisible(false);  panelUsuarios.setVisible(false);
         panel.setVisible(true); panel.toFront();
