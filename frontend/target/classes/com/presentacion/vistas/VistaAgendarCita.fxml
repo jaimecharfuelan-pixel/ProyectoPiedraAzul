@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.proyecto.presentacion.controladores.ControladorAgendarCita"
+           stylesheets="@../Estilos/estilos.css">
+
+    <children>
+        <!-- VBox principal con padding para separar del borde -->
+        <VBox alignment="TOP_CENTER"
+              spacing="20"
+              maxWidth="Infinity"
+              prefWidth="Infinity"
+              style="-fx-padding: 20;"
+              StackPane.alignment="CENTER">
+
+            <!-- Header con logo más grande -->
+            <VBox alignment="CENTER"
+                  prefHeight="100"
+                  maxWidth="Infinity"
+                  styleClass="main-login-card">
+                <children>
+                    <ImageView fitHeight="80" preserveRatio="true">
+                        <Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" />
+                    </ImageView>
+                </children>
+            </VBox>
+
+            <!-- Formulario principal -->
+            <VBox styleClass="main-login-card"
+                  spacing="30"
+                  maxWidth="Infinity"
+                  prefWidth="Infinity"
+                  VBox.vgrow="ALWAYS">
+
+                <children>
+                    <!-- Título con espacio superior e inferior aumentado -->
+                    <Label text="Agendar Cita"
+                           style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-padding: 15 0 15 20px;"/>
+
+                    <ScrollPane fitToWidth="true"
+                                VBox.vgrow="ALWAYS"
+                                style="-fx-background-color: transparent;">
+
+                        <content>
+                            <GridPane hgap="25" vgap="20"
+                                      maxWidth="Infinity"
+                                      prefWidth="Infinity"
+                                      styleClass="scroll-blanco">
+
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                    <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                </columnConstraints>
+
+                                <!-- Fila 0 -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Cédula *" style="-fx-font-size: 18px;"/>
+                                    <HBox spacing="5">
+                                        <TextField fx:id="txtCedula"
+                                                   promptText="Cédula"
+                                                   HBox.hgrow="ALWAYS"
+                                                   prefHeight="42"/>
+                                        <Button text="🔍"
+                                                onAction="#onBuscarPaciente"
+                                                prefWidth="42"
+                                                prefHeight="42"
+                                                style="-fx-font-size: 18px;"/>
+                                    </HBox>
+                                    <Label fx:id="lblErrorCedula" style="-fx-text-fill:red; -fx-font-size: 12px;"/>
+                                </VBox>
+
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Nombre *" style="-fx-font-size: 18px;"/>
+                                    <TextField fx:id="txtNombre"
+                                               promptText="Nombre"
+                                               prefHeight="42"/>
+                                    <Label fx:id="lblErrorNombre" style="-fx-text-fill:red; -fx-font-size: 12px;"/>
+                                </VBox>
+
+                                <!-- Fila 1 -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <Label text="Apellido *" style="-fx-font-size: 18px;"/>
+                                    <TextField fx:id="txtApellido"
+                                               promptText="Apellido"
+                                               prefHeight="42"/>
+                                    <Label fx:id="lblErrorApellido" style="-fx-text-fill:red; -fx-font-size: 12px;"/>
+                                </VBox>
+
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Correo (Opcional)" style="-fx-font-size: 18px;"/>
+                                    <TextField fx:id="txtCorreo"
+                                               prefHeight="42"/>
+                                    <Label fx:id="lblErrorCorreo" style="-fx-text-fill:red; -fx-font-size: 12px;"/>
+                                </VBox>
+
+                                <!-- Fila 2 -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Celular" style="-fx-font-size: 18px;"/>
+                                    <TextField fx:id="txtCelular"
+                                               prefHeight="42"/>
+                                </VBox>
+
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="Fecha de Nacimiento *" style="-fx-font-size: 18px;"/>
+                                    <DatePicker fx:id="dpFechaNac"
+                                                prefHeight="42"
+                                                maxWidth="Infinity"/>
+                                </VBox>
+
+                                <!-- Fila 3 -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                    <Label text="Fecha *" style="-fx-font-size: 18px;"/>
+                                    <DatePicker fx:id="dpFecha"
+                                                prefHeight="42"
+                                                maxWidth="Infinity"/>
+                                </VBox>
+
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <Label text="Doctor *" style="-fx-font-size: 18px;"/>
+                                    <ComboBox fx:id="cbMedico"
+                                              prefHeight="42"
+                                              maxWidth="Infinity"
+                                              style="-fx-padding: 5 10;"/>
+                                </VBox>
+
+                                <!-- Fila 4: Hora y Género a la izquierda, Motivo a la derecha -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                                    <Label text="Hora *" style="-fx-font-size: 18px;"/>
+                                    <ComboBox fx:id="cbHora"
+                                              prefHeight="42"
+                                              maxWidth="Infinity"
+                                              style="-fx-padding: 5 10;"/>
+                                    <Label text="Género" style="-fx-font-size: 18px;"/>
+                                    <ChoiceBox fx:id="cbGenero"
+                                               prefHeight="42"
+                                               maxWidth="Infinity"
+                                               style="-fx-padding: 5 10;"/>
+                                </VBox>
+
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                                      VBox.vgrow="ALWAYS">
+                                    <Label text="Motivo *" style="-fx-font-size: 18px;"/>
+                                    <TextArea fx:id="txtMotivo"
+                                              prefRowCount="5"
+                                              prefHeight="140"
+                                              VBox.vgrow="ALWAYS"
+                                              style="-fx-padding: 5 10;"/>
+                                    <Label fx:id="lblErrorMotivo" style="-fx-text-fill:red; -fx-font-size: 12px;"/>
+                                </VBox>
+
+                            </GridPane>
+                        </content>
+                    </ScrollPane>
+
+                    <!-- Botones con márgenes -->
+                    <HBox spacing="20"
+                          alignment="CENTER_RIGHT"
+                          style="-fx-padding: 0 20 20 0;">
+                        <Button text="- Cancelar"
+                                styleClass="button-logout"
+                                onAction="#onCancelar"
+                                prefWidth="240"
+                                prefHeight="52"
+                                style="-fx-font-size: 18px;"/>
+                        <Button fx:id="btnGuardar"
+                                text="+ Guardar Cita"
+                                onAction="#onGuardarCita"
+                                prefWidth="240"
+                                prefHeight="52"
+                                style="-fx-font-size: 18px;"/>
+                    </HBox>
+                </children>
+            </VBox>
+        </VBox>
+    </children>
+</StackPane>
