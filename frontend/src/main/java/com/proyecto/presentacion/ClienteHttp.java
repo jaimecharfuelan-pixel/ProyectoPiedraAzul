@@ -76,6 +76,15 @@ public class ClienteHttp {
         return resp.body();
     }
 
+    // ─── PATCH ───────────────────────────────────────────────────────────────
+
+    public static String patch(String path, Object body, String token) throws Exception {
+        String json = mapper.writeValueAsString(body);
+        HttpRequest req = HttpRequestFactory.crearPatch(path, json, token);
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        return resp.body();
+    }
+
     // ─── Utilidad ────────────────────────────────────────────────────────────
 
     public static <T> T parsear(String json, Class<T> clase) throws Exception {
@@ -119,6 +128,12 @@ public class ClienteHttp {
 
         private static HttpRequest crearDelete(String path, String token) {
             return baseBuilder(path, token).DELETE().build();
+        }
+
+        private static HttpRequest crearPatch(String path, String jsonBody, String token) {
+            return baseBuilder(path, token)
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
         }
     }
 }

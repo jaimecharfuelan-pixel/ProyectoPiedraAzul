@@ -48,6 +48,12 @@ public class JornadaController {
         return ResponseEntity.ok(servicio.obtenerJornadasPorMedico(idMedico));
     }
 
+    @Operation(summary = "Días con jornada de un médico", description = "Devuelve los nombres de días (Lunes, Martes…) en que el médico tiene jornada configurada. Usado por el frontend para deshabilitar días sin turno.")
+    @GetMapping("/medico/{idMedico}/dias")
+    public ResponseEntity<List<String>> obtenerDiasConJornada(@PathVariable int idMedico) {
+        return ResponseEntity.ok(servicio.obtenerDiasConJornada(idMedico));
+    }
+
     @Operation(summary = "Crear jornada", description = "Asigna una nueva jornada laboral a un médico.")
     @PostMapping
     public ResponseEntity<?> crearJornada(@RequestBody JornadaLaboral jornada) {

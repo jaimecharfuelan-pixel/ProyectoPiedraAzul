@@ -49,6 +49,17 @@ public class ServicioConfiguracion {
         return repoJornada.findByIdUsuario(idMedico);
     }
 
+    /**
+     * Devuelve los nombres de días de la semana en que el médico tiene jornada.
+     * Usado por el frontend para deshabilitar días sin turno en el DatePicker.
+     */
+    public List<String> obtenerDiasConJornada(int idMedico) {
+        return repoJornada.findByIdUsuario(idMedico).stream()
+                .map(JornadaLaboral::getDiaSemana)
+                .distinct()
+                .toList();
+    }
+
     /** Jornada de un médico en un día específico de la semana. */
     public Optional<JornadaLaboral> obtenerJornadaPorMedicoYDia(int idMedico, String diaSemana) {
         return repoJornada.findByIdUsuarioAndDiaSemana(idMedico, diaSemana)

@@ -2,7 +2,6 @@ package com.proyecto.presentacion.controladores;
 
 import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
-import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 import com.proyecto.presentacion.facade.BackendFacade;
@@ -46,7 +45,7 @@ public class ControladorAgendarCita {
     public void initialize() {
         cargarMedicos();
         cargarGenero();
-        cbMedico.setOnAction(e -> actualizarHorarios());
+        cbMedico.setOnAction(e -> { actualizarCalendario(); actualizarHorarios(); });
         dpFecha.setOnAction(e -> actualizarHorarios());
         iniciarValidaciones();
     }
@@ -78,12 +77,48 @@ public class ControladorAgendarCita {
         cbHora.getItems().clear();
         if (cbMedico.getValue() == null || dpFecha.getValue() == null) return;
         try {
-            // GET http://localhost:8080/api/citas/disponibilidad?idMedico=3&fecha=2026-04-28
             String json = ClienteHttp.get("/api/citas/disponibilidad?idMedico="
                     + cbMedico.getValue().getIdMedico() + "&fecha=" + dpFecha.getValue());
             List<LocalTime> horarios = ClienteHttp.parsearLista(json, LocalTime.class);
             cbHora.getItems().addAll(horarios);
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    /** Actualiza el DayCellFactory del DatePicker para deshabilitar días sin jornada del médico. */
+    private void actualizarCalendario() {
+        if (cbMedico.getValue() == null) return;
+        try {
+            String json = ClienteHttp.get("/api/jornadas/medico/" + cbMedico.getValue().getIdMedico() + "/dias");
+            List<String> diasConJornada = ClienteHttp.parsearLista(json, String.class);
+            dpFecha.setDayCellFactory(p -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate d, boolean empty) {
+                    super.updateItem(d, empty);
+                    String nombreDia = traducirDia(d.getDayOfWeek().name());
+                    boolean sinJornada = !diasConJornada.isEmpty()
+                            && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
+                    setDisable(d.isBefore(LocalDate.now()) || sinJornada);
+                    if (sinJornada && !d.isBefore(LocalDate.now()))
+                        setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #aaa;");
+                }
+            });
+            // Limpiar fecha y horas si el médico cambió
+            dpFecha.setValue(null);
+            cbHora.getItems().clear();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private String traducirDia(String dayOfWeekEn) {
+        return switch (dayOfWeekEn) {
+            case "MONDAY"    -> "Lunes";
+            case "TUESDAY"   -> "Martes";
+            case "WEDNESDAY" -> "Miércoles";
+            case "THURSDAY"  -> "Jueves";
+            case "FRIDAY"    -> "Viernes";
+            case "SATURDAY"  -> "Sábado";
+            case "SUNDAY"    -> "Domingo";
+            default          -> dayOfWeekEn;
+        };
     }
 
     @FXML
