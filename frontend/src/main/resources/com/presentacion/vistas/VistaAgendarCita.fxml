@@ -36,7 +36,7 @@
                   styleClass="main-login-card">
                 <children>
                     <ImageView fitHeight="80" preserveRatio="true">
-                        <Image url="@../../../icons/LOGO%20PIEDRA%20AZUL.png" />
+                        <Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" />
                     </ImageView>
                 </children>
             </VBox>
