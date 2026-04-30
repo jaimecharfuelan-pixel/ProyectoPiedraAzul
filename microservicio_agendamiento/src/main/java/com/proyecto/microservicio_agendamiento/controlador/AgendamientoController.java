@@ -4,6 +4,8 @@ import com.proyecto.microservicio_agendamiento.dto.ReagendarCitaDTO;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
 import com.proyecto.microservicio_agendamiento.servicio.ServicioAgendamiento;
 import com.proyecto.microservicio_agendamiento.servicio.ServicioAgendamiento.ReagendamientoResultado;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Citas", description = "Gestión de citas médicas: agendar, reagendar, cancelar y consultar disponibilidad")
 @RestController
 @RequestMapping("/api/citas")
 public class AgendamientoController {
@@ -24,11 +27,7 @@ public class AgendamientoController {
         this.servicio = servicio;
     }
 
-    /**
-     * RF1: Listar citas de un médico en una fecha.
-     * GET /api/citas?idMedico=3&fecha=2026-04-21
-     * GET /api/citas (todas las de hoy)
-     */
+    @Operation(summary = "Listar citas", description = "Lista citas por médico y/o fecha. Sin parámetros devuelve las citas de hoy.")
     @GetMapping
     public ResponseEntity<List<Cita>> listarCitas(
             @RequestParam(required = false) Integer idMedico,
@@ -36,18 +35,13 @@ public class AgendamientoController {
         return ResponseEntity.ok(servicio.listarCitas(idMedico, fecha));
     }
 
-    /**
-     * GET /api/citas/todas
-     */
+    @Operation(summary = "Listar todas las citas", description = "Devuelve todas las citas sin filtro.")
     @GetMapping("/todas")
     public ResponseEntity<List<Cita>> listarTodas() {
         return ResponseEntity.ok(servicio.listarTodasLasCitas());
     }
 
-    /**
-     * RF3: Consultar franjas horarias disponibles de un médico en una fecha.
-     * GET /api/citas/disponibilidad?idMedico=3&fecha=2026-04-21
-     */
+    @Operation(summary = "Consultar disponibilidad", description = "Devuelve los horarios libres de un médico en una fecha específica.")
     @GetMapping("/disponibilidad")
     public ResponseEntity<List<LocalTime>> consultarDisponibilidad(
             @RequestParam int idMedico,
@@ -55,11 +49,7 @@ public class AgendamientoController {
         return ResponseEntity.ok(servicio.consultarDisponibilidad(idMedico, fecha));
     }
 
-    /**
-     * RF3: Paciente agenda cita desde la web.
-     * POST /api/citas/web
-     * Body: { "idPaciente": 10, "idMedico": 3, "fecha": "2026-04-21", "hora": "07:00" }
-     */
+    @Operation(summary = "Agendar cita (paciente web)", description = "El paciente agenda su propia cita eligiendo médico, fecha y hora disponible.")
     @PostMapping("/web")
     public ResponseEntity<String> agendarCitaWeb(@RequestBody Map<String, String> body) {
         int idPaciente = Integer.parseInt(body.get("idPaciente"));
@@ -73,35 +63,26 @@ public class AgendamientoController {
         return ResponseEntity.badRequest().body("Horario no disponible.");
     }
 
-    /**
-     * RF2: Agendador crea cita manual (paciente por WhatsApp).
-     * POST /api/citas
-     */
+    @Operation(summary = "Crear cita manual", description = "El agendador crea una cita manualmente (ej: paciente que llama por teléfono).")
     @PostMapping
     public ResponseEntity<String> crearCitaManual(@RequestBody Cita cita) {
         servicio.crearCitaManual(cita);
         return ResponseEntity.status(HttpStatus.CREATED).body("Cita creada.");
     }
 
-    /**
-     * GET /api/citas/paciente/{idPaciente}/historial
-     */
+    @Operation(summary = "Historial de citas", description = "Devuelve las citas pasadas de un paciente.")
     @GetMapping("/paciente/{idPaciente}/historial")
     public ResponseEntity<List<Cita>> historial(@PathVariable int idPaciente) {
         return ResponseEntity.ok(servicio.obtenerHistorialCitas(idPaciente));
     }
 
-    /**
-     * GET /api/citas/paciente/{idPaciente}/futuras
-     */
+    @Operation(summary = "Citas futuras", description = "Devuelve las citas próximas de un paciente.")
     @GetMapping("/paciente/{idPaciente}/futuras")
     public ResponseEntity<List<Cita>> futuras(@PathVariable int idPaciente) {
         return ResponseEntity.ok(servicio.obtenerCitasFuturas(idPaciente));
     }
 
-    /**
-     * PUT /api/citas/{idCita}
-     */
+    @Operation(summary = "Editar cita", description = "Actualiza todos los campos de una cita existente.")
     @PutMapping("/{idCita}")
     public ResponseEntity<String> editar(@PathVariable int idCita, @RequestBody Cita cita) {
         cita.setIdCita(idCita);
@@ -111,9 +92,7 @@ public class AgendamientoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
     }
 
-    /**
-     * DELETE /api/citas/{idCita} — cancela la cita (cambia estado a Cancelada, no borra el registro)
-     */
+    @Operation(summary = "Cancelar cita", description = "Cambia el estado de la cita a Cancelada (id=1). No elimina el registro.")
     @DeleteMapping("/{idCita}")
     public ResponseEntity<String> cancelar(@PathVariable int idCita) {
         if (servicio.cancelarCita(idCita)) {
@@ -122,10 +101,7 @@ public class AgendamientoController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
     }
 
-    /**
-     * PATCH /api/citas/{idCita}/reagendar — cambia fecha y hora de una cita existente.
-     * Body: { "nuevaFecha": "2026-05-10", "nuevaHora": "09:00" }
-     */
+    @Operation(summary = "Reagendar cita", description = "Cambia la fecha y hora de una cita. El estado vuelve a Pendiente. No se puede reagendar una cita cancelada.")
     @PatchMapping("/{idCita}/reagendar")
     public ResponseEntity<String> reagendar(
             @PathVariable int idCita,

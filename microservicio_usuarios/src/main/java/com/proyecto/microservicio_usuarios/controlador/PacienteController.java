@@ -4,12 +4,15 @@ import com.proyecto.microservicio_usuarios.dto.RegistroPacienteDTO;
 import com.proyecto.microservicio_usuarios.modelo.Paciente;
 import com.proyecto.microservicio_usuarios.servicio.ServicioPaciente;
 import com.proyecto.microservicio_usuarios.servicio.ServicioPersona;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Pacientes", description = "Registro y consulta de pacientes")
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacienteController {
@@ -22,13 +25,13 @@ public class PacienteController {
         this.servicioPersona = servicioPersona;
     }
 
-    /** GET /api/pacientes */
+    @Operation(summary = "Listar pacientes")
     @GetMapping
     public ResponseEntity<List<Paciente>> listar() {
         return ResponseEntity.ok(servicioPaciente.listarPacientes());
     }
 
-    /** GET /api/pacientes/{id} */
+    @Operation(summary = "Buscar paciente por ID")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable int id) {
         return servicioPaciente.buscarPorId(id)
@@ -36,12 +39,7 @@ public class PacienteController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado."));
     }
 
-    /**
-     * POST /api/pacientes
-     * RF2: Agendador registra paciente que contactó por WhatsApp.
-     * RF3: Paciente se registra para agendar cita web.
-     * Recibe paciente + usuario en un solo DTO.
-     */
+    @Operation(summary = "Registrar paciente", description = "Crea paciente + usuario en una sola llamada.")
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody RegistroPacienteDTO dto) {
         try {
@@ -52,10 +50,7 @@ public class PacienteController {
         }
     }
 
-    /**
-     * GET /api/pacientes/documento/{cedula}
-     * RF2: Buscar paciente existente por cédula antes de crear la cita.
-     */
+    @Operation(summary = "Buscar paciente por cédula")
     @GetMapping("/documento/{cedula}")
     public ResponseEntity<?> buscarPorDocumento(@PathVariable String cedula) {
         return servicioPersona.buscarPorDocumento(cedula)

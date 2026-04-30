@@ -1,14 +1,16 @@
 package com.proyecto.microservicio_usuarios.controlador;
 
 import com.proyecto.microservicio_usuarios.dto.MedicoResumenDTO;
-import com.proyecto.microservicio_usuarios.modelo.MedicoTerapista;
 import com.proyecto.microservicio_usuarios.servicio.ServicioPersona;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Tag(name = "Médicos", description = "Consulta y configuración de médicos activos")
 @RestController
 @RequestMapping("/api/medicos")
 public class MedicoController {
@@ -19,11 +21,7 @@ public class MedicoController {
         this.servicioPersona = servicioPersona;
     }
 
-    /**
-     * GET /api/medicos/activos
-     * Usado por ms-configuracion y ms-agendamiento para listar médicos.
-     * RF1, RF2, RF4.
-     */
+    @Operation(summary = "Listar médicos activos", description = "Devuelve todos los médicos con estado activo. Usado por ms-configuracion y ms-agendamiento.")
     @GetMapping("/activos")
     public ResponseEntity<List<MedicoResumenDTO>> listarActivos() {
         List<MedicoResumenDTO> medicos = servicioPersona.listarMedicosActivos().stream()
@@ -36,10 +34,7 @@ public class MedicoController {
         return ResponseEntity.ok(medicos);
     }
 
-    /**
-     * PUT /api/medicos/{id}/especialidad?idEspecialidad=3
-     * RF4: asignar especialidad a un médico.
-     */
+    @Operation(summary = "Asignar especialidad a médico")
     @PutMapping("/{id}/especialidad")
     public ResponseEntity<String> asignarEspecialidad(@PathVariable int id,
                                                        @RequestParam int idEspecialidad) {

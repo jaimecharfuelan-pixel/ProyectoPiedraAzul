@@ -2,6 +2,8 @@ package com.proyecto.microservicio_configuracion.controlador;
 
 import com.proyecto.microservicio_configuracion.modelo.JornadaLaboral;
 import com.proyecto.microservicio_configuracion.servicio.ServicioConfiguracion;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Jornadas", description = "Gestión de jornadas laborales de médicos")
 @RestController
 @RequestMapping("/api/jornadas")
 public class JornadaController {
@@ -19,17 +22,13 @@ public class JornadaController {
         this.servicio = servicio;
     }
 
-    /** GET /api/jornadas — todas las jornadas */
+    @Operation(summary = "Listar todas las jornadas")
     @GetMapping
     public ResponseEntity<List<JornadaLaboral>> obtenerTodas() {
         return ResponseEntity.ok(servicio.obtenerTodasLasJornadas());
     }
 
-    /**
-     * GET /api/jornadas?medicoId=3
-     * GET /api/jornadas?medicoId=3&dia=Lunes
-     * Usado por ms-agendamiento para consultar disponibilidad.
-     */
+    @Operation(summary = "Jornadas por médico", description = "Filtra por medicoId y opcionalmente por día de la semana.")
     @GetMapping(params = "medicoId")
     public ResponseEntity<List<JornadaLaboral>> obtenerPorMedico(
             @RequestParam int medicoId,
@@ -43,13 +42,13 @@ public class JornadaController {
         return ResponseEntity.ok(servicio.obtenerJornadasPorMedico(medicoId));
     }
 
-    /** GET /api/jornadas/medico/{idMedico} */
+    @Operation(summary = "Jornadas por médico (path)")
     @GetMapping("/medico/{idMedico}")
     public ResponseEntity<List<JornadaLaboral>> obtenerPorMedicoPath(@PathVariable int idMedico) {
         return ResponseEntity.ok(servicio.obtenerJornadasPorMedico(idMedico));
     }
 
-    /** POST /api/jornadas — RF4: crear jornada */
+    @Operation(summary = "Crear jornada", description = "Asigna una nueva jornada laboral a un médico.")
     @PostMapping
     public ResponseEntity<?> crearJornada(@RequestBody JornadaLaboral jornada) {
         try {
@@ -60,7 +59,7 @@ public class JornadaController {
         }
     }
 
-    /** PUT /api/jornadas/{idJornada} — RF4: editar jornada */
+    @Operation(summary = "Editar jornada")
     @PutMapping("/{idJornada}")
     public ResponseEntity<?> editarJornada(@PathVariable int idJornada,
                                             @RequestBody JornadaLaboral jornada) {
@@ -72,7 +71,7 @@ public class JornadaController {
         }
     }
 
-    /** DELETE /api/jornadas/{idJornada} — RF4: eliminar jornada */
+    @Operation(summary = "Eliminar jornada")
     @DeleteMapping("/{idJornada}")
     public ResponseEntity<String> eliminarJornada(@PathVariable int idJornada) {
         if (servicio.eliminarTurno(idJornada)) {

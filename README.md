@@ -228,4 +228,8 @@ Panel web de RabbitMQ (para ver colas y mensajes): http://localhost:15672
 
 ## Estado del proyecto
 
+http://localhost:8081/swagger-ui/index.html / Configuracion
+http://localhost:8082/swagger-ui.html / Agendamiento
+http://localhost:8081/swagger-ui.html / Usuarios
+
 
