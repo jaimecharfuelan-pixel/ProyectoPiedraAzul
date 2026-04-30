@@ -20,16 +20,16 @@
       <VBox maxWidth="Infinity" maxHeight="Infinity">
 
          <!-- HEADER -->
-         <StackPane styleClass="main-login-card" minHeight="80" maxWidth="Infinity" style="-fx-padding: 12 20 12 20;">
-            <Label styleClass="info-title" text="Panel Principal" style="-fx-font-size: 26px;" StackPane.alignment="CENTER"/>
-            <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+         <HBox styleClass="main-login-card" minHeight="80" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 20 12 20;">
+            <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true">
                <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png"/></image>
             </ImageView>
-            <HBox spacing="12" StackPane.alignment="CENTER_RIGHT">
+            <Label styleClass="info-title" text="Panel Agendador" style="-fx-font-size: 26px;" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER"/>
+            <HBox spacing="12" alignment="CENTER_RIGHT">
                <Button text="+ Nueva Cita" prefHeight="46" prefWidth="170" onAction="#onNuevaCita"/>
                <Button text="- Cerrar Sesión" prefHeight="46" prefWidth="170" styleClass="button-logout" onAction="#onCerrarSesion"/>
             </HBox>
-         </StackPane>
+         </HBox>
 
          <VBox spacing="16" VBox.vgrow="ALWAYS" style="-fx-padding: 16;">
 
@@ -77,10 +77,11 @@
             <VBox styleClass="main-login-card" maxWidth="Infinity" VBox.vgrow="ALWAYS" style="-fx-padding: 8;">
                <TableView fx:id="tblCitas" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity">
                   <columns>
-                     <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="220"/>
-                     <TableColumn fx:id="colHora"     text="Hora"      prefWidth="110"/>
-                     <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="160"/>
-                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="260"/>
+                     <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="200"/>
+                     <TableColumn fx:id="colHora"     text="Hora"      prefWidth="100"/>
+                     <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="140"/>
+                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="240"/>
+                     <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="180"/>
                   </columns>
                </TableView>
             </VBox>

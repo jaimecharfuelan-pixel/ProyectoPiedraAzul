@@ -14,6 +14,9 @@ public interface RepositorioCitas extends JpaRepository<Cita, Integer> {
     /** Solo citas activas (no canceladas) para calcular disponibilidad */
     List<Cita> findByIdMedicoAndFechaAndIdEstadoCitaNot(int idMedico, LocalDate fecha, int idEstadoCita);
 
+    /** Citas activas de una fecha (sin canceladas) */
+    List<Cita> findByFechaAndIdEstadoCitaNot(LocalDate fecha, int idEstadoCita);
+
     List<Cita> findByIdPaciente(int idPaciente);
 
     List<Cita> findByFecha(LocalDate fecha);

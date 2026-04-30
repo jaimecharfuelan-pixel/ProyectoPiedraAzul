@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Cliente HTTP simple que llama al API Gateway.
@@ -33,13 +34,13 @@ public class ClienteHttp {
 
     public static String get(String path) throws Exception {
         HttpRequest req = HttpRequestFactory.crearGet(path, null);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         return resp.body();
     }
 
     public static String getConToken(String path, String token) throws Exception {
         HttpRequest req = HttpRequestFactory.crearGet(path, token);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         return resp.body();
     }
 
@@ -48,7 +49,7 @@ public class ClienteHttp {
     public static String post(String path, Object body) throws Exception {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPost(path, json, null);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (resp.statusCode() >= 400) {
             throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
         }
@@ -58,7 +59,7 @@ public class ClienteHttp {
     public static String postConToken(String path, Object body, String token) throws Exception {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPost(path, json, token);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (resp.statusCode() >= 400) {
             throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
         }
@@ -70,7 +71,7 @@ public class ClienteHttp {
     public static String put(String path, Object body, String token) throws Exception {
         String json = mapper.writeValueAsString(body);
         HttpRequest req = HttpRequestFactory.crearPut(path, json, token);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (resp.statusCode() >= 400) {
             throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
         }
@@ -80,7 +81,7 @@ public class ClienteHttp {
     /** PUT sin body (útil para endpoints con query params como asignar especialidad). */
     public static String putSinBody(String path, String token) throws Exception {
         HttpRequest req = HttpRequestFactory.crearPut(path, "", token);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (resp.statusCode() >= 400) {
             throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
         }
@@ -91,7 +92,19 @@ public class ClienteHttp {
 
     public static String delete(String path, String token) throws Exception {
         HttpRequest req = HttpRequestFactory.crearDelete(path, token);
-        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
+        return resp.body();
+    }
+
+    // ─── PATCH ───────────────────────────────────────────────────────────────
+
+    public static String patch(String path, Object body, String token) throws Exception {
+        String json = mapper.writeValueAsString(body);
+        HttpRequest req = HttpRequestFactory.crearPatch(path, json, token);
+        HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (resp.statusCode() >= 400) {
             throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
         }
@@ -141,6 +154,12 @@ public class ClienteHttp {
 
         private static HttpRequest crearDelete(String path, String token) {
             return baseBuilder(path, token).DELETE().build();
+        }
+
+        private static HttpRequest crearPatch(String path, String jsonBody, String token) {
+            return baseBuilder(path, token)
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
         }
     }
 }

@@ -1,29 +1,27 @@
 package com.proyecto.microservicio_agendamiento.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalTime;
 
 /**
  * DTO ligero recibido desde ms-configuracion via HTTP.
  * Solo contiene los campos necesarios para calcular disponibilidad.
+ * El campo idMedico llega como "idUsuario" en la respuesta de JornadaLaboral.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JornadaResumenDTO {
 
-    private int idMedico;
+    private Integer idUsuario;   // nombre real en la respuesta JSON
     private String diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
     public JornadaResumenDTO() {}
 
-    public JornadaResumenDTO(int idMedico, String diaSemana, LocalTime horaInicio, LocalTime horaFin) {
-        this.idMedico = idMedico;
-        this.diaSemana = diaSemana;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-    }
-
-    public int getIdMedico() { return idMedico; }
-    public void setIdMedico(int idMedico) { this.idMedico = idMedico; }
+    public Integer getIdMedico()  { return idUsuario; }
+    public Integer getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
+    public void setIdMedico(Integer v)          { this.idUsuario = v; }
 
     public String getDiaSemana() { return diaSemana; }
     public void setDiaSemana(String diaSemana) { this.diaSemana = diaSemana; }

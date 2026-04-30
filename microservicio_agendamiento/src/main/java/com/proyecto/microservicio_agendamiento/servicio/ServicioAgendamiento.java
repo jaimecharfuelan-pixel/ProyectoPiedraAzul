@@ -103,9 +103,9 @@ public class ServicioAgendamiento {
     public List<Cita> listarCitas(Integer idMedico, LocalDate fecha) {
         LocalDate fechaFiltro = (fecha != null) ? fecha : LocalDate.now();
         if (idMedico != null) {
-            return repoCitas.findByIdMedicoAndFecha(idMedico, fechaFiltro);
+            return repoCitas.findByIdMedicoAndFechaAndIdEstadoCitaNot(idMedico, fechaFiltro, EstadoCita.CANCELADA);
         }
-        return repoCitas.findByFecha(fechaFiltro);
+        return repoCitas.findByFechaAndIdEstadoCitaNot(fechaFiltro, EstadoCita.CANCELADA);
     }
 
     public List<Cita> listarTodasLasCitas() {
