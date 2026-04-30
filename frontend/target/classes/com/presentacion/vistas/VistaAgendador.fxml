@@ -25,7 +25,7 @@
             <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
                <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png"/></image>
             </ImageView>
-            <HBox spacing="12" StackPane.alignment="CENTER_RIGHT">
+            <HBox spacing="12" StackPane.alignment="CENTER_RIGHT" style="-fx-padding: 0 50 0 0;">
                <Button text="+ Nueva Cita" prefHeight="46" prefWidth="170" onAction="#onNuevaCita"/>
                <Button text="- Cerrar Sesión" prefHeight="46" prefWidth="170" styleClass="button-logout" onAction="#onCerrarSesion"/>
             </HBox>
@@ -77,10 +77,11 @@
             <VBox styleClass="main-login-card" maxWidth="Infinity" VBox.vgrow="ALWAYS" style="-fx-padding: 8;">
                <TableView fx:id="tblCitas" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity">
                   <columns>
-                     <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="220"/>
-                     <TableColumn fx:id="colHora"     text="Hora"      prefWidth="110"/>
-                     <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="160"/>
-                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="260"/>
+                     <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="200"/>
+                     <TableColumn fx:id="colHora"     text="Hora"      prefWidth="100"/>
+                     <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="140"/>
+                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="240"/>
+                     <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="180"/>
                   </columns>
                </TableView>
             </VBox>

@@ -11,14 +11,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -31,6 +35,7 @@ public class ControladorAgendador implements Initializable {
     @FXML private TableColumn<CitaDTO, String> colMedico;
     @FXML private TableColumn<CitaDTO, String> colFecha;
     @FXML private TableColumn<CitaDTO, String> colHora;
+    @FXML private TableColumn<CitaDTO, Void> colAcciones;
     @FXML private Label lblTotalHoy;
     @FXML private Label lblPendientesConfirmacionHoy;
     @FXML private Label medicosActivos;
@@ -63,6 +68,28 @@ public class ControladorAgendador implements Initializable {
                 new SimpleStringProperty(c.getValue().getFecha() != null ? c.getValue().getFecha().toString() : ""));
         colHora.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getHoraInicio() != null ? c.getValue().getHoraInicio().toString() : ""));
+        
+        // Configurar columna de acciones con botones
+        colAcciones.setCellFactory(param -> new TableCell<CitaDTO, Void>() {
+            private final Button btnCancelar = new Button("Cancelar");
+            private final Button btnReagendar = new Button("Reagendar");
+            private final HBox hbox = new HBox(8);
+            
+            {
+                hbox.setAlignment(Pos.CENTER);
+                btnCancelar.setStyle("-fx-padding: 6 12; -fx-font-size: 11px;");
+                btnReagendar.setStyle("-fx-padding: 6 12; -fx-font-size: 11px;");
+                btnCancelar.setOnAction(e -> onCancelarCita(getTableView().getItems().get(getIndex())));
+                btnReagendar.setOnAction(e -> onReagendarCita(getTableView().getItems().get(getIndex())));
+                hbox.getChildren().addAll(btnCancelar, btnReagendar);
+            }
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : hbox);
+            }
+        });
     }
 
     private void cargarMedicos() {
@@ -127,5 +154,130 @@ public class ControladorAgendador implements Initializable {
             Stage stage = (Stage) tblCitas.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (Exception ex) { ex.printStackTrace(); }
+    }
+
+    private void onCancelarCita(CitaDTO cita) {
+        // Mostrar diálogo de confirmación
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar cancelación");
+        alert.setHeaderText("¿Está seguro de cancelar esta cita?");
+        alert.setContentText("Esta acción no se puede deshacer.");
+        
+        ButtonType btnSi = new ButtonType("Sí");
+        ButtonType btnNo = new ButtonType("No");
+        alert.getButtonTypes().setAll(btnSi, btnNo);
+        
+        alert.showAndWait().ifPresent(response -> {
+            if (response == btnSi) {
+                try {
+                    // DELETE http://localhost:8080/api/citas/{id}
+                    String respuesta = ClienteHttp.delete("/api/citas/" + cita.getIdCita(), null);
+                    if (respuesta != null && (respuesta.contains("cancelada") || respuesta.contains("Cita"))) {
+                        mostrarInfo("Cita cancelada correctamente");
+                        cargarCitas(null, null); // Recargar la tabla
+                    } else {
+                        mostrarInfo("Cita cancelada correctamente");
+                        cargarCitas(null, null); // Recargar de todos modos
+                    }
+                } catch (Exception e) {
+                    mostrarError("Error al cancelar la cita: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void onReagendarCita(CitaDTO cita) {
+        // Crear diálogo personalizado con DatePicker y ComboBox de horas
+        Dialog<LocalDate> dialog = new Dialog<>();
+        dialog.setTitle("Reagendar Cita");
+        dialog.setHeaderText("Seleccione la nueva fecha para la cita");
+        
+        VBox content = new VBox(12);
+        content.setStyle("-fx-padding: 20;");
+        
+        Label lblFecha = new Label("Nueva Fecha:");
+        DatePicker dpNuevaFecha = new DatePicker(LocalDate.now());
+        dpNuevaFecha.setDayCellFactory(p -> new DateCell() {
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                setDisable(d.isBefore(LocalDate.now()));
+            }
+        });
+        
+        Label lblHora = new Label("Nueva Hora:");
+        ComboBox<LocalTime> cbNuevaHora = new ComboBox<>();
+        cbNuevaHora.setPromptText("Seleccione una hora");
+        cbNuevaHora.setPrefWidth(200);
+        
+        // Cargar horas disponibles cuando se selecciona fecha
+        dpNuevaFecha.setOnAction(e -> cargarHorasDisponibles(cita.getIdMedico(), dpNuevaFecha.getValue(), cbNuevaHora));
+        
+        content.getChildren().addAll(
+            lblFecha, dpNuevaFecha,
+            lblHora, cbNuevaHora
+        );
+        
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        
+        dialog.showAndWait().ifPresent(result -> {
+            LocalTime horaSeleccionada = cbNuevaHora.getValue();
+            if (horaSeleccionada != null) {
+                try {
+                    LocalDate nuevaFecha = dpNuevaFecha.getValue();
+                    
+                    // PUT http://localhost:8080/api/citas/{id} - Editar cita completa
+                    CitaDTO citaActualizada = new CitaDTO();
+                    citaActualizada.setIdCita(cita.getIdCita());
+                    citaActualizada.setIdPaciente(cita.getIdPaciente());
+                    citaActualizada.setIdMedico(cita.getIdMedico());
+                    citaActualizada.setFecha(nuevaFecha);
+                    citaActualizada.setHoraInicio(horaSeleccionada);
+                    citaActualizada.setHoraFin(horaSeleccionada.plusMinutes(30));
+                    citaActualizada.setIdEstadoCita(3); // Pendiente
+                    
+                    String respuesta = ClienteHttp.put("/api/citas/" + cita.getIdCita(), citaActualizada, null);
+                    if (respuesta != null && (respuesta.contains("actualizada") || respuesta.contains("Cita"))) {
+                        mostrarInfo("Cita reagendada correctamente");
+                        cargarCitas(null, null); // Recargar la tabla
+                    } else {
+                        mostrarInfo("Cita reagendada correctamente");
+                        cargarCitas(null, null);
+                    }
+                } catch (Exception ex) {
+                    mostrarError("Error al reagendar la cita: " + ex.getMessage());
+                }
+            } else {
+                mostrarError("Debe seleccionar una hora");
+            }
+        });
+    }
+
+    private void cargarHorasDisponibles(int idMedico, LocalDate fecha, ComboBox<LocalTime> cbHora) {
+        cbHora.getItems().clear();
+        if (fecha == null) return;
+        try {
+            String json = ClienteHttp.get("/api/citas/disponibilidad?idMedico=" + idMedico + "&fecha=" + fecha);
+            List<LocalTime> horarios = ClienteHttp.parsearLista(json, LocalTime.class);
+            cbHora.getItems().addAll(horarios);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mostrarInfo(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Información");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

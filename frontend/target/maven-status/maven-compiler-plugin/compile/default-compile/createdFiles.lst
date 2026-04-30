@@ -1,3 +1,4 @@
+com\proyecto\presentacion\controladores\ControladorAgendador$3.class
 com\proyecto\presentacion\controladores\ControladorAgendarCita$4.class
 com\proyecto\presentacion\controladores\ControladorAgendador$1.class
 com\proyecto\presentacion\controladores\ControladorAgendarCita$2.class
@@ -20,3 +21,4 @@ com\proyecto\presentacion\controladores\ControladorAgendarCita$1.class
 com\proyecto\presentacion\dto\LoginResponseDTO.class
 com\proyecto\App.class
 com\proyecto\presentacion\dto\MedicoDTO.class
+com\proyecto\presentacion\controladores\ControladorAgendador$2.class
