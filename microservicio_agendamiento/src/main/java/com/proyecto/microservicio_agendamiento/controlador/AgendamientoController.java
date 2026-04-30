@@ -1,7 +1,9 @@
 package com.proyecto.microservicio_agendamiento.controlador;
 
+import com.proyecto.microservicio_agendamiento.dto.ReagendarCitaDTO;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
 import com.proyecto.microservicio_agendamiento.servicio.ServicioAgendamiento;
+import com.proyecto.microservicio_agendamiento.servicio.ServicioAgendamiento.ReagendamientoResultado;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,7 +112,7 @@ public class AgendamientoController {
     }
 
     /**
-     * DELETE /api/citas/{idCita} — cancela la cita
+     * DELETE /api/citas/{idCita} — cancela la cita (cambia estado a Cancelada, no borra el registro)
      */
     @DeleteMapping("/{idCita}")
     public ResponseEntity<String> cancelar(@PathVariable int idCita) {
@@ -118,5 +120,23 @@ public class AgendamientoController {
             return ResponseEntity.ok("Cita cancelada.");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+    }
+
+    /**
+     * PATCH /api/citas/{idCita}/reagendar — cambia fecha y hora de una cita existente.
+     * Body: { "nuevaFecha": "2026-05-10", "nuevaHora": "09:00" }
+     */
+    @PatchMapping("/{idCita}/reagendar")
+    public ResponseEntity<String> reagendar(
+            @PathVariable int idCita,
+            @RequestBody ReagendarCitaDTO dto) {
+
+        ReagendamientoResultado resultado = servicio.reagendarCita(idCita, dto.getNuevaFecha(), dto.getNuevaHora());
+
+        return switch (resultado) {
+            case OK             -> ResponseEntity.ok("Cita reagendada correctamente.");
+            case NO_ENCONTRADA  -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+            case CITA_CANCELADA -> ResponseEntity.badRequest().body("No se puede reagendar una cita cancelada.");
+        };
     }
 }
