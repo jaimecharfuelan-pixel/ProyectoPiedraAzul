@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 version: '3.9'
 
 services:
-
-  # ─────────────────────────────────────────
-  # BASES DE DATOS
-  # ─────────────────────────────────────────
 
   db-usuarios:
     image: postgres:15-alpine
@@ -67,16 +62,12 @@ services:
       timeout: 5s
       retries: 5
 
-  # ─────────────────────────────────────────
-  # RABBITMQ
-  # ─────────────────────────────────────────
-
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672"    # puerto AMQP que usan los microservicios
-      - "15672:15672"  # panel web: http://localhost:15672 (admin/admin123)
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin123
@@ -89,10 +80,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # ─────────────────────────────────────────
-  # MICROSERVICIOS
-  # ─────────────────────────────────────────
 
   microservicio-usuarios:
     build:
@@ -176,10 +163,6 @@ services:
     networks:
       - piedrazul-net
 
-  # ─────────────────────────────────────────
-  # API GATEWAY
-  # ─────────────────────────────────────────
-
   api-gateway:
     build:
       context: ./APIGateWay
@@ -199,10 +182,6 @@ services:
     networks:
       - piedrazul-net
 
-# ─────────────────────────────────────────
-# VOLÚMENES Y RED
-# ─────────────────────────────────────────
-
 volumes:
   vol_db_usuarios:
   vol_db_agendamiento:
@@ -212,17 +191,3 @@ volumes:
 networks:
   piedrazul-net:
     driver: bridge
-=======
-services:
-  postgres-db:
-    image: postgres:15
-    container_name: ContenedorPostgresDePiedraAzul
-    environment:
-      POSTGRES_USER: PiedraAzulUsuario
-      POSTGRES_PASSWORD: PiedraAzulContraseña
-      POSTGRES_DB: BaseDeDatosPiedraAzul
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./init-db:/docker-entrypoint-initdb.d
->>>>>>> bbca243 (Entorno listo)
