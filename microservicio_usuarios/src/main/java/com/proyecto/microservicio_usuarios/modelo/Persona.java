@@ -40,6 +40,10 @@ public abstract class Persona {
     @Column(name = "id_estado")
     private Integer idEstado;
 
+    /** true = activo, false = inactivo. Columna propia, independiente de dominio_estado. */
+    @Column(name = "activo", nullable = false, columnDefinition = "boolean default true")
+    private boolean activo = true;
+
     public Persona() {}
 
     public int getIdPersona() { return idPersona; }
@@ -71,4 +75,7 @@ public abstract class Persona {
 
     public Integer getIdEstado() { return idEstado; }
     public void setIdEstado(Integer idEstado) { this.idEstado = idEstado; }
+
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 }

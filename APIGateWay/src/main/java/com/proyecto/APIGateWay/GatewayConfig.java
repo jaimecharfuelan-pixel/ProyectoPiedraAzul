@@ -66,6 +66,15 @@ public class GatewayConfig {
                 .build();
     }
 
+    // ── Roles ──────────────────────────────────────────────────────────────────
+    @Bean
+    public RouterFunction<ServerResponse> routeRoles() {
+        return GatewayRouterFunctions.route("ms-roles")
+                .route(RequestPredicates.path("/api/roles/**"),
+                        HandlerFunctions.http(msUsuariosUrl))
+                .build();
+    }
+
     // ── Citas (Agendamiento) ───────────────────────────────────────────────────
     @Bean
     public RouterFunction<ServerResponse> routeCitas() {

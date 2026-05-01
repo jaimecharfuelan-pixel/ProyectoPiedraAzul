@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS persona (
     fecha_nacimiento  DATE,
     correo            VARCHAR(100),
     id_usuario        INT UNIQUE REFERENCES usuario(id_usuario),
-    id_estado         INT REFERENCES dominio_estado(id_estado)
+    id_estado         INT REFERENCES dominio_estado(id_estado),
+    activo            BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS medico_terapista (
@@ -142,48 +143,48 @@ INSERT INTO rol (nombre, id_usuario) VALUES
 ('Paciente', 27), ('Paciente', 28), ('Paciente', 29), ('Paciente', 30);
 
 -- Personas - Agendadores (id_usuario 2 y 3)
-INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado) VALUES
-('Laura',  '10000000001', 'Mendez', '3001000001', 2, '1990-03-15', 'laura.mendez@piedraazul.com',  2, 2),
-('Carlos', '10000000002', 'Pineda', '3001000002', 1, '1988-07-22', 'carlos.pineda@piedraazul.com', 3, 2);
+INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
+('Laura',  '10000000001', 'Mendez', '3001000001', 2, '1990-03-15', 'laura.mendez@piedraazul.com',  2, 2, TRUE),
+('Carlos', '10000000002', 'Pineda', '3001000002', 1, '1988-07-22', 'carlos.pineda@piedraazul.com', 3, 2, TRUE);
 
 INSERT INTO agendador (id_persona) VALUES (1), (2);
 
 -- Personas - Médicos (id_usuario 4 al 10)
-INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado) VALUES
-('Andrés',    '20000000001', 'García',   '3102000001', 1, '1975-01-10', 'andres.garcia@piedraazul.com',      4, 2),
-('Sofía',     '20000000002', 'López',    '3102000002', 2, '1980-05-20', 'sofia.lopez@piedraazul.com',        5, 2),
-('Miguel',    '20000000003', 'Torres',   '3102000003', 1, '1978-09-14', 'miguel.torres@piedraazul.com',      6, 2),
-('Valentina', '20000000004', 'Ramírez',  '3102000004', 2, '1983-11-30', 'valentina.ramirez@piedraazul.com',  7, 2),
-('Julián',    '20000000005', 'Vargas',   '3102000005', 1, '1970-04-05', 'julian.vargas@piedraazul.com',      8, 2),
-('Camila',    '20000000006', 'Moreno',   '3102000006', 2, '1985-08-18', 'camila.moreno@piedraazul.com',      9, 2),
-('Ricardo',   '20000000007', 'Castro',   '3102000007', 1, '1972-12-25', 'ricardo.castro@piedraazul.com',    10, 2);
+INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
+('Andrés',    '20000000001', 'García',   '3102000001', 1, '1975-01-10', 'andres.garcia@piedraazul.com',      4, 2, TRUE),
+('Sofía',     '20000000002', 'López',    '3102000002', 2, '1980-05-20', 'sofia.lopez@piedraazul.com',        5, 2, TRUE),
+('Miguel',    '20000000003', 'Torres',   '3102000003', 1, '1978-09-14', 'miguel.torres@piedraazul.com',      6, 2, TRUE),
+('Valentina', '20000000004', 'Ramírez',  '3102000004', 2, '1983-11-30', 'valentina.ramirez@piedraazul.com',  7, 2, TRUE),
+('Julián',    '20000000005', 'Vargas',   '3102000005', 1, '1970-04-05', 'julian.vargas@piedraazul.com',      8, 2, TRUE),
+('Camila',    '20000000006', 'Moreno',   '3102000006', 2, '1985-08-18', 'camila.moreno@piedraazul.com',      9, 2, TRUE),
+('Ricardo',   '20000000007', 'Castro',   '3102000007', 1, '1972-12-25', 'ricardo.castro@piedraazul.com',    10, 2, TRUE);
 
 -- id_persona de médicos: 3 al 9
 INSERT INTO medico_terapista (id_persona, id_especialidad) VALUES
 (3, 1), (4, 2), (5, 3), (6, 4), (7, 5), (8, 6), (9, 7);
 
 -- Personas - Pacientes (id_usuario 11 al 30)
-INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado) VALUES
-('Juan',      '30000000001', 'Pérez',    '3203000001', 1, '1995-02-14', 'juan.perez@mail.com',       11, 2),
-('María',     '30000000002', 'Gómez',    '3203000002', 2, '1992-06-30', 'maria.gomez@mail.com',      12, 2),
-('Pedro',     '30000000003', 'Herrera',  '3203000003', 1, '1988-10-05', 'pedro.herrera@mail.com',    13, 2),
-('Ana',       '30000000004', 'Jiménez',  '3203000004', 2, '2000-01-20', 'ana.jimenez@mail.com',      14, 2),
-('Luis',      '30000000005', 'Mendoza',  '3203000005', 1, '1997-07-11', 'luis.mendoza@mail.com',     15, 2),
-('Paola',     '30000000006', 'Ríos',     '3203000006', 2, '1990-03-28', 'paola.rios@mail.com',       16, 2),
-('Diego',     '30000000007', 'Silva',    '3203000007', 1, '1985-09-17', 'diego.silva@mail.com',      17, 2),
-('Natalia',   '30000000008', 'Rojas',    '3203000008', 2, '1993-12-03', 'natalia.rojas@mail.com',    18, 2),
-('Sebastián', '30000000009', 'Ortiz',    '3203000009', 1, '1999-04-22', 'sebastian.ortiz@mail.com',  19, 2),
-('Daniela',   '30000000010', 'Núñez',    '3203000010', 2, '1996-08-09', 'daniela.nunez@mail.com',    20, 2),
-('Felipe',    '30000000011', 'Vega',     '3203000011', 1, '1987-05-16', 'felipe.vega@mail.com',      21, 2),
-('Alejandra', '30000000012', 'Soto',     '3203000012', 2, '2001-11-27', 'alejandra.soto@mail.com',   22, 2),
-('Mateo',     '30000000013', 'Reyes',    '3203000013', 1, '1994-01-08', 'mateo.reyes@mail.com',      23, 2),
-('Valeria',   '30000000014', 'Mora',     '3203000014', 2, '1991-07-19', 'valeria.mora@mail.com',     24, 2),
-('Tomás',     '30000000015', 'León',     '3203000015', 1, '1998-03-04', 'tomas.leon@mail.com',       25, 2),
-('Isabella',  '30000000016', 'Ruiz',     '3203000016', 2, '2002-09-13', 'isabella.ruiz@mail.com',    26, 2),
-('Nicolás',   '30000000017', 'Díaz',     '3203000017', 1, '1986-06-25', 'nicolas.diaz@mail.com',     27, 2),
-('Gabriela',  '30000000018', 'Fuentes',  '3203000018', 2, '1989-02-07', 'gabriela.fuentes@mail.com', 28, 2),
-('Esteban',   '30000000019', 'Pinto',    '3203000019', 1, '2003-10-31', 'esteban.pinto@mail.com',    29, 2),
-('Mariana',   '30000000020', 'Salazar',  '3203000020', 2, '1984-04-15', 'mariana.salazar@mail.com',  30, 2);
+INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
+('Juan',      '30000000001', 'Pérez',    '3203000001', 1, '1995-02-14', 'juan.perez@mail.com',       11, 2, TRUE),
+('María',     '30000000002', 'Gómez',    '3203000002', 2, '1992-06-30', 'maria.gomez@mail.com',      12, 2, TRUE),
+('Pedro',     '30000000003', 'Herrera',  '3203000003', 1, '1988-10-05', 'pedro.herrera@mail.com',    13, 2, TRUE),
+('Ana',       '30000000004', 'Jiménez',  '3203000004', 2, '2000-01-20', 'ana.jimenez@mail.com',      14, 2, TRUE),
+('Luis',      '30000000005', 'Mendoza',  '3203000005', 1, '1997-07-11', 'luis.mendoza@mail.com',     15, 2, TRUE),
+('Paola',     '30000000006', 'Ríos',     '3203000006', 2, '1990-03-28', 'paola.rios@mail.com',       16, 2, TRUE),
+('Diego',     '30000000007', 'Silva',    '3203000007', 1, '1985-09-17', 'diego.silva@mail.com',      17, 2, TRUE),
+('Natalia',   '30000000008', 'Rojas',    '3203000008', 2, '1993-12-03', 'natalia.rojas@mail.com',    18, 2, TRUE),
+('Sebastián', '30000000009', 'Ortiz',    '3203000009', 1, '1999-04-22', 'sebastian.ortiz@mail.com',  19, 2, TRUE),
+('Daniela',   '30000000010', 'Núñez',    '3203000010', 2, '1996-08-09', 'daniela.nunez@mail.com',    20, 2, TRUE),
+('Felipe',    '30000000011', 'Vega',     '3203000011', 1, '1987-05-16', 'felipe.vega@mail.com',      21, 2, TRUE),
+('Alejandra', '30000000012', 'Soto',     '3203000012', 2, '2001-11-27', 'alejandra.soto@mail.com',   22, 2, TRUE),
+('Mateo',     '30000000013', 'Reyes',    '3203000013', 1, '1994-01-08', 'mateo.reyes@mail.com',      23, 2, TRUE),
+('Valeria',   '30000000014', 'Mora',     '3203000014', 2, '1991-07-19', 'valeria.mora@mail.com',     24, 2, TRUE),
+('Tomás',     '30000000015', 'León',     '3203000015', 1, '1998-03-04', 'tomas.leon@mail.com',       25, 2, TRUE),
+('Isabella',  '30000000016', 'Ruiz',     '3203000016', 2, '2002-09-13', 'isabella.ruiz@mail.com',    26, 2, TRUE),
+('Nicolás',   '30000000017', 'Díaz',     '3203000017', 1, '1986-06-25', 'nicolas.diaz@mail.com',     27, 2, TRUE),
+('Gabriela',  '30000000018', 'Fuentes',  '3203000018', 2, '1989-02-07', 'gabriela.fuentes@mail.com', 28, 2, TRUE),
+('Esteban',   '30000000019', 'Pinto',    '3203000019', 1, '2003-10-31', 'esteban.pinto@mail.com',    29, 2, TRUE),
+('Mariana',   '30000000020', 'Salazar',  '3203000020', 2, '1984-04-15', 'mariana.salazar@mail.com',  30, 2, TRUE);
 
 -- id_persona de pacientes: 10 al 29
 INSERT INTO paciente (id_persona) VALUES

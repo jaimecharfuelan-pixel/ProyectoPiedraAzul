@@ -1,5 +1,7 @@
 package com.proyecto.microservicio_usuarios.modelo;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,6 +11,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
+    @JsonSetter(nulls = Nulls.SKIP)
     private int idUsuario;
 
     @Column(name = "usuario", nullable = false, unique = true)

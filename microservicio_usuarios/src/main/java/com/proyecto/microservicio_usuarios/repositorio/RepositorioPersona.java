@@ -12,4 +12,6 @@ public interface RepositorioPersona extends JpaRepository<Persona, Integer> {
     Optional<Persona> findByCedulaCiudadania(String cedulaCiudadania);
 
     List<Persona> findByIdEstado(int idEstado);
+
+    List<Persona> findByActivoTrue();
 }

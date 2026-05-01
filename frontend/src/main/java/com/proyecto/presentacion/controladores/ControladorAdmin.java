@@ -80,6 +80,8 @@ public class ControladorAdmin implements Initializable {
     @FXML private TextField txtUsuNombre;
     @FXML private TextField txtUsuContrasena;
 
+    // Persona seleccionada actualmente en la tabla
+    private PersonaDTO personaSeleccionada = null;
     // Mapa idMedico → MedicoDTO para resolver nombre/cédula en la tabla
     private final Map<Integer, MedicoDTO> mapaMedicos = new HashMap<>();
     // Lista completa de turnos para filtrado local
@@ -182,12 +184,37 @@ public class ControladorAdmin implements Initializable {
         MedicoDTO medico = cbMedicoEspecialidad.getValue();
         String esp = cbEspecialidad.getValue();
         if (medico == null || esp == null) { mostrarError("Seleccione médico y especialidad"); return; }
-        mostrarInfo("Especialidad asignada (funcionalidad pendiente de mapeo de ID)");
+        try {
+            // Buscar el id de la especialidad por nombre
+            String jsonEsp = ClienteHttp.get("/api/especialidades");
+            List<Map> especialidades = ClienteHttp.parsearLista(jsonEsp, Map.class);
+            int idEsp = especialidades.stream()
+                    .filter(m -> esp.equals(m.get("nombre")))
+                    .mapToInt(m -> ((Number) m.get("idEspecialidad")).intValue())
+                    .findFirst()
+                    .orElse(-1);
+            if (idEsp == -1) { mostrarError("No se encontró la especialidad seleccionada"); return; }
+            // Usar putSinBody para el PUT con query param (no necesita body)
+            ClienteHttp.putSinBody(
+                    "/api/medicos/" + medico.getIdMedico() + "/especialidad?idEspecialidad=" + idEsp,
+                    SesionUsuario.getInstancia().getToken());
+            mostrarInfo("Especialidad '" + esp + "' asignada a " + medico.toString());
+        } catch (Exception ex) { mostrarError("Error al asignar especialidad: " + ex.getMessage()); }
     }
 
     @FXML
     void onAsignarRol(ActionEvent e) {
-        mostrarInfo("Asignación de rol pendiente de implementación completa");
+        PersonaDTO persona = cbPersonaRol.getValue();
+        String rol = cbRol.getValue();
+        if (persona == null || rol == null) { mostrarError("Seleccione una persona y un rol"); return; }
+        if (persona.getIdUsuario() == null) { mostrarError("La persona seleccionada no tiene usuario asociado"); return; }
+        try {
+            java.util.Map<String, Object> body = new java.util.HashMap<>();
+            body.put("nombre", rol);
+            body.put("idUsuario", persona.getIdUsuario());
+            ClienteHttp.postConToken("/api/roles", body, SesionUsuario.getInstancia().getToken());
+            mostrarInfo("Rol '" + rol + "' asignado correctamente a " + persona.toString());
+        } catch (Exception ex) { mostrarError("Error al asignar rol: " + ex.getMessage()); }
     }
 
     // ── Turnos ────────────────────────────────────────────────
@@ -265,20 +292,25 @@ public class ControladorAdmin implements Initializable {
     }
 
     private void cargarTablaTurnos() {
-        try {
-            String json = ClienteHttp.get("/api/citas/todas");
-            todosTurnos = ClienteHttp.parsearLista(json, CitaDTO.class);
-            // Si hay un doctor seleccionado, mantener el filtro; si no, mostrar todos
-            MedicoDTO sel = cbTurnoDoctor.getValue();
-            if (sel != null) {
-                List<CitaDTO> filtrados = todosTurnos.stream()
-                        .filter(c -> c.getIdMedico() == sel.getIdMedico())
-                        .toList();
-                tblTurnos.setItems(FXCollections.observableArrayList(filtrados));
-            } else {
-                tblTurnos.setItems(FXCollections.observableArrayList(todosTurnos));
+        new Thread(() -> {
+            try {
+                String json = ClienteHttp.get("/api/citas/todas");
+                List<CitaDTO> citas = ClienteHttp.parsearLista(json, CitaDTO.class);
+                todosTurnos = citas;
+                MedicoDTO sel = cbTurnoDoctor.getValue();
+                List<CitaDTO> mostrar = (sel != null)
+                        ? citas.stream().filter(c -> c.getIdMedico() == sel.getIdMedico()).toList()
+                        : citas;
+                javafx.application.Platform.runLater(() -> {
+                    tblTurnos.getItems().clear();
+                    tblTurnos.getItems().addAll(mostrar);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al cargar turnos: " + e.getMessage()));
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        }).start();
     }
 
     @FXML
@@ -346,6 +378,8 @@ public class ControladorAdmin implements Initializable {
 
     private void configurarTablaPersonas() {
         tblPersonas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Inicializar con lista observable vacía
+        tblPersonas.setItems(FXCollections.observableArrayList());
         colPerCedula.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCedulaCiudadania()));
         colPerNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
         colPerApellido.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getApellido()));
@@ -362,6 +396,7 @@ public class ControladorAdmin implements Initializable {
             });
         });
         tblPersonas.getSelectionModel().selectedItemProperty().addListener((obs, old, p) -> {
+            personaSeleccionada = p;
             if (p == null) return;
             txtPerCedula.setText(p.getCedulaCiudadania());
             txtPerNombre.setText(p.getNombre());
@@ -386,71 +421,270 @@ public class ControladorAdmin implements Initializable {
     }
 
     private void cargarTablaPersonas() {
-        try {
-            String json = ClienteHttp.get("/api/personas");
-            List<PersonaDTO> personas = ClienteHttp.parsearLista(json, PersonaDTO.class);
-            tblPersonas.setItems(FXCollections.observableArrayList(personas));
-        } catch (Exception e) { e.printStackTrace(); }
+        new Thread(() -> {
+            try {
+                String json = ClienteHttp.get("/api/personas");
+                List<PersonaDTO> personas = ClienteHttp.parsearLista(json, PersonaDTO.class);
+                javafx.application.Platform.runLater(() ->
+                    tblPersonas.getItems().setAll(personas));
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al cargar personas: " + e.getMessage()));
+            }
+        }).start();
     }
 
     @FXML
     void onEditarPersona(ActionEvent e) {
-        PersonaDTO p = tblPersonas.getSelectionModel().getSelectedItem();
-        if (p == null) { mostrarError("Seleccione una persona de la lista"); return; }
-        p.setNombre(txtPerNombre.getText());
-        p.setApellido(txtPerApellido.getText());
-        p.setCelular(txtPerCelular.getText());
-        p.setCorreo(txtPerCorreo.getText());
-        if (dpPerFechaNac.getValue() != null) p.setFechaNacimiento(dpPerFechaNac.getValue());
-        try {
-            ClienteHttp.put("/api/personas/" + p.getIdPersona(), p, SesionUsuario.getInstancia().getToken());
-            cargarTablaPersonas();
-            mostrarInfo("Persona actualizada correctamente");
-        } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
+        if (personaSeleccionada == null) { mostrarError("Seleccione una persona de la lista"); return; }
+        String nombre   = txtPerNombre.getText().trim();
+        String apellido = txtPerApellido.getText().trim();
+        if (nombre.isEmpty() || apellido.isEmpty()) {
+            mostrarError("Nombre y Apellido son obligatorios"); return;
+        }
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("nombre", nombre);
+        body.put("apellido", apellido);
+        body.put("cedulaCiudadania", personaSeleccionada.getCedulaCiudadania());
+        body.put("celular", txtPerCelular.getText().trim());
+        body.put("correo", txtPerCorreo.getText().trim());
+        if (dpPerFechaNac.getValue() != null)
+            body.put("fechaNacimiento", dpPerFechaNac.getValue().toString());
+        String generoStr = cbPerGenero.getValue();
+        if (generoStr != null) {
+            body.put("idGenero", switch (generoStr) {
+                case "Masculino"  -> 1;
+                case "Femenino"   -> 2;
+                case "No Binario" -> 3;
+                default           -> 4;
+            });
+        }
+        final int idPersona = personaSeleccionada.getIdPersona();
+        new Thread(() -> {
+            try {
+                ClienteHttp.put("/api/personas/" + idPersona, body,
+                        SesionUsuario.getInstancia().getToken());
+                javafx.application.Platform.runLater(() -> {
+                    cargarTablaPersonas();
+                    mostrarInfo("Persona actualizada correctamente");
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al editar: " + ex.getMessage()));
+            }
+        }).start();
     }
 
     @FXML
-    void onCrearPersona(ActionEvent e) { mostrarInfo("Para crear personas use el registro de pacientes."); }
+    void onCrearPersona(ActionEvent e) {
+        String cedula   = txtPerCedula.getText().trim();
+        String nombre   = txtPerNombre.getText().trim();
+        String apellido = txtPerApellido.getText().trim();
+        if (cedula.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
+            mostrarError("Cédula, Nombre y Apellido son obligatorios"); return;
+        }
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("nombre", nombre);
+        body.put("apellido", apellido);
+        body.put("cedulaCiudadania", cedula);
+        body.put("celular", txtPerCelular.getText().trim());
+        body.put("correo", txtPerCorreo.getText().trim());
+        body.put("usuarioLogin", cedula);
+        body.put("contrasena", cedula);
+        body.put("rol", "Paciente");
+        String generoStr = cbPerGenero.getValue();
+        if (generoStr != null) {
+            body.put("idGenero", switch (generoStr) {
+                case "Masculino"  -> 1;
+                case "Femenino"   -> 2;
+                case "No Binario" -> 3;
+                default           -> 4;
+            });
+        }
+        if (dpPerFechaNac.getValue() != null)
+            body.put("fechaNacimiento", dpPerFechaNac.getValue().toString());
+
+        new Thread(() -> {
+            try {
+                String resp = ClienteHttp.post("/api/personas", body);
+                javafx.application.Platform.runLater(() -> {
+                    cargarTablaPersonas();
+                    limpiarFormularioPersona();
+                    mostrarInfo("Persona creada correctamente.\nUsuario: " + cedula + "\nContraseña inicial: " + cedula);
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al crear persona: " + ex.getMessage()));
+            }
+        }).start();
+    }
 
     @FXML
     void onEliminarPersona(ActionEvent e) {
-        PersonaDTO p = tblPersonas.getSelectionModel().getSelectedItem();
-        if (p == null) { mostrarError("Seleccione una persona de la lista"); return; }
-        try {
-            ClienteHttp.delete("/api/personas/" + p.getIdPersona(), SesionUsuario.getInstancia().getToken());
-            cargarTablaPersonas();
-            mostrarInfo("Persona inactivada correctamente");
-        } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
+        // Leer la cédula del campo de texto — está llena cuando el usuario seleccionó la fila
+        String cedula = txtPerCedula.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarError("Seleccione una persona de la lista primero");
+            return;
+        }
+        // Buscar el id en la lista actual de la tabla por cédula
+        PersonaDTO target = tblPersonas.getItems().stream()
+                .filter(p -> cedula.equals(p.getCedulaCiudadania()))
+                .findFirst()
+                .orElse(null);
+        if (target == null) {
+            mostrarError("No se encontró la persona con cédula: " + cedula);
+            return;
+        }
+        final int id = target.getIdPersona();
+        System.out.println("[DEBUG] Eliminando persona id=" + id + " cedula=" + cedula);
+        new Thread(() -> {
+            try {
+                String token = SesionUsuario.getInstancia().getToken();
+                ClienteHttp.delete("/api/personas/" + id, token != null ? token : "");
+                javafx.application.Platform.runLater(() -> {
+                    limpiarFormularioPersona();
+                    cargarTablaPersonas();
+                    mostrarInfo("Persona inactivada correctamente");
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al eliminar: " + ex.getMessage()));
+            }
+        }).start();
+    }
+
+    private void limpiarFormularioPersona() {
+        personaSeleccionada = null;
+        txtPerCedula.clear();
+        txtPerNombre.clear();
+        txtPerApellido.clear();
+        txtPerCelular.clear();
+        txtPerCorreo.clear();
+        dpPerFechaNac.setValue(null);
+        cbPerGenero.setValue(null);
+        tblPersonas.getSelectionModel().clearSelection();
     }
 
     // ── Usuarios ──────────────────────────────────────────────
 
+    @SuppressWarnings("unchecked")
     private void configurarTablaUsuarios() {
         tblUsuarios.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Inicializar con lista observable vacía
+        tblUsuarios.setItems(FXCollections.observableArrayList());
         colUsuNombre.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().get("usuario") != null ? c.getValue().get("usuario").toString() : ""));
         colUsuContrasena.setCellValueFactory(c -> new SimpleStringProperty("••••••••"));
 
-        // Al seleccionar un usuario, poblar el formulario
         tblUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, old, u) -> {
             if (u == null) return;
             txtUsuNombre.setText(u.get("usuario") != null ? u.get("usuario").toString() : "");
-            txtUsuContrasena.clear(); // no mostrar contraseña real
+            txtUsuContrasena.clear();
         });
     }
 
     @SuppressWarnings("unchecked")
     private void cargarTablaUsuarios() {
-        try {
-            String json = ClienteHttp.get("/api/usuarios");
-            List<Map> usuarios = ClienteHttp.parsearLista(json, Map.class);
-            tblUsuarios.setItems(FXCollections.observableArrayList(usuarios));
-        } catch (Exception e) { e.printStackTrace(); }
+        new Thread(() -> {
+            try {
+                String json = ClienteHttp.get("/api/usuarios");
+                List<Map> usuarios = ClienteHttp.parsearLista(json, Map.class);
+                javafx.application.Platform.runLater(() -> {
+                    tblUsuarios.getItems().setAll(usuarios);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al cargar usuarios: " + e.getMessage()));
+            }
+        }).start();
     }
 
-    @FXML void onEditarUsuario(ActionEvent e)   { mostrarInfo("Edición de usuario pendiente"); }
-    @FXML void onCrearUsuario(ActionEvent e)    { mostrarInfo("Creación de usuario pendiente"); }
-    @FXML void onEliminarUsuario(ActionEvent e) { mostrarInfo("Eliminación de usuario pendiente"); }
+    @FXML
+    void onEditarUsuario(ActionEvent e) {
+        Map seleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) { mostrarError("Seleccione un usuario de la lista"); return; }
+        String nuevoNombre = txtUsuNombre.getText().trim();
+        String nuevaClave  = txtUsuContrasena.getText().trim();
+        if (nuevoNombre.isEmpty()) { mostrarError("El nombre de usuario es obligatorio"); return; }
+        Object idObj = seleccionado.get("idUsuario");
+        if (idObj == null) { mostrarError("No se pudo obtener el ID.\nClaves: " + seleccionado.keySet()); return; }
+        int idUsuario = ((Number) idObj).intValue();
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("usuario", nuevoNombre);
+        body.put("contrasena", nuevaClave.isEmpty() ? seleccionado.getOrDefault("contrasena", "").toString() : nuevaClave);
+        new Thread(() -> {
+            try {
+                ClienteHttp.put("/api/usuarios/" + idUsuario, body, SesionUsuario.getInstancia().getToken());
+                javafx.application.Platform.runLater(() -> {
+                    cargarTablaUsuarios();
+                    txtUsuNombre.clear();
+                    txtUsuContrasena.clear();
+                    mostrarInfo("Usuario actualizado correctamente");
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al editar usuario: " + ex.getMessage()));
+            }
+        }).start();
+    }
+
+    @FXML
+    void onCrearUsuario(ActionEvent e) {
+        String nombre = txtUsuNombre.getText().trim();
+        String clave  = txtUsuContrasena.getText().trim();
+        if (nombre.isEmpty() || clave.isEmpty()) {
+            mostrarError("Usuario y Contraseña son obligatorios"); return;
+        }
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("usuario", nombre);
+        body.put("contrasena", clave);
+        new Thread(() -> {
+            try {
+                ClienteHttp.post("/api/usuarios", body);
+                javafx.application.Platform.runLater(() -> {
+                    cargarTablaUsuarios();
+                    txtUsuNombre.clear();
+                    txtUsuContrasena.clear();
+                    mostrarInfo("Usuario creado correctamente");
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al crear usuario: " + ex.getMessage()));
+            }
+        }).start();
+    }
+
+    @FXML
+    void onEliminarUsuario(ActionEvent e) {
+        Map seleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) { mostrarError("Seleccione un usuario de la lista"); return; }
+        Object idObj = seleccionado.get("idUsuario");
+        if (idObj == null) { mostrarError("No se pudo obtener el ID.\nClaves: " + seleccionado.keySet()); return; }
+        int idUsuario = ((Number) idObj).intValue();
+        new Thread(() -> {
+            try {
+                ClienteHttp.delete("/api/usuarios/" + idUsuario, SesionUsuario.getInstancia().getToken());
+                javafx.application.Platform.runLater(() -> {
+                    cargarTablaUsuarios();
+                    txtUsuNombre.clear();
+                    txtUsuContrasena.clear();
+                    mostrarInfo("Usuario eliminado correctamente");
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                javafx.application.Platform.runLater(() ->
+                    mostrarError("Error al eliminar usuario: " + ex.getMessage()));
+            }
+        }).start();
+    }
 
     private void mostrarError(String msg) { new Alert(Alert.AlertType.ERROR, msg).showAndWait(); }
     private void mostrarInfo(String msg)  { new Alert(Alert.AlertType.INFORMATION, msg).showAndWait(); }
