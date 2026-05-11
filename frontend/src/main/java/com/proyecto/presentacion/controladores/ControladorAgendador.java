@@ -5,6 +5,7 @@ import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
+import com.proyecto.presentacion.dto.PersonaDTO;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import javafx.util.StringConverter;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -47,11 +49,14 @@ public class ControladorAgendador implements Initializable {
     private LocalDate filtroFecha  = null;
 
     private List<MedicoDTO> medicos;
+    // Mapa idPaciente → nombre completo para resolver en la tabla
+    private final Map<Integer, String> mapaPacientes = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarColumnas();
         cargarMedicos();
+        cargarPacientes();
         filtroFecha = LocalDate.now();
         cargarCitas(null, filtroFecha);
         actualizarContadores();
@@ -65,8 +70,10 @@ public class ControladorAgendador implements Initializable {
     // ─── Configuración de tabla ───────────────────────────────────────────────
 
     private void configurarColumnas() {
-        colPaciente.setCellValueFactory(c ->
-                new SimpleStringProperty("Paciente #" + c.getValue().getIdPaciente()));
+        colPaciente.setCellValueFactory(c -> {
+            String nombre = mapaPacientes.get(c.getValue().getIdPaciente());
+            return new SimpleStringProperty(nombre != null ? nombre : "Paciente #" + c.getValue().getIdPaciente());
+        });
 
         colMedico.setCellValueFactory(c -> {
             if (medicos != null) {
@@ -121,6 +128,17 @@ public class ControladorAgendador implements Initializable {
                 public String toString(MedicoDTO m)   { return m == null ? "Todos los médicos" : m.toString(); }
                 public MedicoDTO fromString(String s) { return null; }
             });
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void cargarPacientes() {
+        try {
+            String json = ClienteHttp.get("/api/pacientes");
+            List<PersonaDTO> pacientes = ClienteHttp.parsearLista(json, PersonaDTO.class);
+            mapaPacientes.clear();
+            for (PersonaDTO p : pacientes) {
+                mapaPacientes.put(p.getIdPersona(), p.getNombre() + " " + p.getApellido());
+            }
         } catch (Exception e) { e.printStackTrace(); }
     }
 

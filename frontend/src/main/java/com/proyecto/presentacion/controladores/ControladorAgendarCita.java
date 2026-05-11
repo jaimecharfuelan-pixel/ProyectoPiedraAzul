@@ -219,7 +219,7 @@ public class ControladorAgendarCita {
         if (cedula.isEmpty()) { mostrarError("Ingrese una cédula para buscar"); return; }
         try {
             PersonaDTO persona = backendFacade.buscarPacientePorDocumento(cedula);
-            if (persona.getIdPersona() == 0) {
+            if (persona == null || persona.getIdPersona() == 0) {
                 mostrarError("No se encontró ninguna persona con esa cédula");
                 return;
             }
@@ -250,24 +250,29 @@ public class ControladorAgendarCita {
         try {
             PersonaDTO persona = backendFacade.buscarPacientePorDocumento(txtCedula.getText().trim());
             int idPaciente;
-            if (persona.getIdPersona() > 0) {
+            if (persona != null && persona.getIdPersona() > 0) {
                 idPaciente = persona.getIdPersona();
             } else {
-                PersonaDTO nuevo = backendFacade.registrarPaciente(Map.of(
-                        "paciente", Map.of(
-                                "nombre",            txtNombre.getText().trim(),
-                                "apellido",          txtApellido.getText().trim(),
-                                "cedulaCiudadania",  txtCedula.getText().trim(),
-                                "celular",           txtCelular.getText().trim(),
-                                "correo",            txtCorreo.getText().trim(),
-                                "idGenero",          generoAId(cbGenero.getValue()),
-                                "idEstado",          2
-                        ),
-                        "usuario", Map.of(
-                                "usuario",    txtCedula.getText().trim(),
-                                "contrasena", txtCedula.getText().trim()
-                        )
-                ));
+                // Construir el body con HashMap para evitar problemas de serialización
+                // con Map.of() anidado que Jackson no deserializa correctamente
+                java.util.Map<String, Object> pacienteBody = new java.util.HashMap<>();
+                pacienteBody.put("nombre",           txtNombre.getText().trim());
+                pacienteBody.put("apellido",         txtApellido.getText().trim());
+                pacienteBody.put("cedulaCiudadania", txtCedula.getText().trim());
+                pacienteBody.put("celular",          txtCelular.getText().trim());
+                pacienteBody.put("correo",           txtCorreo.getText().trim());
+                pacienteBody.put("idGenero",         generoAId(cbGenero.getValue()));
+                pacienteBody.put("idEstado",         2);
+
+                java.util.Map<String, Object> usuarioBody = new java.util.HashMap<>();
+                usuarioBody.put("usuario",    txtCedula.getText().trim());
+                usuarioBody.put("contrasena", txtCedula.getText().trim());
+
+                java.util.Map<String, Object> body = new java.util.HashMap<>();
+                body.put("paciente", pacienteBody);
+                body.put("usuario",  usuarioBody);
+
+                PersonaDTO nuevo = backendFacade.registrarPaciente(body);
                 idPaciente = nuevo.getIdPersona();
             }
 

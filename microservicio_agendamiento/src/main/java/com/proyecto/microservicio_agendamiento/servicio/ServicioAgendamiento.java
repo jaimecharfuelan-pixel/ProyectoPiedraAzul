@@ -3,6 +3,7 @@ package com.proyecto.microservicio_agendamiento.servicio;
 import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
 import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
 import com.proyecto.microservicio_agendamiento.modelo.Cita;
+import com.proyecto.microservicio_agendamiento.modelo.CitaWebBuilder;
 import com.proyecto.microservicio_agendamiento.modelo.EstadoCita;
 import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
 import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoTemplate;
@@ -85,13 +86,12 @@ public class ServicioAgendamiento {
         List<LocalTime> disponibles = consultarDisponibilidad(idMedico, fecha);
         if (!disponibles.contains(hora)) return false;
 
-        Cita cita = Cita.builder()
+
+        Cita cita = new CitaWebBuilder()
                 .idPaciente(idPaciente)
                 .idMedico(idMedico)
                 .fecha(fecha)
                 .horaInicio(hora)
-                .horaFin(hora.plusMinutes(30))
-                .idEstadoCita(2)
                 .build();
         return flujoWeb.guardarYPublicar(cita, repoCitas, publicador);
     }

@@ -35,12 +35,18 @@ public class ClienteHttp {
     public static String get(String path) throws Exception {
         HttpRequest req = HttpRequestFactory.crearGet(path, null);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 
     public static String getConToken(String path, String token) throws Exception {
         HttpRequest req = HttpRequestFactory.crearGet(path, token);
         HttpResponse<String> resp = cliente.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (resp.statusCode() >= 400) {
+            throw new Exception("HTTP " + resp.statusCode() + ": " + resp.body());
+        }
         return resp.body();
     }
 

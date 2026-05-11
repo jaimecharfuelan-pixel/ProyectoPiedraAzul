@@ -2,9 +2,6 @@
 **/target/
 **/*.class
 
-# Archivos temporales y zips descargados
-*.zip
-ProyectoPiedraAzul-main/
 
 # IDE
 .idea/
