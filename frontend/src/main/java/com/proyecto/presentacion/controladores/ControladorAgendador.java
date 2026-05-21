@@ -57,8 +57,9 @@ public class ControladorAgendador implements Initializable {
         configurarColumnas();
         cargarMedicos();
         cargarPacientes();
-        filtroFecha = LocalDate.now();
-        cargarCitas(null, filtroFecha);
+        // Sin filtro de fecha inicial — muestra todas las citas de hoy o las más recientes
+        filtroFecha = null;
+        cargarCitas(null, null);
         actualizarContadores();
         // Calendario inicial: días con jornada de cualquier médico
         actualizarCalendarioFiltro(null);
@@ -188,16 +189,29 @@ public class ControladorAgendador implements Initializable {
 
     /**
      * Carga citas activas (no canceladas) con el filtro dado.
-     * Guarda el filtro para poder recargar después de cancelar/reagendar.
+     * Si fecha es null, carga todas las citas sin filtrar por fecha.
      */
     private void cargarCitas(Integer idMedico, LocalDate fecha) {
         filtroIdMedico = idMedico;
         filtroFecha    = fecha;
         try {
-            String url = "/api/citas?fecha=" + (fecha != null ? fecha : LocalDate.now());
-            if (idMedico != null) url += "&idMedico=" + idMedico;
+            String url;
+            if (fecha != null && idMedico != null) {
+                url = "/api/citas?fecha=" + fecha + "&idMedico=" + idMedico;
+            } else if (fecha != null) {
+                url = "/api/citas?fecha=" + fecha;
+            } else if (idMedico != null) {
+                url = "/api/citas/todas"; // todas y filtramos localmente por médico
+            } else {
+                url = "/api/citas/todas"; // sin filtro: mostrar todas
+            }
             String json = ClienteHttp.get(url);
             List<CitaDTO> citas = ClienteHttp.parsearLista(json, CitaDTO.class);
+            // Filtro local por médico si no se pudo filtrar en el servidor
+            if (idMedico != null && fecha == null) {
+                final int id = idMedico;
+                citas = citas.stream().filter(c -> c.getIdMedico() == id).toList();
+            }
             tblCitas.setItems(FXCollections.observableArrayList(citas));
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -229,7 +243,7 @@ public class ControladorAgendador implements Initializable {
 
     @FXML
     void onFiltrar(ActionEvent e) {
-        LocalDate fecha  = dpFechaFiltro.getValue();
+        LocalDate fecha  = dpFechaFiltro.getValue();   // puede ser null si no seleccionó
         MedicoDTO medico = cbDoctorFiltro.getValue();
         cargarCitas(medico != null ? medico.getIdMedico() : null, fecha);
     }
