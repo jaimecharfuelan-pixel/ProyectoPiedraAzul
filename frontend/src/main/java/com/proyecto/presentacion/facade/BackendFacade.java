@@ -24,8 +24,16 @@ public class BackendFacade {
     }
 
     public PersonaDTO buscarPacientePorDocumento(String cedula) throws Exception {
-        String json = ClienteHttp.get("/api/pacientes/documento/" + cedula);
-        return ClienteHttp.parsear(json, PersonaDTO.class);
+        try {
+            String json = ClienteHttp.get("/api/pacientes/documento/" + cedula);
+            return ClienteHttp.parsear(json, PersonaDTO.class);
+        } catch (Exception e) {
+            // 404 = paciente no existe, devolvemos null para que el llamador lo maneje
+            if (e.getMessage() != null && e.getMessage().contains("HTTP 404")) {
+                return null;
+            }
+            throw e;
+        }
     }
 
     public PersonaDTO registrarPaciente(Map<String, Object> body) throws Exception {

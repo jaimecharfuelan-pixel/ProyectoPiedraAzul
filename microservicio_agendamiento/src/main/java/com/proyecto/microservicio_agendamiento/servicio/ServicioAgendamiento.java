@@ -1,18 +1,25 @@
 package com.proyecto.microservicio_agendamiento.servicio;
 
-import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
-import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
-import com.proyecto.microservicio_agendamiento.modelo.Cita;
-import com.proyecto.microservicio_agendamiento.modelo.EstadoCita;
-import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
-import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.proyecto.microservicio_agendamiento.dto.JornadaResumenDTO;
+import com.proyecto.microservicio_agendamiento.mensajeria.PublicadorCitas;
+import com.proyecto.microservicio_agendamiento.modelo.Cita;
+import com.proyecto.microservicio_agendamiento.modelo.CitaWebBuilder;
+import com.proyecto.microservicio_agendamiento.modelo.EstadoCita;
+import com.proyecto.microservicio_agendamiento.repositorio.RepositorioCitas;
+import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoManual;
+import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoTemplate;
+import com.proyecto.microservicio_agendamiento.servicio.template.CitaProcesoWeb;
 
 @Service
 public class ServicioAgendamiento {
@@ -20,18 +27,8 @@ public class ServicioAgendamiento {
     private final RepositorioCitas repoCitas;
     private final RestTemplate restTemplate;
     private final PublicadorCitas publicador;
-    private final CitaProcesoTemplate flujoWeb = new CitaProcesoTemplate() {
-        @Override
-        protected void despuesDeGuardar(Cita cita) {
-            // Hook para futuras acciones especificas del flujo web.
-        }
-    };
-    private final CitaProcesoTemplate flujoManual = new CitaProcesoTemplate() {
-        @Override
-        protected void despuesDeGuardar(Cita cita) {
-            // Hook para futuras acciones especificas del flujo manual.
-        }
-    };
+    private final CitaProcesoTemplate flujoWeb    = new CitaProcesoWeb();
+    private final CitaProcesoTemplate flujoManual = new CitaProcesoManual();
 
     @org.springframework.beans.factory.annotation.Value("${ms.configuracion.url:http://microservicio-configuracion:8080}")
     private String msConfiguracionUrl;
@@ -85,19 +82,18 @@ public class ServicioAgendamiento {
         List<LocalTime> disponibles = consultarDisponibilidad(idMedico, fecha);
         if (!disponibles.contains(hora)) return false;
 
-        Cita cita = Cita.builder()
+
+        Cita cita = new CitaWebBuilder()
                 .idPaciente(idPaciente)
                 .idMedico(idMedico)
                 .fecha(fecha)
                 .horaInicio(hora)
-                .horaFin(hora.plusMinutes(30))
-                .idEstadoCita(2)
                 .build();
-        return flujoWeb.guardarYPublicar(cita, repoCitas, publicador);
+        return flujoWeb.procesarCita(cita, repoCitas, publicador);
     }
 
     public boolean crearCitaManual(Cita cita) {
-        return flujoManual.guardarYPublicar(cita, repoCitas, publicador);
+        return flujoManual.procesarCita(cita, repoCitas, publicador);
     }
 
     public List<Cita> listarCitas(Integer idMedico, LocalDate fecha) {
