@@ -151,6 +151,94 @@ Se creo el metodo plantilla `guardarYPublicar(...)` que:
 
 ---
 
+## 7) State
+
+### Que es
+Permite que un objeto cambie su comportamiento cuando su estado interno varia. El patrón encapsula el comportamiento que depende del estado en clases separadas.
+
+### Donde se agrego
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoConsultaStrategy.java` (interfaz)
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoPendiente.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoConfirmada.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoCompletada.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoCancelada.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoNoAsistio.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/FabricaEstados.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/TablaTransiciones.java`
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/Consulta.java` (contexto)
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/DemostracionPatronState.java` (tests)
+
+### Como se implemento
+Se creo:
+1. **Interfaz `EstadoConsultaStrategy`** que define operaciones comunes a todos los estados:
+   - `confirmar()`, `cancelar()`, `completar()`, `marcarNoAsistio()`
+   - `obtenerNombre()`, `obtenerID()`, `obtenerDescripcion()`
+
+2. **5 Estados Concretos** que implementan la interfaz:
+   - `EstadoPendiente`: Consulta recién agendada
+   - `EstadoConfirmada`: Paciente confirmó
+   - `EstadoCompletada`: Consulta realizada (TERMINAL)
+   - `EstadoCancelada`: Consulta cancelada (TERMINAL)
+   - `EstadoNoAsistio`: Paciente no asistió (TERMINAL)
+
+3. **Clase Contexto `Consulta`** que:
+   - Contiene los datos de la consulta (paciente, médico, fecha, hora)
+   - Mantiene un `estadoActual` del tipo `EstadoConsultaStrategy`
+   - Delega operaciones al estado actual: `confirmar()`, `cancelar()`, etc.
+
+4. **Factory `FabricaEstados`** para crear estados por ID o estado inicial
+
+5. **Documentación `TablaTransiciones`** que muestra visualmente qué transiciones son válidas
+
+### Tabla de Transiciones Implementada
+```
+┌──────────────────┬────────────┬──────────┬───────────┬─────────────┐
+│ ESTADO ACTUAL    │ CONFIRMAR  │ CANCELAR │ COMPLETAR │ NO ASISTIO  │
+├──────────────────┼────────────┼──────────┼───────────┼─────────────┤
+│ Pendiente        │     ✓      │    ✓     │     ✗     │      ✗      │
+│ Confirmada       │     ✓      │    ✓     │     ✓     │      ✓      │
+│ Completada       │     ✗      │    ✗     │     ✓     │      ✗      │
+│ Cancelada        │     ✗      │    ✓     │     ✗     │      ✗      │
+│ No Asistió       │     ✗      │    ✗     │     ✗     │      ✓      │
+└──────────────────┴────────────┴──────────┴───────────┴─────────────┘
+```
+
+### Que mejoro
+- **Validación automática:** Cada estado valida si una operación es permitida
+- **Sin cascadas de if/else:** La lógica está encapsulada en cada clase de estado
+- **Fácil extensión:** Agregar un nuevo estado = crear una nueva clase, sin modificar existentes
+- **Mejor testabilidad:** Cada estado puede testearse independientemente
+- **Documentación clara:** Las transiciones válidas están explícitas en cada estado
+
+### Ejemplos de Uso
+```java
+// Crear consulta (comienza en PENDIENTE)
+Consulta consulta = new Consulta(10, 3, fecha, horaInicio, horaFin);
+
+// Cambiar estado (el estado actual decide si es válido)
+if (consulta.confirmar()) {
+    // Transición PENDIENTE → CONFIRMADA exitosa
+    guardarEnBD(consulta);
+} else {
+    // Transición fue rechazada
+}
+
+// Obtener información
+String estado = consulta.getEstadoNombre();  // "Confirmada"
+int idEstado = consulta.getEstadoID();       // 3
+```
+
+---
+
+## Documentacion Incluida para State Pattern
+
+- `PATRON_STATE_EXPLICACION.md` - Explicación detallada del patrón
+- `PATRON_STATE_RESUMEN.md` - Resumen ejecutivo
+- `PATRON_STATE_DIAGRAMAS.md` - Diagramas UML y visualización
+- `PATRON_STATE_REFERENCIA.md` - Guía de referencia rápida para desarrolladores
+
+---
+
 ## Resumen rapido (patron -> modulo)
 
 - Factory Method -> `frontend` (`ClienteHttp`)
@@ -159,6 +247,9 @@ Se creo el metodo plantilla `guardarYPublicar(...)` que:
 - Adapter -> `microservicio_configuracion` (cliente de medicos)
 - Builder -> `microservicio_agendamiento` (`Cita`)
 - Template Method -> `microservicio_agendamiento` (proceso de guardado/publicacion)
+- **State -> `microservicio_agendamiento` (ciclo de vida de Consulta)** ← NUEVO
+
+**TOTAL: 7 PATRONES GOF IMPLEMENTADOS**
 
 ---
 
@@ -167,5 +258,6 @@ Se creo el metodo plantilla `guardarYPublicar(...)` que:
 Durante validacion:
 - `frontend` compila con JDK 17.
 - `microservicio_usuarios`, `microservicio_configuracion` y `microservicio_agendamiento` requieren Java 21 (sus `pom.xml` usan release 21).
+- Las clases del patrón State fueron compiladas y testeadas exitosamente con Java 23.
 
 Si quieres, en un siguiente paso puedo dejar tambien un `CHECKLIST_PATRONES.md` corto para presentacion (tipo evidencia academica: patron, archivo, captura sugerida y prueba recomendada).
