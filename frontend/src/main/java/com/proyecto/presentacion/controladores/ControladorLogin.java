@@ -201,6 +201,19 @@ public class ControladorLogin {
 
     // ─── Navegación ───────────────────────────────────────────────────────────
 
+    @FXML
+    private void onRegistro() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/presentacion/vistas/VistaRegistroPaciente.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) txtUsuario.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarNotificacion("Error", "No se pudo abrir la vista de registro", TipoNoti.ERROR);
+        }
+    }
+
     private void navegarSegunRol(String rol) {
         String vista = switch (rol) {
             case "administrador" -> "/com/presentacion/vistas/VistaAdmin.fxml";

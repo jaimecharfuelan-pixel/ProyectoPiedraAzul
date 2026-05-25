@@ -90,7 +90,9 @@
                <HBox alignment="CENTER" spacing="4" style="-fx-padding: 18 0 0 0;">
                   <Label styleClass="label-grey-small"
                          text="¿No tienes una cuenta?" style="-fx-font-size: 14px;"/>
-                  <Hyperlink text="Regístrese aquí" style="-fx-font-size: 14px;"/>
+                  <Hyperlink fx:id="hypRegistro" text="Regístrese aquí"
+                             onAction="#onRegistro"
+                             style="-fx-font-size: 14px;"/>
                </HBox>
             </children>
          </VBox>
