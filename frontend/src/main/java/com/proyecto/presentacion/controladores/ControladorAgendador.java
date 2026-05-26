@@ -1,7 +1,8 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
+import com.proyecto.presentacion.facade.BackendFacade;
+import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
@@ -49,8 +50,8 @@ public class ControladorAgendador implements Initializable {
     private LocalDate filtroFecha  = null;
 
     private List<MedicoDTO> medicos;
-    // Mapa idPaciente → nombre completo para resolver en la tabla
     private final Map<Integer, String> mapaPacientes = new HashMap<>();
+    private final BackendFacade backend = new BackendFacade();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -120,9 +121,7 @@ public class ControladorAgendador implements Initializable {
 
     private void cargarMedicos() {
         try {
-            String json = ClienteHttp.get("/api/medicos/activos");
-            medicos = ClienteHttp.parsearLista(json, MedicoDTO.class);
-
+            medicos = backend.listarMedicosActivos();
             cbDoctorFiltro.setItems(FXCollections.observableArrayList(medicos));
             cbDoctorFiltro.getItems().add(0, null);
             cbDoctorFiltro.setConverter(new StringConverter<>() {
@@ -134,12 +133,10 @@ public class ControladorAgendador implements Initializable {
 
     private void cargarPacientes() {
         try {
-            String json = ClienteHttp.get("/api/pacientes");
-            List<PersonaDTO> pacientes = ClienteHttp.parsearLista(json, PersonaDTO.class);
+            List<PersonaDTO> pacientes = backend.listarPacientes();
             mapaPacientes.clear();
-            for (PersonaDTO p : pacientes) {
+            for (PersonaDTO p : pacientes)
                 mapaPacientes.put(p.getIdPersona(), p.getNombre() + " " + p.getApellido());
-            }
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -152,13 +149,9 @@ public class ControladorAgendador implements Initializable {
         List<String> diasHabilitados;
         try {
             if (medico != null) {
-                // Días con jornada del médico específico
-                String json = ClienteHttp.get("/api/jornadas/medico/" + medico.getIdMedico() + "/dias");
-                diasHabilitados = ClienteHttp.parsearLista(json, String.class);
+                diasHabilitados = backend.listarDiasConJornada(medico.getIdMedico());
             } else {
-                // Todos los días que tienen jornada de cualquier médico
-                String json = ClienteHttp.get("/api/jornadas");
-                List<JornadaDTO> jornadas = ClienteHttp.parsearLista(json, JornadaDTO.class);
+                List<JornadaDTO> jornadas = backend.listarJornadas();
                 diasHabilitados = jornadas.stream()
                         .map(JornadaDTO::getDiaSemana)
                         .filter(d -> d != null)
@@ -175,14 +168,12 @@ public class ControladorAgendador implements Initializable {
             @Override
             public void updateItem(LocalDate d, boolean empty) {
                 super.updateItem(d, empty);
-                if (dias.isEmpty()) return; // sin info, no deshabilitar
-                String nombreDia = traducirDia(d.getDayOfWeek().name());
+                if (dias.isEmpty()) return;
+                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
                 boolean sinJornada = dias.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
                 setDisable(sinJornada);
-                if (sinJornada)
-                    setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #bbb;");
-                else
-                    setStyle("");
+                if (sinJornada) setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #bbb;");
+                else setStyle("");
             }
         });
     }
@@ -195,19 +186,7 @@ public class ControladorAgendador implements Initializable {
         filtroIdMedico = idMedico;
         filtroFecha    = fecha;
         try {
-            String url;
-            if (fecha != null && idMedico != null) {
-                url = "/api/citas?fecha=" + fecha + "&idMedico=" + idMedico;
-            } else if (fecha != null) {
-                url = "/api/citas?fecha=" + fecha;
-            } else if (idMedico != null) {
-                url = "/api/citas/todas"; // todas y filtramos localmente por médico
-            } else {
-                url = "/api/citas/todas"; // sin filtro: mostrar todas
-            }
-            String json = ClienteHttp.get(url);
-            List<CitaDTO> citas = ClienteHttp.parsearLista(json, CitaDTO.class);
-            // Filtro local por médico si no se pudo filtrar en el servidor
+            List<CitaDTO> citas = backend.listarCitas(fecha, idMedico);
             if (idMedico != null && fecha == null) {
                 final int id = idMedico;
                 citas = citas.stream().filter(c -> c.getIdMedico() == id).toList();
@@ -223,19 +202,13 @@ public class ControladorAgendador implements Initializable {
 
     private void actualizarContadores() {
         try {
-            String json = ClienteHttp.get("/api/citas?fecha=" + LocalDate.now());
-            List<CitaDTO> citasHoy = ClienteHttp.parsearLista(json, CitaDTO.class);
-
+            List<CitaDTO> citasHoy = backend.listarCitasHoy();
             long pendientes = citasHoy.stream()
                     .filter(c -> c.getIdEstadoCita() != null && c.getIdEstadoCita() == 2)
                     .count();
-
-            if (lblTotalHoy != null)
-                lblTotalHoy.setText(String.valueOf(citasHoy.size()));
-            if (lblPendientesConfirmacionHoy != null)
-                lblPendientesConfirmacionHoy.setText(String.valueOf(pendientes));
-            if (medicos != null && medicosActivos != null)
-                medicosActivos.setText(String.valueOf(medicos.size()));
+            if (lblTotalHoy != null)                lblTotalHoy.setText(String.valueOf(citasHoy.size()));
+            if (lblPendientesConfirmacionHoy != null) lblPendientesConfirmacionHoy.setText(String.valueOf(pendientes));
+            if (medicos != null && medicosActivos != null) medicosActivos.setText(String.valueOf(medicos.size()));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -279,22 +252,17 @@ public class ControladorAgendador implements Initializable {
         confirm.setHeaderText("¿Cancelar esta cita?");
         confirm.setContentText("Paciente #" + cita.getIdPaciente()
                 + "  —  " + cita.getFecha() + " " + cita.getHoraInicio());
-
         ButtonType btnSi = new ButtonType("Sí, cancelar");
         ButtonType btnNo = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirm.getButtonTypes().setAll(btnSi, btnNo);
-
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == btnSi) {
                 try {
-                    // DELETE /api/citas/{id}  →  cambia estado a Cancelada, no borra
-                    ClienteHttp.delete("/api/citas/" + cita.getIdCita(), null);
+                    backend.cancelarCita(cita.getIdCita(), null);
                     mostrarInfo("Cita cancelada correctamente.");
-                    recargarCitas();          // la cita ya no aparece (estado=Cancelada)
+                    recargarCitas();
                     actualizarContadores();
-                } catch (Exception ex) {
-                    mostrarError("Error al cancelar: " + ex.getMessage());
-                }
+                } catch (Exception ex) { mostrarError("Error al cancelar: " + ex.getMessage()); }
             }
         });
     }
@@ -320,7 +288,7 @@ public class ControladorAgendador implements Initializable {
             @Override
             public void updateItem(LocalDate d, boolean empty) {
                 super.updateItem(d, empty);
-                String nombreDia = traducirDia(d.getDayOfWeek().name());
+                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
                 boolean sinJornada = !diasConJornada.isEmpty()
                         && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
                 setDisable(d.isBefore(LocalDate.now()) || sinJornada);
@@ -348,32 +316,18 @@ public class ControladorAgendador implements Initializable {
 
         dialog.showAndWait().ifPresent(result -> {
             if (result != ButtonType.OK) return;
-
             LocalDate nuevaFecha = dpNuevaFecha.getValue();
             LocalTime nuevaHora  = cbNuevaHora.getValue();
-
-            if (nuevaFecha == null || nuevaHora == null) {
-                mostrarError("Debe seleccionar fecha y hora.");
-                return;
-            }
-
+            if (nuevaFecha == null || nuevaHora == null) { mostrarError("Debe seleccionar fecha y hora."); return; }
             try {
-                // PATCH /api/citas/{id}/reagendar
-                String respuesta = ClienteHttp.patch(
-                        "/api/citas/" + cita.getIdCita() + "/reagendar",
-                        Map.of("nuevaFecha", nuevaFecha.toString(),
-                               "nuevaHora",  nuevaHora.toString()),
-                        null);
-
+                String respuesta = backend.reagendarCita(cita.getIdCita(), nuevaFecha, nuevaHora, null);
                 if (respuesta != null && respuesta.contains("reagendada")) {
                     mostrarInfo("Cita reagendada correctamente.");
                     recargarCitas();
                 } else {
                     mostrarError("No se pudo reagendar: " + respuesta);
                 }
-            } catch (Exception ex) {
-                mostrarError("Error al reagendar: " + ex.getMessage());
-            }
+            } catch (Exception ex) { mostrarError("Error al reagendar: " + ex.getMessage()); }
         });
     }
 
@@ -383,9 +337,7 @@ public class ControladorAgendador implements Initializable {
         cbHora.getItems().clear();
         if (fecha == null) return;
         try {
-            String json = ClienteHttp.get(
-                    "/api/citas/disponibilidad?idMedico=" + idMedico + "&fecha=" + fecha);
-            List<LocalTime> horarios = ClienteHttp.parsearLista(json, LocalTime.class);
+            List<LocalTime> horarios = backend.consultarDisponibilidad(idMedico, fecha);
             cbHora.getItems().addAll(horarios);
             if (!horarios.isEmpty()) cbHora.setValue(horarios.get(0));
         } catch (Exception e) { e.printStackTrace(); }
@@ -393,26 +345,8 @@ public class ControladorAgendador implements Initializable {
 
     private List<String> obtenerDiasConJornada(int idMedico) {
         try {
-            String json = ClienteHttp.get("/api/jornadas/medico/" + idMedico + "/dias");
-            return ClienteHttp.parsearLista(json, String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return List.of();
-        }
-    }
-
-    /** Convierte el nombre en inglés del DayOfWeek al español usado en la BD. */
-    private String traducirDia(String dayOfWeekEn) {
-        return switch (dayOfWeekEn) {
-            case "MONDAY"    -> "Lunes";
-            case "TUESDAY"   -> "Martes";
-            case "WEDNESDAY" -> "Miércoles";
-            case "THURSDAY"  -> "Jueves";
-            case "FRIDAY"    -> "Viernes";
-            case "SATURDAY"  -> "Sábado";
-            case "SUNDAY"    -> "Domingo";
-            default          -> dayOfWeekEn;
-        };
+            return backend.listarDiasConJornada(idMedico);
+        } catch (Exception e) { e.printStackTrace(); return List.of(); }
     }
 
     private void mostrarInfo(String msg) {

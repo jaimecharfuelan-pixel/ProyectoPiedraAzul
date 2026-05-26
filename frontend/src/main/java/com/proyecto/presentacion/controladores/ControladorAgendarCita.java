@@ -1,10 +1,10 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
+import com.proyecto.presentacion.facade.BackendFacade;
+import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
-import com.proyecto.presentacion.facade.BackendFacade;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,8 +41,6 @@ public class ControladorAgendarCita {
     @FXML private Label               lblErrorMotivo;
 
     private final BackendFacade backendFacade = new BackendFacade();
-
-    // ─── Inicialización ───────────────────────────────────────────────────────
 
     @FXML
     public void initialize() {
@@ -167,25 +165,22 @@ public class ControladorAgendarCita {
         cbHora.getItems().clear();
         if (cbMedico.getValue() == null || dpFecha.getValue() == null) return;
         try {
-            String json = ClienteHttp.get("/api/citas/disponibilidad?idMedico="
-                    + cbMedico.getValue().getIdMedico() + "&fecha=" + dpFecha.getValue());
-            List<LocalTime> horarios = ClienteHttp.parsearLista(json, LocalTime.class);
+            List<LocalTime> horarios = backendFacade.consultarDisponibilidad(
+                    cbMedico.getValue().getIdMedico(), dpFecha.getValue());
             cbHora.getItems().addAll(horarios);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    /** Deshabilita en el DatePicker los días sin jornada del médico seleccionado. */
     private void actualizarCalendario() {
         if (cbMedico.getValue() == null) return;
         try {
-            String json = ClienteHttp.get(
-                    "/api/jornadas/medico/" + cbMedico.getValue().getIdMedico() + "/dias");
-            List<String> diasConJornada = ClienteHttp.parsearLista(json, String.class);
+            List<String> diasConJornada = backendFacade.listarDiasConJornada(
+                    cbMedico.getValue().getIdMedico());
             dpFecha.setDayCellFactory(p -> new DateCell() {
                 @Override
                 public void updateItem(LocalDate d, boolean empty) {
                     super.updateItem(d, empty);
-                    String nombreDia = traducirDia(d.getDayOfWeek().name());
+                    String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
                     boolean sinJornada = !diasConJornada.isEmpty()
                             && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
                     setDisable(d.isBefore(LocalDate.now()) || sinJornada);
@@ -198,19 +193,6 @@ public class ControladorAgendarCita {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private String traducirDia(String dayOfWeekEn) {
-        return switch (dayOfWeekEn) {
-            case "MONDAY"    -> "Lunes";
-            case "TUESDAY"   -> "Martes";
-            case "WEDNESDAY" -> "Miércoles";
-            case "THURSDAY"  -> "Jueves";
-            case "FRIDAY"    -> "Viernes";
-            case "SATURDAY"  -> "Sábado";
-            case "SUNDAY"    -> "Domingo";
-            default          -> dayOfWeekEn;
-        };
-    }
-
     // ─── Acciones ─────────────────────────────────────────────────────────────
 
     @FXML
@@ -220,14 +202,11 @@ public class ControladorAgendarCita {
         try {
             PersonaDTO persona = backendFacade.buscarPacientePorDocumento(cedula);
             if (persona == null || persona.getIdPersona() == 0) {
-                mostrarError("No se encontró ninguna persona con esa cédula");
-                return;
+                mostrarError("No se encontró ninguna persona con esa cédula"); return;
             }
             precargarPersona(persona);
             mostrarInfo("Paciente cargado correctamente");
-        } catch (Exception e) {
-            mostrarError("No se encontró ninguna persona con esa cédula");
-        }
+        } catch (Exception e) { mostrarError("No se encontró ninguna persona con esa cédula"); }
     }
 
     private void precargarPersona(PersonaDTO p) {
@@ -335,8 +314,7 @@ public class ControladorAgendarCita {
     }
 
     private int generoAId(String genero) {
-        if (genero == null) return 4;
-        return switch (genero) { case "Masculino" -> 1; case "Femenino" -> 2; default -> 3; };
+        return Conversiones.generoAId(genero);
     }
 
     private void limpiar() {
@@ -358,8 +336,7 @@ public class ControladorAgendarCita {
     public void setModoPaciente(int idPaciente) {
         if (idPaciente <= 0) return;
         try {
-            String json = ClienteHttp.get("/api/pacientes/" + idPaciente);
-            PersonaDTO p = ClienteHttp.parsear(json, PersonaDTO.class);
+            PersonaDTO p = backendFacade.buscarPacientePorId(idPaciente);
             txtCedula.setText(p.getCedulaCiudadania());
             precargarPersona(p);
             txtCedula.setDisable(true);
