@@ -7,6 +7,8 @@ import com.proyecto.presentacion.dto.LoginResponseDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 import com.proyecto.presentacion.dto.RolDTO;
+import com.proyecto.presentacion.dto.ErrorValidacionDTO;
+import com.proyecto.presentacion.dto.HistorialCitaDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -179,6 +181,21 @@ public class BackendFacade {
         return ClienteHttp.patch("/api/citas/" + idCita + "/reagendar", body, token);
     }
 
+    public ErrorValidacionDTO reagendarCitaConValidacion(int idCita, LocalDate nuevaFecha, LocalTime nuevaHora,
+                                                          String token) throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("nuevaFecha", nuevaFecha.toString());
+        body.put("nuevaHora", nuevaHora.toString());
+        try {
+            String respuesta = ClienteHttp.patch("/api/citas/" + idCita + "/reagendar", body, token);
+            return new ErrorValidacionDTO(true, respuesta, List.of(), 0);
+        } catch (Exception e) {
+            ErrorValidacionDTO dto = parsearErrorValidacion(e);
+            if (dto != null) return dto;
+            throw e;
+        }
+    }
+
     public String agendarCitaWeb(int idPaciente, int idMedico, LocalDate fecha,
                                   LocalTime hora) throws Exception {
         return ClienteHttp.post("/api/citas/web", Map.of(
@@ -187,6 +204,28 @@ public class BackendFacade {
                 "fecha",      fecha.toString(),
                 "hora",       hora.toString()
         ));
+    }
+
+    public ErrorValidacionDTO agendarCitaWebConValidacion(int idPaciente, int idMedico, LocalDate fecha,
+                                                           LocalTime hora) throws Exception {
+        try {
+            String respuesta = ClienteHttp.post("/api/citas/web", Map.of(
+                    "idPaciente", String.valueOf(idPaciente),
+                    "idMedico",   String.valueOf(idMedico),
+                    "fecha",      fecha.toString(),
+                    "hora",       hora.toString()
+            ));
+            return new ErrorValidacionDTO(true, respuesta, List.of(), 0);
+        } catch (Exception e) {
+            ErrorValidacionDTO dto = parsearErrorValidacion(e);
+            if (dto != null) return dto;
+            throw e;
+        }
+    }
+
+    public List<HistorialCitaDTO> obtenerHistorialCita(int idCita) throws Exception {
+        String json = ClienteHttp.get("/api/citas/" + idCita + "/historial");
+        return ClienteHttp.parsearLista(json, HistorialCitaDTO.class);
     }
 
     // ── Disponibilidad ────────────────────────────────────────────────────────
@@ -212,5 +251,16 @@ public class BackendFacade {
     public List<PersonaDTO> listarPacientes() throws Exception {
         String json = ClienteHttp.get("/api/pacientes");
         return ClienteHttp.parsearLista(json, PersonaDTO.class);
+    }
+
+    private ErrorValidacionDTO parsearErrorValidacion(Exception e) {
+        String m = e.getMessage();
+        if (m == null || !m.startsWith("HTTP 400:")) return null;
+        String body = m.substring("HTTP 400:".length()).trim();
+        try {
+            return ClienteHttp.parsear(body, ErrorValidacionDTO.class);
+        } catch (Exception ignore) {
+            return null;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.proyecto.presentacion.controladores;
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
 import com.proyecto.presentacion.util.Conversiones;
+import com.proyecto.presentacion.dto.ErrorValidacionDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 
@@ -255,20 +256,29 @@ public class ControladorAgendarCita {
                 idPaciente = nuevo.getIdPersona();
             }
 
-            String respuesta = backendFacade.agendarCitaWeb(
+            ErrorValidacionDTO resultado = backendFacade.agendarCitaWebConValidacion(
                     idPaciente,
                     cbMedico.getValue().getIdMedico(),
                     dpFecha.getValue(),
                     cbHora.getValue()
             );
 
-            if (respuesta.contains("agendada")) {
-                mostrarInfo("Cita agendada correctamente");
+            if (resultado.isExitosa()) {
+                mostrarInfo("✅ Cita agendada correctamente");
                 limpiar();
             } else {
-                mostrarError("Ese horario ya no está disponible");
+                mostrarError(construirMensajeValidacion(resultado));
             }
         } catch (Exception e) { mostrarError("Error al agendar: " + e.getMessage()); }
+    }
+
+    private String construirMensajeValidacion(ErrorValidacionDTO dto) {
+        if (dto == null) return "❌ Error de validación desconocido.";
+        if (dto.getErrores() == null || dto.getErrores().isEmpty()) {
+            return "⚠️ " + (dto.getMensajePrincipal() != null ? dto.getMensajePrincipal() : "No se pudo agendar la cita.");
+        }
+        return "⚠️ " + (dto.getMensajePrincipal() != null ? dto.getMensajePrincipal() : "No se pudo agendar la cita.")
+                + "\n\n• " + String.join("\n• ", dto.getErrores());
     }
 
     /** Validación completa al guardar — muestra errores en los labels. */

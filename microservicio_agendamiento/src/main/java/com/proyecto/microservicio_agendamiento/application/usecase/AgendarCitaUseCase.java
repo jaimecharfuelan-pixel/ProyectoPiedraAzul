@@ -4,6 +4,7 @@ import com.proyecto.microservicio_agendamiento.application.dto.AgendarCitaWebCom
 import com.proyecto.microservicio_agendamiento.application.dto.CrearCitaManualCommand;
 import com.proyecto.microservicio_agendamiento.domain.model.Cita;
 import com.proyecto.microservicio_agendamiento.domain.model.EstadoCitaId;
+import com.proyecto.microservicio_agendamiento.domain.model.ValidadorSolapamiento;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.AgendarCitaPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.ConsultarDisponibilidadPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.out.CitaRepositoryPort;
@@ -31,19 +32,38 @@ public class AgendarCitaUseCase implements AgendarCitaPort {
     }
 
     /**
-     * Flujo web: valida disponibilidad, crea cita en estado Pendiente y publica evento.
+     * Flujo web: valida disponibilidad con reglas de solapamiento, crea cita en estado Pendiente y publica evento.
+     * Retorna true si fue exitosa, false si hay conflicto.
      */
     @Override
     public boolean agendarWeb(AgendarCitaWebCommand command) {
         List<LocalTime> horasLibres = disponibilidad.consultar(command.getIdMedico(), command.getFecha());
-        if (!horasLibres.contains(command.getHora())) return false;
+        if (!horasLibres.contains(command.getHora())) {
+            return false; // Hora no disponible
+        }
+
+        // Validar reglas de solapamiento en el dominio
+        LocalTime horaFin = command.getHora().plusMinutes(DURACION_WEB_MINUTOS);
+        List<Cita> todasLasCitas = citaRepo.findAll();
+        List<String> errores = ValidadorSolapamiento.validarCompletamente(
+                command.getIdMedico(),
+                command.getIdPaciente(),
+                command.getFecha(),
+                command.getHora(),
+                horaFin,
+                todasLasCitas
+        );
+
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException(String.join("; ", errores));
+        }
 
         Cita cita = new Cita(
                 command.getIdPaciente(),
                 command.getIdMedico(),
                 command.getFecha(),
                 command.getHora(),
-                command.getHora().plusMinutes(DURACION_WEB_MINUTOS)
+                horaFin
         );
         // Estado inicial Pendiente ya asignado por el constructor de Cita
 
@@ -54,6 +74,7 @@ public class AgendarCitaUseCase implements AgendarCitaPort {
 
     /**
      * Flujo manual: el agendador crea la cita directamente en estado Confirmada.
+     * También valida las reglas de solapamiento para evitar conflictos.
      */
     @Override
     public boolean crearManual(CrearCitaManualCommand command) {
@@ -62,6 +83,23 @@ public class AgendarCitaUseCase implements AgendarCitaPort {
         }
         if (command.getHoraFin().isBefore(command.getHoraInicio())) {
             throw new IllegalArgumentException("horaFin debe ser posterior a horaInicio.");
+        }
+
+        // Validar reglas de solapamiento en el dominio
+        List<Cita> todasLasCitas = citaRepo.findAll();
+        List<String> errores = ValidadorSolapamiento.validarCompletamente(
+                command.getIdMedico(),
+                command.getIdPaciente(),
+                command.getFecha(),
+                command.getHoraInicio(),
+                command.getHoraFin(),
+                todasLasCitas
+        );
+
+        if (!errores.isEmpty()) {
+            // Hay conflictos - loguear y lanzar excepción
+            String mensaje = String.join("; ", errores);
+            throw new IllegalArgumentException("No se puede agendar la cita: " + mensaje);
         }
 
         Cita cita = new Cita(

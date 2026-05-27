@@ -80,8 +80,9 @@
                      <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="200"/>
                      <TableColumn fx:id="colHora"     text="Hora"      prefWidth="100"/>
                      <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="140"/>
-                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="240"/>
-                     <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="180"/>
+                     <TableColumn fx:id="colMedico"   text="Médico"    prefWidth="220"/>
+                     <TableColumn fx:id="colHistorial" text="Historial"  prefWidth="120"/>
+                     <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="160"/>
                   </columns>
                </TableView>
             </VBox>
