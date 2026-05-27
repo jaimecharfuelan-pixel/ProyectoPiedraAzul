@@ -157,7 +157,7 @@ Se creo el metodo plantilla `guardarYPublicar(...)` que:
 Permite que un objeto cambie su comportamiento cuando su estado interno varia. El patrón encapsula el comportamiento que depende del estado en clases separadas.
 
 ### Donde se agrego
-- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoConsultaStrategy.java` (interfaz)
+- `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/domain/model/EstadoCita.java` (interfaz)
 - `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoPendiente.java`
 - `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoConfirmada.java`
 - `microservicio_agendamiento/src/main/java/com/proyecto/microservicio_agendamiento/estado/EstadoCompletada.java`
@@ -170,7 +170,7 @@ Permite que un objeto cambie su comportamiento cuando su estado interno varia. E
 
 ### Como se implemento
 Se creo:
-1. **Interfaz `EstadoConsultaStrategy`** que define operaciones comunes a todos los estados:
+1. **Interfaz `EstadoCita`** que define operaciones comunes a todos los estados:
    - `confirmar()`, `cancelar()`, `completar()`, `marcarNoAsistio()`
    - `obtenerNombre()`, `obtenerID()`, `obtenerDescripcion()`
 
@@ -183,7 +183,7 @@ Se creo:
 
 3. **Clase Contexto `Consulta`** que:
    - Contiene los datos de la consulta (paciente, médico, fecha, hora)
-   - Mantiene un `estadoActual` del tipo `EstadoConsultaStrategy`
+   - Mantiene un `estadoActual` del tipo `EstadoCita`
    - Delega operaciones al estado actual: `confirmar()`, `cancelar()`, etc.
 
 4. **Factory `FabricaEstados`** para crear estados por ID o estado inicial

@@ -1,6 +1,6 @@
 package com.proyecto.microservicio_agendamiento.domain.model;
 
-public class EstadoCompletada implements EstadoConsulta {
+public class EstadoCompletada implements EstadoCita {
 
     @Override public boolean confirmar()      { return false; }
     @Override public boolean cancelar()       { return false; }

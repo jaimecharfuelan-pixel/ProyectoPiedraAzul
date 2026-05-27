@@ -4,6 +4,8 @@ import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
 import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.CitaDTO;
+import com.proyecto.presentacion.dto.ErrorValidacionDTO;
+import com.proyecto.presentacion.dto.HistorialCitaDTO;
 import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
@@ -40,6 +42,7 @@ public class ControladorAgendador implements Initializable {
     @FXML private TableColumn<CitaDTO, String> colMedico;
     @FXML private TableColumn<CitaDTO, String> colFecha;
     @FXML private TableColumn<CitaDTO, String> colHora;
+    @FXML private TableColumn<CitaDTO, Void>   colHistorial;
     @FXML private TableColumn<CitaDTO, Void>   colAcciones;
     @FXML private Label lblTotalHoy;
     @FXML private Label lblPendientesConfirmacionHoy;
@@ -94,6 +97,25 @@ public class ControladorAgendador implements Initializable {
         colHora.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getHoraInicio() != null
                         ? c.getValue().getHoraInicio().toString() : ""));
+
+        // ── Columna de Historial (con botón para ver detalles) ──
+        // Patrón elegido: Diálogo modal al hacer click en el botón "Ver Historial"
+        // Justificación: Los sistemas médicos modernos (Epic, Cerner) usan diálogos modales
+        // para mostrar auditoría de cambios, mantiene la vista limpia y no consume espacio horizontal.
+        colHistorial.setCellFactory(param -> new TableCell<>() {
+            private final Button btnHistorial = new Button("Ver Historial");
+
+            {
+                btnHistorial.setStyle("-fx-padding: 6 12; -fx-font-size: 10px;");
+                btnHistorial.setOnAction(e -> onVerHistorial(getTableView().getItems().get(getIndex())));
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnHistorial);
+            }
+        });
 
         colAcciones.setCellFactory(param -> new TableCell<>() {
             private final Button btnCancelar  = new Button("Cancelar");
@@ -318,16 +340,22 @@ public class ControladorAgendador implements Initializable {
             if (result != ButtonType.OK) return;
             LocalDate nuevaFecha = dpNuevaFecha.getValue();
             LocalTime nuevaHora  = cbNuevaHora.getValue();
-            if (nuevaFecha == null || nuevaHora == null) { mostrarError("Debe seleccionar fecha y hora."); return; }
+            if (nuevaFecha == null || nuevaHora == null) { 
+                mostrarError("Debe seleccionar fecha y hora."); 
+                return; 
+            }
             try {
-                String respuesta = backend.reagendarCita(cita.getIdCita(), nuevaFecha, nuevaHora, null);
-                if (respuesta != null && respuesta.contains("reagendada")) {
-                    mostrarInfo("Cita reagendada correctamente.");
+                ErrorValidacionDTO resultado = backend.reagendarCitaConValidacion(
+                        cita.getIdCita(), nuevaFecha, nuevaHora, null);
+                if (resultado.isExitosa()) {
+                    mostrarInfo("✅ Cita reagendada correctamente.");
                     recargarCitas();
                 } else {
-                    mostrarError("No se pudo reagendar: " + respuesta);
+                    mostrarError(formatearErroresValidacion(resultado));
                 }
-            } catch (Exception ex) { mostrarError("Error al reagendar: " + ex.getMessage()); }
+            } catch (Exception ex) { 
+                mostrarError("❌ Error al reagendar: " + ex.getMessage()); 
+            }
         });
     }
 
@@ -359,5 +387,83 @@ public class ControladorAgendador implements Initializable {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setTitle("Error"); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
+    }
+
+    private String formatearErroresValidacion(ErrorValidacionDTO dto) {
+        if (dto == null) return "⚠️ No se pudo completar la validación.";
+        if (dto.getErrores() == null || dto.getErrores().isEmpty()) {
+            return "⚠️ " + (dto.getMensajePrincipal() != null ? dto.getMensajePrincipal() : "No se pudo reagendar la cita.");
+        }
+        return "⚠️ " + (dto.getMensajePrincipal() != null ? dto.getMensajePrincipal() : "No se pudo reagendar la cita.")
+                + "\n\n• " + String.join("\n• ", dto.getErrores());
+    }
+
+    // ─── Mostrar Historial de Cambios ──────────────────────────────────────────
+    
+    /**
+     * Abre un diálogo modal que muestra el historial completo de cambios de la cita.
+     * Muestra: reagendamientos (fecha orig → nueva), cancelaciones (desde cuándo), 
+     * cambios de estado y quién realizó cada cambio.
+     */
+    private void onVerHistorial(CitaDTO cita) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Historial de Cambios - Cita #" + cita.getIdCita());
+        dialog.setHeaderText("Paciente #" + cita.getIdPaciente() + "  —  Médico #" + cita.getIdMedico());
+
+        VBox content = new VBox(10);
+        content.setStyle("-fx-padding: 15;");
+
+        // Intentar cargar el historial
+        try {
+            List<HistorialCitaDTO> historial = backend.obtenerHistorialCita(cita.getIdCita());
+            
+            if (historial == null || historial.isEmpty()) {
+                Label lblSinHistorial = new Label("No hay cambios registrados para esta cita.");
+                lblSinHistorial.setStyle("-fx-font-size: 12px; -fx-text-fill: #999;");
+                content.getChildren().add(lblSinHistorial);
+            } else {
+                // Mostrar cada cambio en una fila con detalles
+                for (HistorialCitaDTO cambio : historial) {
+                    VBox rowCambio = new VBox(5);
+                    rowCambio.setStyle("-fx-border-color: #ddd; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
+
+                    String tipo = cambio.getTipoCambio() != null ? cambio.getTipoCambio() : "";
+                    String anterior = cambio.getValorAnterior() != null ? cambio.getValorAnterior() : "";
+                    String nuevo = cambio.getValorNuevo() != null ? cambio.getValorNuevo() : "";
+
+                    Label lblTipo = new Label("📋 " + tipo);
+                    lblTipo.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
+
+                    Label lblDetalles;
+                    if ("REAGENDAMIENTO".equals(tipo)) {
+                        lblDetalles = new Label("📅 " + anterior + " → " + nuevo);
+                    } else if ("CANCELACION".equals(tipo)) {
+                        lblDetalles = new Label("❌ " + anterior + " → " + nuevo);
+                    } else {
+                        lblDetalles = new Label("⚙️ " + anterior + " → " + nuevo);
+                    }
+                    lblDetalles.setStyle("-fx-font-size: 11px;");
+
+                    Label lblFechaUsuario = new Label("🕐 " + cambio.getFechaHora() + "  |  Usuario: #" + cambio.getIdUsuario());
+                    lblFechaUsuario.setStyle("-fx-font-size: 10px; -fx-text-fill: #666;");
+
+                    rowCambio.getChildren().addAll(lblTipo, lblDetalles, lblFechaUsuario);
+                    content.getChildren().add(rowCambio);
+                }
+            }
+        } catch (Exception ex) {
+            Label lblError = new Label("Error al cargar historial: " + ex.getMessage());
+            lblError.setStyle("-fx-text-fill: #c00;");
+            content.getChildren().add(lblError);
+        }
+
+        // Scroll si hay muchos cambios
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(400);
+
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.showAndWait();
     }
 }

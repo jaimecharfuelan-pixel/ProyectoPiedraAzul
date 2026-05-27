@@ -5,7 +5,7 @@ import java.time.LocalTime;
 
 /**
  * Modelo de dominio de una cita médica. POJO puro, sin dependencias de infraestructura.
- * El estado de la cita se gestiona a través del patrón State (EstadoConsulta).
+ * El estado de la cita se gestiona a través del patrón State (EstadoCita).
  */
 public class Cita {
 
@@ -17,7 +17,7 @@ public class Cita {
     private LocalTime horaFin;
 
     // Estado actual gestionado por el patrón State
-    private EstadoConsulta estadoActual;
+    private EstadoCita estadoActual;
 
     public Cita() {}
 
