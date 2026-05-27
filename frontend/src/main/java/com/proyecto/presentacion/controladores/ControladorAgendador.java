@@ -314,7 +314,7 @@ public class ControladorAgendador implements Initializable {
 
                 String fecha = cita.getFecha() != null ? cita.getFecha().toString() : "";
                 String hora  = cita.getHoraInicio() != null ? cita.getHoraInicio().toString() : "";
-                String estado = cita.getIdEstadoCita() != null ? String.valueOf(cita.getIdEstadoCita()) : "";
+                String estado = traducirEstadoCita(cita.getIdEstadoCita());
 
                 writer.write(String.join(";",
                         escaparCsv(String.valueOf(cita.getIdCita())),
@@ -344,6 +344,22 @@ public class ControladorAgendador implements Initializable {
             return "\"" + valor.replace("\"", "\"\"") + "\"";
         }
         return valor;
+    }
+
+    /**
+     * Convierte el ID numérico del estado de cita a su nombre legible.
+     * 1=Cancelada, 2=Pendiente, 3=Confirmada, 4=Completada, 5=No Asistió
+     */
+    private String traducirEstadoCita(Integer idEstado) {
+        if (idEstado == null) return "";
+        return switch (idEstado) {
+            case 1 -> "Cancelada";
+            case 2 -> "Pendiente";
+            case 3 -> "Confirmada";
+            case 4 -> "Completada";
+            case 5 -> "No Asistió";
+            default -> "Estado #" + idEstado;
+        };
     }
 
     // ─── Cancelar cita ────────────────────────────────────────────────────────
