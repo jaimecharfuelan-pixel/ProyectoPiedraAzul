@@ -7,6 +7,7 @@ import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
+import com.proyecto.presentacion.dto.RolDTO;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -34,9 +35,24 @@ public class ControladorAdmin implements Initializable {
     @FXML private VBox panelTurnos;
     @FXML private VBox panelPersonas;
     @FXML private VBox panelUsuarios;
+    @FXML private VBox panelRoles;
 
-    @FXML private ComboBox<PersonaDTO> cbPersonaRol;
-    @FXML private ComboBox<String>     cbRol;
+    // ── Gestión de Roles (Panel de Administración) ────────────────────────────
+    @FXML private ComboBox<PersonaDTO> cbPersonaRol;     // DEPRECATED: usar tabla en su lugar
+    @FXML private ComboBox<String>     cbRol;            // DEPRECATED: usar tabla en su lugar
+    
+    // Nueva tabla para gestión de roles por usuario
+    @FXML private TableView<PersonaDTO>           tblPersonasRoles;
+    @FXML private TableColumn<PersonaDTO, String> colPerRolCedula;
+    @FXML private TableColumn<PersonaDTO, String> colPerRolNombre;
+    @FXML private TableColumn<PersonaDTO, String> colPerRolApellido;
+    
+    @FXML private TableView<RolDTO>              tblRolesUsuario;
+    @FXML private TableColumn<RolDTO, String>    colRolNombre;
+    
+    @FXML private ComboBox<String>   cbRolesDisponibles;
+    @FXML private Button             btnAgregarRol;
+    @FXML private Button             btnQuitarRol;
     @FXML private ComboBox<MedicoDTO>  cbMedicoEspecialidad;
     @FXML private ComboBox<String>     cbEspecialidad;
 
@@ -78,8 +94,10 @@ public class ControladorAdmin implements Initializable {
     @FXML private TextField txtUsuContrasena;
 
     private PersonaDTO personaSeleccionada = null;
+    private PersonaDTO personaSeleccionadaParaRoles = null;
     private final Map<Integer, MedicoDTO> mapaMedicos = new HashMap<>();
     private List<CitaDTO> todosTurnos = new java.util.ArrayList<>();
+    private List<RolDTO> rolesActualesUsuario = new java.util.ArrayList<>();
     private final BackendFacade backend = new BackendFacade();
 
     private final StringConverter<MedicoDTO> convMedico = new StringConverter<>() {
@@ -93,9 +111,12 @@ public class ControladorAdmin implements Initializable {
         configurarTablaTurnos();
         configurarTablaPersonas();
         configurarTablaUsuarios();
+        configurarTablaPersonasRoles();
+        configurarTablaRolesUsuario();
         cargarTablaTurnos();
         cargarTablaPersonas();
         cargarTablaUsuarios();
+        cargarTablaPersonasRoles();
     }
 
     // ── Navegación ────────────────────────────────────────────
@@ -103,12 +124,14 @@ public class ControladorAdmin implements Initializable {
     private void mostrarPanel(VBox panel) {
         panelPrincipal.setVisible(false); panelTurnos.setVisible(false);
         panelPersonas.setVisible(false);  panelUsuarios.setVisible(false);
+        panelRoles.setVisible(false);
         panel.setVisible(true); panel.toFront();
     }
 
     @FXML void onAbrirTurnos(ActionEvent e)      { mostrarPanel(panelTurnos);   cargarTablaTurnos(); }
     @FXML void onAbrirPersonas(ActionEvent e)    { mostrarPanel(panelPersonas); cargarTablaPersonas(); }
     @FXML void onAbrirUsuarios(ActionEvent e)    { mostrarPanel(panelUsuarios); cargarTablaUsuarios(); }
+    @FXML void onAbrirRoles(ActionEvent e)       { mostrarPanel(panelRoles);    cargarTablaPersonasRoles(); }
     @FXML void onVolverDesdePanel(ActionEvent e) { mostrarPanel(panelPrincipal); }
 
     @FXML
@@ -186,6 +209,128 @@ public class ControladorAdmin implements Initializable {
             backend.asignarRol(persona.getIdUsuario(), rol, SesionUsuario.getInstancia().getToken());
             mostrarInfo("Rol '" + rol + "' asignado a " + persona);
         } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
+    }
+
+    // ── Gestión de Roles (Nueva Tabla) ────────────────────────────────────────
+
+    private void configurarTablaPersonasRoles() {
+        tblPersonasRoles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tblPersonasRoles.setItems(FXCollections.observableArrayList());
+        
+        colPerRolCedula.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCedulaCiudadania()));
+        colPerRolNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
+        colPerRolApellido.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getApellido()));
+        
+        tblPersonasRoles.getSelectionModel().selectedItemProperty().addListener((obs, old, persona) -> {
+            personaSeleccionadaParaRoles = persona;
+            if (persona == null) {
+                tblRolesUsuario.getItems().clear();
+                cbRolesDisponibles.setValue(null);
+                btnAgregarRol.setDisable(true);
+                btnQuitarRol.setDisable(true);
+            } else if (persona.getIdUsuario() != null) {
+                btnAgregarRol.setDisable(false);
+                btnQuitarRol.setDisable(false);
+                cargarRolesDeUsuario(persona.getIdUsuario());
+            } else {
+                tblRolesUsuario.getItems().clear();
+                cbRolesDisponibles.setValue(null);
+                mostrarError("Esta persona no tiene usuario asociado");
+            }
+        });
+    }
+
+    private void cargarTablaPersonasRoles() {
+        new Thread(() -> {
+            try {
+                List<PersonaDTO> personas = backend.listarPersonas();
+                javafx.application.Platform.runLater(() -> tblPersonasRoles.getItems().setAll(personas));
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> mostrarError("Error al cargar personas para roles: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private void configurarTablaRolesUsuario() {
+        tblRolesUsuario.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tblRolesUsuario.setItems(FXCollections.observableArrayList());
+        colRolNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
+        
+        cbRolesDisponibles.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
+    }
+
+    private void cargarRolesDeUsuario(int idUsuario) {
+        new Thread(() -> {
+            try {
+                List<RolDTO> roles = backend.listarRolesDeUsuario(idUsuario);
+                rolesActualesUsuario = roles;
+                javafx.application.Platform.runLater(() -> {
+                    tblRolesUsuario.getItems().setAll(roles);
+                    // Actualizar combo de roles disponibles mostrando solo los no asignados
+                    List<String> rolesDisponibles = new java.util.ArrayList<>(java.util.Arrays.asList("Administrador", "Agendador", "Medico", "Paciente"));
+                    for (RolDTO rol : roles) {
+                        rolesDisponibles.remove(rol.getNombre());
+                    }
+                    cbRolesDisponibles.setItems(FXCollections.observableArrayList(rolesDisponibles));
+                    cbRolesDisponibles.setValue(null);
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> mostrarError("Error al cargar roles: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    @FXML
+    void onAgregarRol(ActionEvent e) {
+        if (personaSeleccionadaParaRoles == null) { mostrarError("Seleccione una persona"); return; }
+        if (personaSeleccionadaParaRoles.getIdUsuario() == null) { mostrarError("La persona no tiene usuario asociado"); return; }
+        
+        String rolSeleccionado = cbRolesDisponibles.getValue();
+        if (rolSeleccionado == null || rolSeleccionado.isEmpty()) { mostrarError("Seleccione un rol"); return; }
+        
+        // Validar que el rol no esté duplicado
+        boolean rolYaAsignado = rolesActualesUsuario.stream()
+                .anyMatch(r -> r.getNombre().equals(rolSeleccionado));
+        if (rolYaAsignado) { mostrarError("Este rol ya está asignado al usuario"); return; }
+        
+        new Thread(() -> {
+            try {
+                backend.asignarRol(personaSeleccionadaParaRoles.getIdUsuario(), rolSeleccionado, 
+                                  SesionUsuario.getInstancia().getToken());
+                javafx.application.Platform.runLater(() -> {
+                    cargarRolesDeUsuario(personaSeleccionadaParaRoles.getIdUsuario());
+                    mostrarInfo("Rol '" + rolSeleccionado + "' asignado correctamente");
+                });
+            } catch (Exception ex) {
+                javafx.application.Platform.runLater(() -> mostrarError("Error: " + ex.getMessage()));
+            }
+        }).start();
+    }
+
+    @FXML
+    void onQuitarRol(ActionEvent e) {
+        if (personaSeleccionadaParaRoles == null) { mostrarError("Seleccione una persona"); return; }
+        
+        RolDTO rolSeleccionado = tblRolesUsuario.getSelectionModel().getSelectedItem();
+        if (rolSeleccionado == null) { mostrarError("Seleccione un rol de la tabla para eliminar"); return; }
+        
+        // Confirmar eliminación
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION,
+                "¿Está seguro de que desea quitar el rol '" + rolSeleccionado.getNombre() + "'?",
+                ButtonType.YES, ButtonType.NO);
+        if (confirmacion.showAndWait().orElse(ButtonType.NO) == ButtonType.NO) return;
+        
+        new Thread(() -> {
+            try {
+                backend.eliminarRol(rolSeleccionado.getIdRol(), SesionUsuario.getInstancia().getToken());
+                javafx.application.Platform.runLater(() -> {
+                    cargarRolesDeUsuario(personaSeleccionadaParaRoles.getIdUsuario());
+                    mostrarInfo("Rol eliminado correctamente");
+                });
+            } catch (Exception ex) {
+                javafx.application.Platform.runLater(() -> mostrarError("Error: " + ex.getMessage()));
+            }
+        }).start();
     }
 
     // ── Turnos ────────────────────────────────────────────────

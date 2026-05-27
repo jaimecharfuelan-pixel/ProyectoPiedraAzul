@@ -6,6 +6,7 @@ import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.LoginResponseDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
+import com.proyecto.presentacion.dto.RolDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -99,6 +100,15 @@ public class BackendFacade {
         body.put("nombre", nombreRol);
         body.put("idUsuario", idUsuario);
         ClienteHttp.postConToken("/api/roles", body, token);
+    }
+
+    public List<RolDTO> listarRolesDeUsuario(int idUsuario) throws Exception {
+        String json = ClienteHttp.get("/api/roles/usuario/" + idUsuario);
+        return ClienteHttp.parsearLista(json, RolDTO.class);
+    }
+
+    public void eliminarRol(int idRol, String token) throws Exception {
+        ClienteHttp.delete("/api/roles/" + idRol, token);
     }
 
     // ── Usuarios ──────────────────────────────────────────────────────────────
