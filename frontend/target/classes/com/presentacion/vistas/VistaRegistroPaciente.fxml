@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.proyecto.presentacion.controladores.ControladorRegistroPaciente"
+           stylesheets="@../Estilos/estilos.css">
+
+    <children>
+        <!-- VBox principal -->
+        <VBox alignment="TOP_CENTER"
+              spacing="20"
+              maxWidth="Infinity"
+              prefWidth="Infinity"
+              style="-fx-padding: 30;">
+
+            <!-- Header con logo - estilo mejorado -->
+            <VBox alignment="CENTER"
+                  prefHeight="120"
+                  maxWidth="Infinity"
+                  styleClass="header-card">
+                <ImageView fitHeight="100" preserveRatio="true">
+                    <Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" />
+                </ImageView>
+            </VBox>
+
+            <!-- Card principal del formulario -->
+            <VBox styleClass="registration-card"
+                  spacing="25"
+                  maxWidth="900"
+                  VBox.vgrow="ALWAYS">
+
+                <!-- Título con subtítulo -->
+                <VBox spacing="10" style="-fx-padding: 20 30 10 30;">
+                    <Label text="Crear Cuenta"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                    <Label text="Completa tus datos para registrarte en nuestro sistema"
+                           style="-fx-font-size: 15px; -fx-text-fill: #666666; -fx-wrap-text: true;"/>
+                </VBox>
+
+                <!-- Separador visual -->
+                <VBox style="-fx-background-color: #e5e7eb; -fx-min-height: 1; -fx-pref-height: 1;"/>
+
+                <!-- ScrollPane con contenido -->
+                <ScrollPane fitToWidth="true"
+                            VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-padding: 0;">
+                    <content>
+                        <VBox spacing="30" style="-fx-padding: 0 30 0 30;">
+
+                            <!-- PANEL 1: DATOS DEL PACIENTE -->
+                            <VBox fx:id="panelDatosPaciente" spacing="20">
+                                <Label text="Información Personal"
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1a2b48; -fx-padding: 10 0 5 0;"/>
+
+                                <VBox style="-fx-background-color: #f9fafb; -fx-background-radius: 12; -fx-padding: 20; -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-border-width: 1;">
+                                    <GridPane hgap="20" vgap="18" maxWidth="Infinity" prefWidth="Infinity">
+                                        <columnConstraints>
+                                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                        </columnConstraints>
+
+                                        <!-- Nombre y Apellido -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <Label text="Nombre" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtNombre"
+                                                       promptText="Tu nombre"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorNombre" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                            <Label text="Apellido" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtApellido"
+                                                       promptText="Tu apellido"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorApellido" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <!-- Cédula y Celular -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <Label text="Cédula" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtCedula"
+                                                       promptText="Tu documento"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorCedula" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <Label text="Celular" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtCelular"
+                                                       promptText="Tu teléfono (opcional)"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorCelular" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <!-- Correo y Género -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                                            <Label text="Correo Electrónico" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtCorreo"
+                                                       promptText="tu.correo@ejemplo.com"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorCorreo" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <!-- Género y Fecha de Nacimiento -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                            <Label text="Género" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <ChoiceBox fx:id="cbGenero"
+                                                       styleClass="field-registro-choice"
+                                                       prefHeight="42"
+                                                       maxWidth="Infinity"
+                                                       style="-fx-padding: 8 12;"/>
+                                            <Label fx:id="lblErrorGenero" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                            <Label text="Fecha de Nacimiento" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <DatePicker fx:id="dpFechaNac"
+                                                        styleClass="field-registro-date"
+                                                        prefHeight="42"
+                                                        maxWidth="Infinity"/>
+                                            <Label fx:id="lblErrorFechaNac" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                    </GridPane>
+                                </VBox>
+                            </VBox>
+
+                            <!-- PANEL 2: DATOS DEL USUARIO -->
+                            <VBox fx:id="panelDatosUsuario" spacing="20" managed="false" visible="false">
+                                <Label text="Crear Acceso"
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1a2b48; -fx-padding: 10 0 5 0;"/>
+
+                                <VBox style="-fx-background-color: #f9fafb; -fx-background-radius: 12; -fx-padding: 20; -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-border-width: 1;">
+                                    <GridPane hgap="20" vgap="18" maxWidth="Infinity" prefWidth="Infinity">
+                                        <columnConstraints>
+                                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                                        </columnConstraints>
+
+                                        <!-- Usuario -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+                                            <Label text="Nombre de Usuario" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <TextField fx:id="txtUsuario"
+                                                       promptText="Tu nombre de usuario"
+                                                       styleClass="field-registro"
+                                                       prefHeight="42"/>
+                                            <Label fx:id="lblErrorUsuario" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <!-- Contraseña y Confirmar -->
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <Label text="Contraseña" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <PasswordField fx:id="txtContrasena"
+                                                           promptText="••••••••"
+                                                           styleClass="field-registro"
+                                                           prefHeight="42"/>
+                                            <Label fx:id="lblErrorContrasena" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <Label text="Confirmar Contraseña" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a2b48;"/>
+                                            <PasswordField fx:id="txtConfirmarContrasena"
+                                                           promptText="••••••••"
+                                                           styleClass="field-registro"
+                                                           prefHeight="42"/>
+                                            <Label fx:id="lblErrorConfirmarContrasena" style="-fx-text-fill: #e53935; -fx-font-size: 11px; -fx-padding: 2 0 0 0;"/>
+                                        </VBox>
+
+                                    </GridPane>
+                                </VBox>
+                            </VBox>
+
+                        </VBox>
+                    </content>
+                </ScrollPane>
+
+                <!-- Botones de acción - estilo mejorado -->
+                <HBox spacing="12"
+                      alignment="CENTER_RIGHT"
+                      style="-fx-padding: 20 30 30 30;">
+                    <Button fx:id="btnCancelar"
+                            text="Cancelar"
+                            styleClass="btn-registro-secondary"
+                            onAction="#onCancelar"
+                            prefWidth="180"
+                            prefHeight="50"
+                            style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                    <Button fx:id="btnSiguiente"
+                            text="Siguiente"
+                            styleClass="btn-registro-primary"
+                            onAction="#onSiguiente"
+                            prefWidth="180"
+                            prefHeight="50"
+                            style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                    <Button fx:id="btnGuardar"
+                            text="Registrar"
+                            styleClass="btn-registro-primary"
+                            onAction="#onGuardar"
+                            prefWidth="180"
+                            prefHeight="50"
+                            style="-fx-font-size: 15px; -fx-font-weight: bold;"
+                            managed="false"
+                            visible="false"/>
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+    </children>
+</StackPane>
