@@ -27,6 +27,7 @@
             <Label styleClass="info-title" text="Panel Agendador" style="-fx-font-size: 26px;" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER"/>
             <HBox spacing="12" alignment="CENTER_RIGHT">
                <Button text="+ Nueva Cita" prefHeight="46" prefWidth="170" onAction="#onNuevaCita"/>
+               <Button text="Exportar" prefHeight="46" prefWidth="170" styleClass="button-export" onAction="#onExportar"/>
                <Button text="- Cerrar Sesión" prefHeight="46" prefWidth="170" styleClass="button-logout" onAction="#onCerrarSesion"/>
             </HBox>
          </HBox>

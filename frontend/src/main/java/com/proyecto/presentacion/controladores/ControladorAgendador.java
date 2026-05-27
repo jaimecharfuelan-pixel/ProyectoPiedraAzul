@@ -22,10 +22,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -264,6 +270,80 @@ public class ControladorAgendador implements Initializable {
             Stage stage = (Stage) tblCitas.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (Exception ex) { ex.printStackTrace(); }
+    }
+
+    @FXML
+    void onExportar(ActionEvent e) {
+        List<CitaDTO> citas = tblCitas.getItems();
+        if (citas == null || citas.isEmpty()) {
+            mostrarInfo("No hay citas para exportar con el filtro actual.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar exportación de citas");
+        fileChooser.setInitialFileName("citas_exportadas.csv");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivo CSV (*.csv)", "*.csv"));
+
+        Stage stage = (Stage) tblCitas.getScene().getWindow();
+        File archivo = fileChooser.showSaveDialog(stage);
+        if (archivo == null) return;
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(archivo), StandardCharsets.UTF_8))) {
+
+            // BOM para que Excel reconozca UTF-8 correctamente
+            writer.write('\uFEFF');
+
+            // Encabezados
+            writer.write("ID Cita;Paciente;Médico;Fecha;Hora;Estado");
+            writer.newLine();
+
+            for (CitaDTO cita : citas) {
+                String paciente = mapaPacientes.getOrDefault(cita.getIdPaciente(),
+                        "Paciente #" + cita.getIdPaciente());
+
+                String medico = "Médico #" + cita.getIdMedico();
+                if (medicos != null) {
+                    medico = medicos.stream()
+                            .filter(m -> m.getIdMedico() == cita.getIdMedico())
+                            .map(m -> m.getNombre() + " " + m.getApellido())
+                            .findFirst().orElse(medico);
+                }
+
+                String fecha = cita.getFecha() != null ? cita.getFecha().toString() : "";
+                String hora  = cita.getHoraInicio() != null ? cita.getHoraInicio().toString() : "";
+                String estado = cita.getIdEstadoCita() != null ? String.valueOf(cita.getIdEstadoCita()) : "";
+
+                writer.write(String.join(";",
+                        escaparCsv(String.valueOf(cita.getIdCita())),
+                        escaparCsv(paciente),
+                        escaparCsv(medico),
+                        escaparCsv(fecha),
+                        escaparCsv(hora),
+                        escaparCsv(estado)));
+                writer.newLine();
+            }
+
+            mostrarInfo("✅ Exportación completada: " + citas.size() + " cita(s) guardadas en\n" + archivo.getAbsolutePath());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            mostrarError("Error al exportar: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Escapa un valor para CSV: si contiene punto y coma, comillas o saltos de línea
+     * lo envuelve entre comillas dobles y duplica las comillas internas.
+     */
+    private String escaparCsv(String valor) {
+        if (valor == null) return "";
+        if (valor.contains(";") || valor.contains("\"") || valor.contains("\n")) {
+            return "\"" + valor.replace("\"", "\"\"") + "\"";
+        }
+        return valor;
     }
 
     // ─── Cancelar cita ────────────────────────────────────────────────────────

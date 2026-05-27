@@ -164,6 +164,20 @@
     -fx-background-color: #b91c1c !important; /* Rojo más oscuro al pasar el mouse */
 }
 
+/* --- BOTÓN EXPORTAR VERDE --- */
+.button-export {
+    -fx-background-color: #16a34a !important;
+    -fx-text-fill: white !important;
+    -fx-background-radius: 8px !important;
+    -fx-font-weight: bold !important;
+    -fx-font-size: 15px !important;
+    -fx-border-width: 0px !important;
+}
+
+.button-export:hover {
+    -fx-background-color: #15803d !important;
+}
+
 /* Botón amarillo de editar */
 .btn-amarillo-vivo {
     -fx-background-color: #d97706 !important;
