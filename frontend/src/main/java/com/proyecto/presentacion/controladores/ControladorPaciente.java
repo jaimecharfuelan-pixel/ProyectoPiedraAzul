@@ -1,7 +1,7 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
+import com.proyecto.presentacion.facade.BackendFacade;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 
@@ -41,6 +41,7 @@ public class ControladorPaciente implements Initializable {
     @FXML private TableColumn<CitaDTO, String> colFutEstado;
 
     private int idPaciente;
+    private final BackendFacade backend = new BackendFacade();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -56,9 +57,7 @@ public class ControladorPaciente implements Initializable {
         int idUsuario = SesionUsuario.getInstancia().getIdUsuario();
         if (idUsuario <= 0) return -1;
         try {
-            // GET http://localhost:8080/api/personas
-            String json = ClienteHttp.get("/api/personas");
-            List<PersonaDTO> personas = ClienteHttp.parsearLista(json, PersonaDTO.class);
+            List<PersonaDTO> personas = backend.listarPersonas();
             PersonaDTO persona = personas.stream()
                     .filter(p -> p.getIdUsuario() != null && p.getIdUsuario() == idUsuario)
                     .findFirst().orElse(null);
@@ -90,14 +89,10 @@ public class ControladorPaciente implements Initializable {
     private void cargarTablas() {
         if (idPaciente <= 0) return;
         try {
-            // GET http://localhost:8080/api/citas/paciente/{id}/historial
-            String jsonHist = ClienteHttp.get("/api/citas/paciente/" + idPaciente + "/historial");
-            List<CitaDTO> historial = ClienteHttp.parsearLista(jsonHist, CitaDTO.class);
+            List<CitaDTO> historial = backend.historialCitasPaciente(idPaciente);
             tblHistorial.setItems(FXCollections.observableArrayList(historial));
 
-            // GET http://localhost:8080/api/citas/paciente/{id}/futuras
-            String jsonFut = ClienteHttp.get("/api/citas/paciente/" + idPaciente + "/futuras");
-            List<CitaDTO> futuras = ClienteHttp.parsearLista(jsonFut, CitaDTO.class);
+            List<CitaDTO> futuras = backend.citasFuturasPaciente(idPaciente);
             tblFuturas.setItems(FXCollections.observableArrayList(futuras));
         } catch (Exception e) { e.printStackTrace(); }
     }

@@ -65,14 +65,12 @@
                      </HBox>
                   </VBox>
 
-                  <Label styleClass="info-title" text="Asignar Rol (Agendador, Medico, Paciente)" style="-fx-font-size: 18px;"/>
+                  <Label styleClass="info-title" text="Gestionar Roles de Usuarios" style="-fx-font-size: 18px;"/>
                   <VBox styleClass="main-login-card" style="-fx-padding: 20;">
                      <HBox alignment="CENTER_LEFT" spacing="16">
-                        <ComboBox fx:id="cbPersonaRol" prefHeight="52" HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                                  promptText="Persona" style="-fx-font-size: 15px;" styleClass="combo-box"/>
-                        <ComboBox fx:id="cbRol" prefHeight="52" HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                                  promptText="Rol" style="-fx-font-size: 15px;" styleClass="combo-box"/>
-                        <Button prefHeight="52" prefWidth="190" text="Asignar Rol" onAction="#onAsignarRol"/>
+                        <Label styleClass="info-title" text="Asignación de Roles" HBox.hgrow="ALWAYS" style="-fx-font-size: 16px;"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button prefHeight="52" prefWidth="210" text="Gestionar Roles" onAction="#onAbrirRoles"/>
                      </HBox>
                   </VBox>
 
@@ -304,6 +302,82 @@
                      <Button prefHeight="50" prefWidth="160" text="Crear Usuario" onAction="#onCrearUsuario"/>
                      <Button prefHeight="50" prefWidth="175" styleClass="button-logout" text="Eliminar Usuario" onAction="#onEliminarUsuario"/>
                   </HBox>
+
+               </VBox>
+            </content>
+         </ScrollPane>
+      </VBox>
+
+
+      <!-- ===== PANEL ROLES ===== -->
+      <VBox fx:id="panelRoles" maxWidth="Infinity" maxHeight="Infinity" visible="false">
+
+         <StackPane styleClass="main-login-card" minHeight="80" maxWidth="Infinity" style="-fx-padding: 12 20 12 20;">
+            <Label styleClass="info-title" text="Gestión de Roles de Usuarios" style="-fx-font-size: 26px;" StackPane.alignment="CENTER"/>
+            <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+               <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
+            </ImageView>
+            <Button styleClass="button-logout" text="← Volver" onAction="#onVolverDesdePanel"
+                    prefHeight="46" prefWidth="140" StackPane.alignment="CENTER_RIGHT"/>
+         </StackPane>
+
+         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <content>
+               <VBox spacing="14" style="-fx-padding: 14;">
+
+                  <Label styleClass="info-title" text="Seleccionar Persona" style="-fx-font-size: 20px;"/>
+
+                  <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
+                     <TableView fx:id="tblPersonasRoles" prefHeight="200" maxWidth="Infinity">
+                        <columns>
+                           <TableColumn fx:id="colPerRolCedula"  prefWidth="200" text="Cédula de Ciudadanía"/>
+                           <TableColumn fx:id="colPerRolNombre"  prefWidth="200" text="Nombre"/>
+                           <TableColumn fx:id="colPerRolApellido" prefWidth="200" text="Apellido"/>
+                        </columns>
+                     </TableView>
+                  </VBox>
+
+                  <Label styleClass="info-title" text="Roles Asignados" style="-fx-font-size: 20px;"/>
+
+                  <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
+                     <TableView fx:id="tblRolesUsuario" prefHeight="150" maxWidth="Infinity">
+                        <columns>
+                           <TableColumn fx:id="colRolNombre" prefWidth="600" text="Nombre del Rol"/>
+                        </columns>
+                     </TableView>
+                  </VBox>
+
+                  <Label styleClass="info-title" text="Agregar Nuevo Rol" style="-fx-font-size: 20px;"/>
+
+                  <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 20;">
+                     <GridPane hgap="20" vgap="14" maxWidth="Infinity">
+                        <columnConstraints>
+                           <ColumnConstraints percentWidth="70" hgrow="ALWAYS"/>
+                           <ColumnConstraints percentWidth="30" hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <Label text="Rol Disponible *" style="-fx-font-size: 15px; -fx-font-weight: bold;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <ComboBox fx:id="cbRolesDisponibles" prefHeight="48" maxWidth="Infinity"
+                                  promptText="Seleccione un rol (solo se muestran los no asignados)"
+                                  style="-fx-font-size: 14px;" styleClass="combo-box"
+                                  GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+                        <Button fx:id="btnAgregarRol" prefHeight="48" prefWidth="150"
+                                text="Agregar Rol" style="-fx-font-size: 14px;"
+                                onAction="#onAgregarRol" disable="true"
+                                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                     </GridPane>
+                  </VBox>
+
+                  <HBox spacing="14" alignment="CENTER_RIGHT">
+                     <Button fx:id="btnQuitarRol" prefHeight="50" prefWidth="175" styleClass="button-logout"
+                             text="Quitar Rol Seleccionado" onAction="#onQuitarRol" disable="true"/>
+                  </HBox>
+
+                  <Label styleClass="info-title" text="Nota:" style="-fx-font-size: 14px; -fx-text-fill: #ff6b00;"/>
+                  <Label text="• Seleccione una persona de la tabla superior para ver y gestionar sus roles&#10;• El ComboBox solo muestra roles que aún no están asignados&#10;• No se permiten roles duplicados en el mismo usuario&#10;• Seleccione un rol de la tabla de 'Roles Asignados' para eliminarlo"
+                         style="-fx-font-size: 13px; -fx-wrap-text: true;"/>
 
                </VBox>
             </content>

@@ -1,9 +1,9 @@
 package com.proyecto.presentacion.controladores;
 
-import com.proyecto.presentacion.ClienteHttp;
 import com.proyecto.presentacion.SesionUsuario;
-import com.proyecto.presentacion.dto.PersonaDTO;
 import com.proyecto.presentacion.facade.BackendFacade;
+import com.proyecto.presentacion.util.Conversiones;
+import com.proyecto.presentacion.dto.PersonaDTO;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -319,13 +319,7 @@ public class ControladorRegistroPaciente {
     }
 
     private int generoAId(String genero) {
-        if (genero == null) return 4;
-        return switch (genero) {
-            case "Masculino" -> 1;
-            case "Femenino" -> 2;
-            case "No Binario" -> 3;
-            default -> 4;
-        };
+        return Conversiones.generoAId(genero);
     }
 
     private void irALogin() {
