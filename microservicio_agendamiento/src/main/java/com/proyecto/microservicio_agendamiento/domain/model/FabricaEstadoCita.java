@@ -8,7 +8,7 @@ public final class FabricaEstadoCita {
 
     private FabricaEstadoCita() {}
 
-    public static EstadoConsulta crearEstado(int idEstado) {
+    public static EstadoCita crearEstado(int idEstado) {
         return switch (idEstado) {
             case EstadoCitaId.CANCELADA  -> new EstadoCancelada();
             case EstadoCitaId.PENDIENTE  -> new EstadoPendiente();
@@ -19,7 +19,7 @@ public final class FabricaEstadoCita {
         };
     }
 
-    public static EstadoConsulta crearEstadoInicial() {
+    public static EstadoCita crearEstadoInicial() {
         return new EstadoPendiente();
     }
 }

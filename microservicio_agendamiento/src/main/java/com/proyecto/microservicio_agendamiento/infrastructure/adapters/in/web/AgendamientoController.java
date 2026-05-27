@@ -4,10 +4,13 @@ import com.proyecto.microservicio_agendamiento.application.dto.AgendarCitaWebCom
 import com.proyecto.microservicio_agendamiento.application.dto.CrearCitaManualCommand;
 import com.proyecto.microservicio_agendamiento.application.dto.ReagendarCitaCommand;
 import com.proyecto.microservicio_agendamiento.application.usecase.GestionarCitaUseCase.ReagendamientoResultado;
+import com.proyecto.microservicio_agendamiento.application.usecase.RegistrarHistorialCitaUseCase;
 import com.proyecto.microservicio_agendamiento.domain.model.Cita;
+import com.proyecto.microservicio_agendamiento.domain.model.HistorialCita;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.AgendarCitaPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.ConsultarDisponibilidadPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.GestionarCitaPort;
+import com.proyecto.microservicio_agendamiento.infrastructure.adapters.in.web.dto.ErrorValidacionDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Tag(name = "Citas", description = "Gestión de citas médicas: agendar, reagendar, cancelar y consultar disponibilidad")
@@ -27,13 +31,16 @@ public class AgendamientoController {
     private final AgendarCitaPort agendarCita;
     private final GestionarCitaPort gestionarCita;
     private final ConsultarDisponibilidadPort consultarDisponibilidad;
+    private final RegistrarHistorialCitaUseCase registrarHistorial;
 
     public AgendamientoController(AgendarCitaPort agendarCita,
                                    GestionarCitaPort gestionarCita,
-                                   ConsultarDisponibilidadPort consultarDisponibilidad) {
+                                   ConsultarDisponibilidadPort consultarDisponibilidad,
+                                   RegistrarHistorialCitaUseCase registrarHistorial) {
         this.agendarCita            = agendarCita;
         this.gestionarCita          = gestionarCita;
         this.consultarDisponibilidad = consultarDisponibilidad;
+        this.registrarHistorial     = registrarHistorial;
     }
 
     @Operation(summary = "Listar citas", description = "Lista citas por médico y/o fecha. Sin parámetros devuelve las citas de hoy.")
@@ -60,21 +67,25 @@ public class AgendamientoController {
 
     @Operation(summary = "Agendar cita (paciente web)", description = "El paciente agenda su cita eligiendo médico, fecha y hora disponible.")
     @PostMapping("/web")
-    public ResponseEntity<String> agendarCitaWeb(@RequestBody AgendarCitaWebCommand command) {
-        if (agendarCita.agendarWeb(command)) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Cita agendada.");
+    public ResponseEntity<?> agendarCitaWeb(@RequestBody AgendarCitaWebCommand command) {
+        try {
+            if (agendarCita.agendarWeb(command)) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Cita agendada.");
+            }
+            return ResponseEntity.badRequest().body("Horario no disponible.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(construirErrorValidacion(e.getMessage()));
         }
-        return ResponseEntity.badRequest().body("Horario no disponible.");
     }
 
     @Operation(summary = "Crear cita manual", description = "El agendador crea una cita manualmente.")
     @PostMapping
-    public ResponseEntity<String> crearCitaManual(@RequestBody CrearCitaManualCommand command) {
+    public ResponseEntity<?> crearCitaManual(@RequestBody CrearCitaManualCommand command) {
         try {
             agendarCita.crearManual(command);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cita creada.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(construirErrorValidacion(e.getMessage()));
         }
     }
 
@@ -88,6 +99,12 @@ public class AgendamientoController {
     @GetMapping("/paciente/{idPaciente}/futuras")
     public ResponseEntity<List<Cita>> futuras(@PathVariable int idPaciente) {
         return ResponseEntity.ok(gestionarCita.citasFuturasPaciente(idPaciente));
+    }
+
+    @Operation(summary = "Historial de cambios por cita")
+    @GetMapping("/{idCita}/historial")
+    public ResponseEntity<List<HistorialCita>> historialPorCita(@PathVariable int idCita) {
+        return ResponseEntity.ok(registrarHistorial.obtenerHistorialCita(idCita));
     }
 
     @Operation(summary = "Editar cita")
@@ -111,14 +128,28 @@ public class AgendamientoController {
 
     @Operation(summary = "Reagendar cita", description = "Cambia fecha/hora. El estado vuelve a Pendiente. No aplica a citas canceladas.")
     @PatchMapping("/{idCita}/reagendar")
-    public ResponseEntity<String> reagendar(@PathVariable int idCita,
+    public ResponseEntity<?> reagendar(@PathVariable int idCita,
                                              @RequestBody ReagendarCitaCommand command) {
         command.setIdCita(idCita);
-        ReagendamientoResultado resultado = gestionarCita.reagendar(command);
-        return switch (resultado) {
-            case OK             -> ResponseEntity.ok("Cita reagendada correctamente.");
-            case NO_ENCONTRADA  -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
-            case CITA_CANCELADA -> ResponseEntity.badRequest().body("No se puede reagendar una cita cancelada.");
-        };
+        try {
+            ReagendamientoResultado resultado = gestionarCita.reagendar(command);
+            return switch (resultado) {
+                case OK             -> ResponseEntity.ok("Cita reagendada correctamente.");
+                case NO_ENCONTRADA  -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+                case CITA_CANCELADA -> ResponseEntity.badRequest().body("No se puede reagendar una cita cancelada.");
+            };
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(construirErrorValidacion(e.getMessage()));
+        }
+    }
+
+    private ErrorValidacionDTO construirErrorValidacion(String mensaje) {
+        List<String> errores = Arrays.stream(mensaje.split(";"))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toList();
+        int codigo = errores.stream().anyMatch(e -> e.toLowerCase().contains("solapamiento")) ? 1
+                : errores.stream().anyMatch(e -> e.toLowerCase().contains("paciente")) ? 2 : 3;
+        return new ErrorValidacionDTO(false, "No se pudo completar la operación de agendamiento.", errores, codigo);
     }
 }

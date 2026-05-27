@@ -1,13 +1,6 @@
 -- ============================================================
 -- SCRIPT DB: db_usuarios
--- Microservicio: ms-usuarios (puerto 8081)
--- Contiene: usuarios, roles, personas, médicos, pacientes,
---           agendadores, tokens de sesión y dominios de apoyo
 -- ============================================================
-
--- ─────────────────────────────────────────
--- TABLAS DE DOMINIO (solo las que usa este MS)
--- ─────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS dominio_estado (
     id_estado SERIAL PRIMARY KEY,
@@ -23,10 +16,6 @@ CREATE TABLE IF NOT EXISTS dominio_especialidad (
     id_especialidad SERIAL PRIMARY KEY,
     nombre          VARCHAR(50) NOT NULL
 );
-
--- ─────────────────────────────────────────
--- SEGURIDAD
--- ─────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS usuario (
     id_usuario SERIAL PRIMARY KEY,
@@ -50,10 +39,6 @@ CREATE TABLE IF NOT EXISTS sesion_token (
     id_usuario       INT NOT NULL,
     CONSTRAINT fk_token_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
-
--- ─────────────────────────────────────────
--- PERSONAS Y SUBTIPOS
--- ─────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS persona (
     id_persona        SERIAL PRIMARY KEY,
@@ -82,11 +67,10 @@ CREATE TABLE IF NOT EXISTS paciente (
     id_persona INT PRIMARY KEY REFERENCES persona(id_persona) ON DELETE CASCADE
 );
 
--- ============================================================
--- DATOS DE PRUEBA
--- ============================================================
+-- ─────────────────────────────────────────
+-- DATOS
+-- ─────────────────────────────────────────
 
--- Dominios
 INSERT INTO dominio_estado (nombre) VALUES
 ('Inactivo'), ('Activo'), ('Suspendido'), ('Pendiente'), ('Eliminado');
 
@@ -98,7 +82,6 @@ INSERT INTO dominio_especialidad (nombre) VALUES
 ('Cardiología'), ('Neurología'), ('Pediatría'), ('Dermatología'),
 ('Ortopedia'), ('Terapia Ocupacional');
 
--- Usuarios (30)
 INSERT INTO usuario (usuario, contrasena) VALUES
 ('admin',          'admin123'),
 ('agendador1',     'agenda123'),
@@ -131,7 +114,6 @@ INSERT INTO usuario (usuario, contrasena) VALUES
 ('paciente.pinto',    'pac303'),
 ('paciente.salazar',  'pac404');
 
--- Roles
 INSERT INTO rol (nombre, id_usuario) VALUES
 ('Administrador', 1), ('Agendador', 2), ('Agendador', 3),
 ('Medico', 4), ('Medico', 5), ('Medico', 6), ('Medico', 7),
@@ -142,28 +124,24 @@ INSERT INTO rol (nombre, id_usuario) VALUES
 ('Paciente', 23), ('Paciente', 24), ('Paciente', 25), ('Paciente', 26),
 ('Paciente', 27), ('Paciente', 28), ('Paciente', 29), ('Paciente', 30);
 
--- Personas - Agendadores (id_usuario 2 y 3)
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
 ('Laura',  '10000000001', 'Mendez', '3001000001', 2, '1990-03-15', 'laura.mendez@piedraazul.com',  2, 2, TRUE),
 ('Carlos', '10000000002', 'Pineda', '3001000002', 1, '1988-07-22', 'carlos.pineda@piedraazul.com', 3, 2, TRUE);
 
 INSERT INTO agendador (id_persona) VALUES (1), (2);
 
--- Personas - Médicos (id_usuario 4 al 10)
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
-('Andrés',    '20000000001', 'García',   '3102000001', 1, '1975-01-10', 'andres.garcia@piedraazul.com',      4, 2, TRUE),
-('Sofía',     '20000000002', 'López',    '3102000002', 2, '1980-05-20', 'sofia.lopez@piedraazul.com',        5, 2, TRUE),
-('Miguel',    '20000000003', 'Torres',   '3102000003', 1, '1978-09-14', 'miguel.torres@piedraazul.com',      6, 2, TRUE),
-('Valentina', '20000000004', 'Ramírez',  '3102000004', 2, '1983-11-30', 'valentina.ramirez@piedraazul.com',  7, 2, TRUE),
-('Julián',    '20000000005', 'Vargas',   '3102000005', 1, '1970-04-05', 'julian.vargas@piedraazul.com',      8, 2, TRUE),
-('Camila',    '20000000006', 'Moreno',   '3102000006', 2, '1985-08-18', 'camila.moreno@piedraazul.com',      9, 2, TRUE),
-('Ricardo',   '20000000007', 'Castro',   '3102000007', 1, '1972-12-25', 'ricardo.castro@piedraazul.com',    10, 2, TRUE);
+('Andrés',    '20000000001', 'García',   '3102000001', 1, '1975-01-10', 'andres.garcia@piedraazul.com',     4, 2, TRUE),
+('Sofía',     '20000000002', 'López',    '3102000002', 2, '1980-05-20', 'sofia.lopez@piedraazul.com',       5, 2, TRUE),
+('Miguel',    '20000000003', 'Torres',   '3102000003', 1, '1978-09-14', 'miguel.torres@piedraazul.com',     6, 2, TRUE),
+('Valentina', '20000000004', 'Ramírez',  '3102000004', 2, '1983-11-30', 'valentina.ramirez@piedraazul.com', 7, 2, TRUE),
+('Julián',    '20000000005', 'Vargas',   '3102000005', 1, '1970-04-05', 'julian.vargas@piedraazul.com',     8, 2, TRUE),
+('Camila',    '20000000006', 'Moreno',   '3102000006', 2, '1985-08-18', 'camila.moreno@piedraazul.com',     9, 2, TRUE),
+('Ricardo',   '20000000007', 'Castro',   '3102000007', 1, '1972-12-25', 'ricardo.castro@piedraazul.com',   10, 2, TRUE);
 
--- id_persona de médicos: 3 al 9
 INSERT INTO medico_terapista (id_persona, id_especialidad) VALUES
 (3, 1), (4, 2), (5, 3), (6, 4), (7, 5), (8, 6), (9, 7);
 
--- Personas - Pacientes (id_usuario 11 al 30)
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
 ('Juan',      '30000000001', 'Pérez',    '3203000001', 1, '1995-02-14', 'juan.perez@mail.com',       11, 2, TRUE),
 ('María',     '30000000002', 'Gómez',    '3203000002', 2, '1992-06-30', 'maria.gomez@mail.com',      12, 2, TRUE),
@@ -186,20 +164,18 @@ INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fe
 ('Esteban',   '30000000019', 'Pinto',    '3203000019', 1, '2003-10-31', 'esteban.pinto@mail.com',    29, 2, TRUE),
 ('Mariana',   '30000000020', 'Salazar',  '3203000020', 2, '1984-04-15', 'mariana.salazar@mail.com',  30, 2, TRUE);
 
--- id_persona de pacientes: 10 al 29
 INSERT INTO paciente (id_persona) VALUES
 (10),(11),(12),(13),(14),(15),(16),(17),(18),(19),
 (20),(21),(22),(23),(24),(25),(26),(27),(28),(29);
 
--- Tokens de sesión
 INSERT INTO sesion_token (token_hash, fecha_creacion, fecha_expiracion, id_estado, id_usuario) VALUES
 ('tok_admin_001',     '2026-05-10 08:00:00', '2026-05-10 09:00:00', 1, 1),
 ('tok_agend_001',     '2026-05-10 08:05:00', '2026-05-10 09:05:00', 1, 2),
 ('tok_med_garcia',    '2026-05-10 08:15:00', '2026-05-10 09:15:00', 1, 4),
 ('tok_med_lopez',     '2026-05-10 08:20:00', '2026-05-10 09:20:00', 1, 5),
 ('tok_pac_perez',     '2026-05-10 09:00:00', '2026-05-10 10:00:00', 1, 11),
-('tok_active_admin',  '2026-05-10 10:00:00', '2026-05-11 10:00:00', 2, 1),
-('tok_active_agend1', '2026-05-10 10:05:00', '2026-05-11 10:05:00', 2, 2),
-('tok_active_med1',   '2026-05-10 10:10:00', '2026-05-11 10:10:00', 2, 4),
-('tok_active_pac1',   '2026-05-10 10:25:00', '2026-05-11 10:25:00', 2, 11),
-('tok_active_pac2',   '2026-05-10 10:30:00', '2026-05-11 10:30:00', 2, 12);
+('tok_active_admin',  '2026-05-27 10:00:00', '2026-05-28 10:00:00', 2, 1),
+('tok_active_agend1', '2026-05-27 10:05:00', '2026-05-28 10:05:00', 2, 2),
+('tok_active_med1',   '2026-05-27 10:10:00', '2026-05-28 10:10:00', 2, 4),
+('tok_active_pac1',   '2026-05-27 10:25:00', '2026-05-28 10:25:00', 2, 11),
+('tok_active_pac2',   '2026-05-27 10:30:00', '2026-05-28 10:30:00', 2, 12);
