@@ -70,7 +70,7 @@ public class PersonaRepositoryAdapter implements PersonaRepositoryPort {
     }
 
     private void copyToDomain(PersonaEntity e, Persona p) {
-        p.setIdPersona(e.getIdPersona());
+        if (e.getIdPersona() != null) p.setIdPersona(e.getIdPersona());
         p.setNombre(e.getNombre());
         p.setApellido(e.getApellido());
         p.setCedulaCiudadania(e.getCedulaCiudadania());
@@ -101,7 +101,8 @@ public class PersonaRepositoryAdapter implements PersonaRepositoryPort {
     }
 
     private void copyToEntity(Persona p, PersonaEntity e) {
-        e.setIdPersona(p.getIdPersona());
+        // Solo setear idPersona si es > 0 (registro existente); null = nuevo registro para JPA
+        if (p.getIdPersona() > 0) e.setIdPersona(p.getIdPersona());
         e.setNombre(p.getNombre());
         e.setApellido(p.getApellido());
         e.setCedulaCiudadania(p.getCedulaCiudadania());

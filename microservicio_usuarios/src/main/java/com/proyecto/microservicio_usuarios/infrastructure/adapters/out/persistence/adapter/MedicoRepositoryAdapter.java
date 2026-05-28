@@ -36,7 +36,7 @@ public class MedicoRepositoryAdapter implements MedicoRepositoryPort {
 
     private MedicoTerapista toDomain(MedicoTerapistaEntity e) {
         MedicoTerapista m = new MedicoTerapista();
-        m.setIdPersona(e.getIdPersona());
+        if (e.getIdPersona() != null) m.setIdPersona(e.getIdPersona());
         m.setNombre(e.getNombre());
         m.setApellido(e.getApellido());
         m.setCedulaCiudadania(e.getCedulaCiudadania());
@@ -53,7 +53,7 @@ public class MedicoRepositoryAdapter implements MedicoRepositoryPort {
 
     private MedicoTerapistaEntity toEntity(MedicoTerapista m) {
         MedicoTerapistaEntity e = new MedicoTerapistaEntity();
-        e.setIdPersona(m.getIdPersona());
+        if (m.getIdPersona() > 0) e.setIdPersona(m.getIdPersona());
         e.setNombre(m.getNombre());
         e.setApellido(m.getApellido());
         e.setCedulaCiudadania(m.getCedulaCiudadania());

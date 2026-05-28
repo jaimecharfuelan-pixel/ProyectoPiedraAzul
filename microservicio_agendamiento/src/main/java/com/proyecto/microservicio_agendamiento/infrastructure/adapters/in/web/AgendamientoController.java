@@ -109,12 +109,16 @@ public class AgendamientoController {
 
     @Operation(summary = "Editar cita")
     @PutMapping("/{idCita}")
-    public ResponseEntity<String> editar(@PathVariable int idCita, @RequestBody Cita cita) {
+    public ResponseEntity<?> editar(@PathVariable int idCita, @RequestBody Cita cita) {
         cita.setIdCita(idCita);
-        if (gestionarCita.editar(cita)) {
-            return ResponseEntity.ok("Cita actualizada.");
+        try {
+            if (gestionarCita.editar(cita)) {
+                return ResponseEntity.ok("Cita actualizada.");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(construirErrorValidacion(e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
     }
 
     @Operation(summary = "Cancelar cita", description = "Cambia el estado a Cancelada. No elimina el registro.")

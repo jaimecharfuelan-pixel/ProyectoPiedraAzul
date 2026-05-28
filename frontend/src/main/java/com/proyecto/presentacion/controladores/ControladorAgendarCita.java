@@ -15,10 +15,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ControladorAgendarCita {
 
@@ -42,13 +48,15 @@ public class ControladorAgendarCita {
     @FXML private Label               lblErrorMotivo;
 
     private final BackendFacade backendFacade = new BackendFacade();
+    private final Map<LocalDate, Boolean> cacheDisponibilidad = new ConcurrentHashMap<>();
+    private final Set<LocalDate> fechasEnCarga = ConcurrentHashMap.newKeySet();
 
     @FXML
     public void initialize() {
         cargarMedicos();
         cargarGenero();
-        cbMedico.setOnAction(e -> { actualizarCalendario(); actualizarHorarios(); });
-        dpFecha.setOnAction(e -> actualizarHorarios());
+        cbMedico.setOnAction(e -> { actualizarCalendario(); });
+        dpFecha.setOnAction(e -> verificarDisponibilidadFecha(dpFecha.getValue()));
         iniciarValidaciones();
         iniciarListeners();
     }
@@ -162,36 +170,178 @@ public class ControladorAgendarCita {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void actualizarHorarios() {
-        cbHora.getItems().clear();
-        if (cbMedico.getValue() == null || dpFecha.getValue() == null) return;
-        try {
-            List<LocalTime> horarios = backendFacade.consultarDisponibilidad(
-                    cbMedico.getValue().getIdMedico(), dpFecha.getValue());
-            cbHora.getItems().addAll(horarios);
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
     private void actualizarCalendario() {
         if (cbMedico.getValue() == null) return;
-        try {
-            List<String> diasConJornada = backendFacade.listarDiasConJornada(
-                    cbMedico.getValue().getIdMedico());
-            dpFecha.setDayCellFactory(p -> new DateCell() {
-                @Override
-                public void updateItem(LocalDate d, boolean empty) {
-                    super.updateItem(d, empty);
-                    String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
-                    boolean sinJornada = !diasConJornada.isEmpty()
-                            && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
-                    setDisable(d.isBefore(LocalDate.now()) || sinJornada);
-                    if (sinJornada && !d.isBefore(LocalDate.now()))
-                        setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #aaa;");
+        int idMedico = cbMedico.getValue().getIdMedico();
+        cacheDisponibilidad.clear();
+        fechasEnCarga.clear();
+        dpFecha.setDisable(true);
+        dpFecha.setValue(null);
+        cbHora.getItems().clear();
+        dpFecha.setDayCellFactory(p -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                if (empty || d == null) {
+                    setDisable(true);
+                    return;
                 }
-            });
-            dpFecha.setValue(null);
-            cbHora.getItems().clear();
-        } catch (Exception e) { e.printStackTrace(); }
+                setDisable(true);
+                setStyle("-fx-background-color: #eeeeee; -fx-text-fill: #cccccc;");
+            }
+        });
+
+        new Thread(() -> {
+            try {
+                List<String> diasConJornada = backendFacade.listarDiasConJornada(idMedico);
+                if (diasConJornada.isEmpty()) {
+                    javafx.application.Platform.runLater(() -> {
+                        mostrarAdvertencia("El médico seleccionado no tiene jornadas configuradas.\n"
+                                + "Contacte al administrador para configurar los turnos.");
+                        dpFecha.setDayCellFactory(null);
+                        dpFecha.setDisable(true);
+                    });
+                    return;
+                }
+
+                List<LocalDate> fechasCandidatas = obtenerFechasConJornada(diasConJornada, 90);
+                Map<LocalDate, Boolean> disponibilidad = new java.util.HashMap<>();
+                for (LocalDate fecha : fechasCandidatas) {
+                    boolean libre = !backendFacade.consultarDisponibilidad(idMedico, fecha).isEmpty();
+                    disponibilidad.put(fecha, libre);
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    cacheDisponibilidad.putAll(disponibilidad);
+                    establecerDayCellFactory(idMedico, diasConJornada);
+                    dpFecha.setDisable(false);
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() ->
+                        mostrarError("No se pudieron cargar las jornadas del médico: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private void establecerDayCellFactory(int idMedico, List<String> diasConJornada) {
+        dpFecha.setDayCellFactory(p -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                if (empty || d == null) {
+                    setDisable(true);
+                    return;
+                }
+
+                if (d.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #eeeeee; -fx-text-fill: #cccccc;");
+                    return;
+                }
+
+                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
+                if (!tieneJornada(nombreDia, diasConJornada)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #aaaaaa;");
+                    return;
+                }
+
+                Boolean disponible = cacheDisponibilidad.get(d);
+                if (disponible == null) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #fff9c4; -fx-text-fill: #555;");
+                } else if (!disponible) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #aaaaaa;");
+                } else {
+                    setDisable(false);
+                    setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #1b5e20; -fx-font-weight: bold;");
+                }
+            }
+        });
+    }
+
+    private boolean tieneJornada(String nombreDia, List<String> diasConJornada) {
+        return diasConJornada.stream()
+                .anyMatch(j -> normalizarDia(j).equalsIgnoreCase(normalizarDia(nombreDia)));
+    }
+
+    private String normalizarDia(String dia) {
+        if (dia == null) return "";
+        return dia.toLowerCase()
+                .replace("á", "a")
+                .replace("é", "e")
+                .replace("í", "i")
+                .replace("ó", "o")
+                .replace("ú", "u")
+                .replace("ñ", "n")
+                .trim();
+    }
+
+    private List<LocalDate> obtenerFechasConJornada(List<String> diasConJornada, int diasAdelante) {
+        java.util.Set<DayOfWeek> diasSemana = new HashSet<>();
+        for (String dia : diasConJornada) {
+            DayOfWeek dow = mapearDiaSemana(dia);
+            if (dow != null) diasSemana.add(dow);
+        }
+
+        List<LocalDate> fechas = new ArrayList<>();
+        LocalDate actual = LocalDate.now();
+        LocalDate limite = actual.plusDays(diasAdelante);
+        while (!actual.isAfter(limite)) {
+            if (diasSemana.contains(actual.getDayOfWeek())) {
+                fechas.add(actual);
+            }
+            actual = actual.plusDays(1);
+        }
+        return fechas;
+    }
+
+    private DayOfWeek mapearDiaSemana(String diaSemana) {
+        if (diaSemana == null) return null;
+        return switch (normalizarDia(diaSemana)) {
+            case "lunes"     -> DayOfWeek.MONDAY;
+            case "martes"    -> DayOfWeek.TUESDAY;
+            case "miercoles" -> DayOfWeek.WEDNESDAY;
+            case "jueves"    -> DayOfWeek.THURSDAY;
+            case "viernes"   -> DayOfWeek.FRIDAY;
+            case "sabado"    -> DayOfWeek.SATURDAY;
+            case "domingo"   -> DayOfWeek.SUNDAY;
+            default           -> null;
+        };
+    }
+
+    private void verificarDisponibilidadFecha(LocalDate fecha) {
+        if (cbMedico.getValue() == null || fecha == null) return;
+        int idMedico = cbMedico.getValue().getIdMedico();
+
+        cbHora.getItems().clear();
+        cbHora.setPromptText("Cargando horarios...");
+
+        new Thread(() -> {
+            try {
+                List<LocalTime> slots = backendFacade.consultarDisponibilidad(idMedico, fecha);
+
+                javafx.application.Platform.runLater(() -> {
+                    cbHora.getItems().clear();
+                    if (slots.isEmpty()) {
+                        cbHora.setPromptText("Sin horarios disponibles");
+                        mostrarAdvertencia("El día " + fecha.getDayOfWeek().name()
+                                + " (" + fecha + ") no tiene horarios disponibles.\n"
+                                + "Todos los turnos están ocupados o no hay jornada configurada.");
+                        dpFecha.setValue(null);
+                    } else {
+                        cbHora.getItems().addAll(slots);
+                        cbHora.setPromptText("Seleccione una hora");
+                    }
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    cbHora.setPromptText("Error al cargar horarios");
+                    mostrarError("Error al consultar disponibilidad: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 
     // ─── Acciones ─────────────────────────────────────────────────────────────
@@ -382,6 +532,7 @@ public class ControladorAgendarCita {
         });
     }
 
-    private void mostrarError(String msg) { new Alert(Alert.AlertType.ERROR, msg).showAndWait(); }
-    private void mostrarInfo(String msg)  { new Alert(Alert.AlertType.INFORMATION, msg).showAndWait(); }
+    private void mostrarError(String msg)       { new Alert(Alert.AlertType.ERROR, msg).showAndWait(); }
+    private void mostrarInfo(String msg)        { new Alert(Alert.AlertType.INFORMATION, msg).showAndWait(); }
+    private void mostrarAdvertencia(String msg) { new Alert(Alert.AlertType.WARNING, msg).showAndWait(); }
 }

@@ -36,7 +36,7 @@ public class PacienteRepositoryAdapter implements PacienteRepositoryPort {
 
     private Paciente toDomain(PacienteEntity e) {
         Paciente p = new Paciente();
-        p.setIdPersona(e.getIdPersona());
+        if (e.getIdPersona() != null) p.setIdPersona(e.getIdPersona());
         p.setNombre(e.getNombre());
         p.setApellido(e.getApellido());
         p.setCedulaCiudadania(e.getCedulaCiudadania());
@@ -52,7 +52,8 @@ public class PacienteRepositoryAdapter implements PacienteRepositoryPort {
 
     private PacienteEntity toEntity(Paciente p) {
         PacienteEntity e = new PacienteEntity();
-        e.setIdPersona(p.getIdPersona());
+        // Solo setear idPersona si es > 0 (registro existente); null = nuevo registro para JPA
+        if (p.getIdPersona() > 0) e.setIdPersona(p.getIdPersona());
         e.setNombre(p.getNombre());
         e.setApellido(p.getApellido());
         e.setCedulaCiudadania(p.getCedulaCiudadania());

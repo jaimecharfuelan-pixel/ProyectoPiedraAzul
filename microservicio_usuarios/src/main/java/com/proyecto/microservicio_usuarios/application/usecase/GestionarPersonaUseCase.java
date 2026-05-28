@@ -10,6 +10,8 @@ import com.proyecto.microservicio_usuarios.domain.ports.out.PacienteRepositoryPo
 import com.proyecto.microservicio_usuarios.domain.ports.out.PersonaRepositoryPort;
 import com.proyecto.microservicio_usuarios.domain.ports.out.RolRepositoryPort;
 import com.proyecto.microservicio_usuarios.domain.ports.out.UsuarioRepositoryPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import java.util.Optional;
 
 @Service
 public class GestionarPersonaUseCase implements GestionarPersonaPort {
+
+    private static final Logger log = LoggerFactory.getLogger(GestionarPersonaUseCase.class);
 
     private final PersonaRepositoryPort personaRepo;
     private final PacienteRepositoryPort pacienteRepo;
@@ -43,6 +47,10 @@ public class GestionarPersonaUseCase implements GestionarPersonaPort {
                 || command.getNombre() == null || command.getNombre().isBlank()
                 || command.getApellido() == null || command.getApellido().isBlank()) {
             throw new IllegalArgumentException("Cédula, nombre y apellido son obligatorios.");
+        }
+
+        if (personaRepo.findByCedula(command.getCedulaCiudadania()).isPresent()) {
+            throw new IllegalArgumentException("La cédula '" + command.getCedulaCiudadania() + "' ya existe.");
         }
 
         String loginUsuario = command.getUsuarioLogin() != null && !command.getUsuarioLogin().isBlank()

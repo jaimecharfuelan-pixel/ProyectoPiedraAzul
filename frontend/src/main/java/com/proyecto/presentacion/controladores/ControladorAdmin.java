@@ -1,4 +1,3 @@
-
 package com.proyecto.presentacion.controladores;
 
 import com.proyecto.presentacion.SesionUsuario;
@@ -7,7 +6,6 @@ import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
-import com.proyecto.presentacion.dto.RolDTO;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -23,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -31,74 +30,80 @@ import java.util.ResourceBundle;
 
 public class ControladorAdmin implements Initializable {
 
+    // ── Paneles ───────────────────────────────────────────────
     @FXML private VBox panelPrincipal;
     @FXML private VBox panelTurnos;
     @FXML private VBox panelPersonas;
     @FXML private VBox panelUsuarios;
     @FXML private VBox panelRoles;
 
-    // ── Gestión de Roles (Panel de Administración) ────────────────────────────
-    @FXML private ComboBox<PersonaDTO> cbPersonaRol;     // DEPRECATED: usar tabla en su lugar
-    @FXML private ComboBox<String>     cbRol;            // DEPRECATED: usar tabla en su lugar
-    
-    // Nueva tabla para gestión de roles por usuario
-    @FXML private TableView<PersonaDTO>           tblPersonasRoles;
-    @FXML private TableColumn<PersonaDTO, String> colPerRolCedula;
-    @FXML private TableColumn<PersonaDTO, String> colPerRolNombre;
-    @FXML private TableColumn<PersonaDTO, String> colPerRolApellido;
-    
-    @FXML private TableView<RolDTO>              tblRolesUsuario;
-    @FXML private TableColumn<RolDTO, String>    colRolNombre;
-    
-    @FXML private ComboBox<String>   cbRolesDisponibles;
-    @FXML private Button             btnAgregarRol;
-    @FXML private Button             btnQuitarRol;
-    @FXML private ComboBox<MedicoDTO>  cbMedicoEspecialidad;
-    @FXML private ComboBox<String>     cbEspecialidad;
+    // ── Panel Especialidad ────────────────────────────────────
+    @FXML private ComboBox<MedicoDTO> cbMedicoEspecialidad;
+    @FXML private ComboBox<String>    cbEspecialidad;
 
-    @FXML private ComboBox<MedicoDTO>         cbTurnoDoctor;
-    @FXML private TextField                   txtTurnoCedMedico;
-    @FXML private TextField                   txtTurnoNomMedico;
-    @FXML private TableView<CitaDTO>           tblTurnos;
-    @FXML private TableColumn<CitaDTO, String> colTurnoCedMedico;
-    @FXML private TableColumn<CitaDTO, String> colTurnoNomMedico;
-    @FXML private TableColumn<CitaDTO, String> colTurnoFecha;
-    @FXML private TableColumn<CitaDTO, String> colTurnoHoraInicio;
-    @FXML private TableColumn<CitaDTO, String> colTurnoHoraFin;
-    @FXML private TableColumn<CitaDTO, String> colTurnoEstado;
-    @FXML private DatePicker              dpTurnoFecha;
-    @FXML private ComboBox<LocalTime>     cbTurnoHoraInicio;
-    @FXML private ComboBox<LocalTime>     cbTurnoHoraFin;
-    @FXML private CheckBox                chkTurnoActivo;
+    // ── Panel Turnos ──────────────────────────────────────────
+    @FXML private ComboBox<MedicoDTO>          cbTurnoDoctor;
+    @FXML private TextField                    txtTurnoCedMedico;
+    @FXML private TextField                    txtTurnoNomMedico;
+    @FXML private TableView<CitaDTO>            tblTurnos;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoCedMedico;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoNomMedico;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoFecha;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoHoraInicio;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoHoraFin;
+    @FXML private TableColumn<CitaDTO, String>  colTurnoEstado;
+    @FXML private ComboBox<String>     cbTurnoDia;
+    @FXML private ComboBox<LocalTime>  cbTurnoHoraInicio;
+    @FXML private ComboBox<LocalTime>  cbTurnoHoraFin;
+    @FXML private CheckBox             chkTurnoActivo;
 
-    @FXML private TableView<PersonaDTO>           tblPersonas;
-    @FXML private TableColumn<PersonaDTO, String> colPerCedula;
-    @FXML private TableColumn<PersonaDTO, String> colPerNombre;
-    @FXML private TableColumn<PersonaDTO, String> colPerApellido;
-    @FXML private TableColumn<PersonaDTO, String> colPerCelular;
-    @FXML private TableColumn<PersonaDTO, String> colPerFechaNac;
-    @FXML private TableColumn<PersonaDTO, String> colPerCorreo;
-    @FXML private TableColumn<PersonaDTO, String> colPerGenero;
-    @FXML private TextField         txtPerCedula;
-    @FXML private TextField         txtPerNombre;
-    @FXML private TextField         txtPerApellido;
-    @FXML private TextField         txtPerCelular;
-    @FXML private DatePicker        dpPerFechaNac;
-    @FXML private TextField         txtPerCorreo;
-    @FXML private ChoiceBox<String> cbPerGenero;
+    // ── Panel Personas ────────────────────────────────────────
+    @FXML private TableView<PersonaDTO>            tblPersonas;
+    @FXML private TableColumn<PersonaDTO, String>  colPerCedula;
+    @FXML private TableColumn<PersonaDTO, String>  colPerNombre;
+    @FXML private TableColumn<PersonaDTO, String>  colPerApellido;
+    @FXML private TableColumn<PersonaDTO, String>  colPerCelular;
+    @FXML private TableColumn<PersonaDTO, String>  colPerFechaNac;
+    @FXML private TableColumn<PersonaDTO, String>  colPerCorreo;
+    @FXML private TableColumn<PersonaDTO, String>  colPerGenero;
+    @FXML private TextField          txtPerCedula;
+    @FXML private TextField          txtPerNombre;
+    @FXML private TextField          txtPerApellido;
+    @FXML private TextField          txtPerCelular;
+    @FXML private DatePicker         dpPerFechaNac;
+    @FXML private TextField          txtPerCorreo;
+    @FXML private ChoiceBox<String>  cbPerGenero;
 
-    @FXML private TableView<Map>           tblUsuarios;
-    @FXML private TableColumn<Map, String> colUsuNombre;
-    @FXML private TableColumn<Map, String> colUsuContrasena;
+    // ── Panel Usuarios ────────────────────────────────────────
+    @FXML private TableView<Map>            tblUsuarios;
+    @FXML private TableColumn<Map, String>  colUsuNombre;
+    @FXML private TableColumn<Map, String>  colUsuContrasena;
     @FXML private TextField txtUsuNombre;
     @FXML private TextField txtUsuContrasena;
 
-    private PersonaDTO personaSeleccionada = null;
-    private PersonaDTO personaSeleccionadaParaRoles = null;
+    // ── Panel Roles ───────────────────────────────────────────
+    @FXML private TableView<PersonaDTO>            tblPersonasRoles;
+    @FXML private TableColumn<PersonaDTO, String>  colPerRolCedula;
+    @FXML private TableColumn<PersonaDTO, String>  colPerRolNombre;
+    @FXML private TableColumn<PersonaDTO, String>  colPerRolApellido;
+    @FXML private TableView<Map>                   tblRolesUsuario;
+    @FXML private TableColumn<Map, String>         colRolNombre;
+    @FXML private ComboBox<String>                 cbRolesDisponibles;
+    @FXML private Button                           btnAgregarRol;
+    @FXML private Button                           btnQuitarRol;
+
+    // ── Estado interno ────────────────────────────────────────
+    private PersonaDTO personaSeleccionada    = null;
+    private PersonaDTO personaRolSeleccionada = null;
     private final Map<Integer, MedicoDTO> mapaMedicos = new HashMap<>();
     private List<CitaDTO> todosTurnos = new java.util.ArrayList<>();
-    private List<RolDTO> rolesActualesUsuario = new java.util.ArrayList<>();
     private final BackendFacade backend = new BackendFacade();
+
+    private static final List<String> DIAS_SEMANA =
+            List.of("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo");
+
+    private static final List<String> ROLES_DISPONIBLES =
+            List.of("Administrador", "Agendador", "Medico", "Paciente");
 
     private final StringConverter<MedicoDTO> convMedico = new StringConverter<>() {
         public String toString(MedicoDTO m)   { return m == null ? "" : m.toString(); }
@@ -107,16 +112,14 @@ public class ControladorAdmin implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cargarCombosPrincipal();
+        cargarCombosIniciales();
         configurarTablaTurnos();
         configurarTablaPersonas();
         configurarTablaUsuarios();
-        configurarTablaPersonasRoles();
-        configurarTablaRolesUsuario();
+        configurarTablaRoles();
         cargarTablaTurnos();
         cargarTablaPersonas();
         cargarTablaUsuarios();
-        cargarTablaPersonasRoles();
     }
 
     // ── Navegación ────────────────────────────────────────────
@@ -145,16 +148,14 @@ public class ControladorAdmin implements Initializable {
         } catch (Exception ex) { ex.printStackTrace(); }
     }
 
-    // ── Combos principal ──────────────────────────────────────
+    // ── Carga inicial ─────────────────────────────────────────
 
-    private void cargarCombosPrincipal() {
+    private void cargarCombosIniciales() {
         try {
             List<MedicoDTO> medicos = backend.listarMedicosActivos();
             mapaMedicos.clear();
             for (MedicoDTO m : medicos) mapaMedicos.put(m.getIdMedico(), m);
 
-            cbTurnoDoctor.setItems(FXCollections.observableArrayList(medicos));
-            cbTurnoDoctor.setConverter(convMedico);
             cbMedicoEspecialidad.setItems(FXCollections.observableArrayList(medicos));
             cbMedicoEspecialidad.setConverter(convMedico);
 
@@ -162,15 +163,14 @@ public class ControladorAdmin implements Initializable {
             cbEspecialidad.setItems(FXCollections.observableArrayList(
                     especialidades.stream().map(esp -> esp.get("nombre").toString()).toList()));
 
-            List<PersonaDTO> personas = backend.listarPersonas();
-            cbPersonaRol.setItems(FXCollections.observableArrayList(personas));
-            cbPersonaRol.setConverter(new StringConverter<>() {
-                public String toString(PersonaDTO p)   { return p == null ? "" : p.toString(); }
-                public PersonaDTO fromString(String s) { return null; }
-            });
+            cbTurnoDoctor.setItems(FXCollections.observableArrayList(medicos));
+            cbTurnoDoctor.setConverter(convMedico);
 
-            cbRol.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
-            cbPerGenero.setItems(FXCollections.observableArrayList("Masculino", "Femenino", "No Binario", "Prefiero no decir"));
+            // Días de la semana en lugar de DatePicker
+            cbTurnoDia.setItems(FXCollections.observableArrayList(DIAS_SEMANA));
+
+            cbPerGenero.setItems(FXCollections.observableArrayList(
+                    "Masculino", "Femenino", "No Binario", "Prefiero no decir"));
 
             List<LocalTime> horas = new java.util.ArrayList<>();
             for (int h = 7; h <= 20; h++) {
@@ -181,6 +181,8 @@ public class ControladorAdmin implements Initializable {
             cbTurnoHoraFin.setItems(FXCollections.observableArrayList(horas));
         } catch (Exception e) { e.printStackTrace(); }
     }
+
+    // ── Especialidad ──────────────────────────────────────────
 
     @FXML
     void onAsignarEspecialidad(ActionEvent e) {
@@ -194,143 +196,16 @@ public class ControladorAdmin implements Initializable {
                     .mapToInt(m -> ((Number) m.get("idEspecialidad")).intValue())
                     .findFirst().orElse(-1);
             if (idEsp == -1) { mostrarError("No se encontró la especialidad"); return; }
+            if (medico.getIdEspecialidad() == idEsp) {
+                mostrarAdvertencia("El médico " + medico.getNombre() + " " + medico.getApellido()
+                        + " ya tiene asignada esa especialidad.");
+                return;
+            }
             backend.asignarEspecialidad(medico.getIdMedico(), idEsp, SesionUsuario.getInstancia().getToken());
-            mostrarInfo("Especialidad '" + esp + "' asignada a " + medico);
+            medico.setIdEspecialidad(idEsp);
+            mostrarInfo("Especialidad '" + esp + "' asignada a "
+                    + medico.getNombre() + " " + medico.getApellido() + " correctamente.");
         } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
-    }
-
-    @FXML
-    void onAsignarRol(ActionEvent e) {
-        PersonaDTO persona = cbPersonaRol.getValue();
-        String rol = cbRol.getValue();
-        if (persona == null || rol == null) { mostrarError("Seleccione persona y rol"); return; }
-        if (persona.getIdUsuario() == null) { mostrarError("La persona no tiene usuario asociado"); return; }
-        try {
-            backend.asignarRol(persona.getIdUsuario(), rol, SesionUsuario.getInstancia().getToken());
-            mostrarInfo("Rol '" + rol + "' asignado a " + persona);
-        } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
-    }
-
-    // ── Gestión de Roles (Nueva Tabla) ────────────────────────────────────────
-
-    private void configurarTablaPersonasRoles() {
-        tblPersonasRoles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tblPersonasRoles.setItems(FXCollections.observableArrayList());
-        
-        colPerRolCedula.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCedulaCiudadania()));
-        colPerRolNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
-        colPerRolApellido.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getApellido()));
-        
-        tblPersonasRoles.getSelectionModel().selectedItemProperty().addListener((obs, old, persona) -> {
-            personaSeleccionadaParaRoles = persona;
-            if (persona == null) {
-                tblRolesUsuario.getItems().clear();
-                cbRolesDisponibles.setValue(null);
-                btnAgregarRol.setDisable(true);
-                btnQuitarRol.setDisable(true);
-            } else if (persona.getIdUsuario() != null) {
-                btnAgregarRol.setDisable(false);
-                btnQuitarRol.setDisable(false);
-                cargarRolesDeUsuario(persona.getIdUsuario());
-            } else {
-                tblRolesUsuario.getItems().clear();
-                cbRolesDisponibles.setValue(null);
-                mostrarError("Esta persona no tiene usuario asociado");
-            }
-        });
-    }
-
-    private void cargarTablaPersonasRoles() {
-        new Thread(() -> {
-            try {
-                List<PersonaDTO> personas = backend.listarPersonas();
-                javafx.application.Platform.runLater(() -> tblPersonasRoles.getItems().setAll(personas));
-            } catch (Exception e) {
-                javafx.application.Platform.runLater(() -> mostrarError("Error al cargar personas para roles: " + e.getMessage()));
-            }
-        }).start();
-    }
-
-    private void configurarTablaRolesUsuario() {
-        tblRolesUsuario.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tblRolesUsuario.setItems(FXCollections.observableArrayList());
-        colRolNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
-        
-        cbRolesDisponibles.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
-    }
-
-    private void cargarRolesDeUsuario(int idUsuario) {
-        new Thread(() -> {
-            try {
-                List<RolDTO> roles = backend.listarRolesDeUsuario(idUsuario);
-                rolesActualesUsuario = roles;
-                javafx.application.Platform.runLater(() -> {
-                    tblRolesUsuario.getItems().setAll(roles);
-                    // Actualizar combo de roles disponibles mostrando solo los no asignados
-                    List<String> rolesDisponibles = new java.util.ArrayList<>(java.util.Arrays.asList("Administrador", "Agendador", "Medico", "Paciente"));
-                    for (RolDTO rol : roles) {
-                        rolesDisponibles.remove(rol.getNombre());
-                    }
-                    cbRolesDisponibles.setItems(FXCollections.observableArrayList(rolesDisponibles));
-                    cbRolesDisponibles.setValue(null);
-                });
-            } catch (Exception e) {
-                javafx.application.Platform.runLater(() -> mostrarError("Error al cargar roles: " + e.getMessage()));
-            }
-        }).start();
-    }
-
-    @FXML
-    void onAgregarRol(ActionEvent e) {
-        if (personaSeleccionadaParaRoles == null) { mostrarError("Seleccione una persona"); return; }
-        if (personaSeleccionadaParaRoles.getIdUsuario() == null) { mostrarError("La persona no tiene usuario asociado"); return; }
-        
-        String rolSeleccionado = cbRolesDisponibles.getValue();
-        if (rolSeleccionado == null || rolSeleccionado.isEmpty()) { mostrarError("Seleccione un rol"); return; }
-        
-        // Validar que el rol no esté duplicado
-        boolean rolYaAsignado = rolesActualesUsuario.stream()
-                .anyMatch(r -> r.getNombre().equals(rolSeleccionado));
-        if (rolYaAsignado) { mostrarError("Este rol ya está asignado al usuario"); return; }
-        
-        new Thread(() -> {
-            try {
-                backend.asignarRol(personaSeleccionadaParaRoles.getIdUsuario(), rolSeleccionado, 
-                                  SesionUsuario.getInstancia().getToken());
-                javafx.application.Platform.runLater(() -> {
-                    cargarRolesDeUsuario(personaSeleccionadaParaRoles.getIdUsuario());
-                    mostrarInfo("Rol '" + rolSeleccionado + "' asignado correctamente");
-                });
-            } catch (Exception ex) {
-                javafx.application.Platform.runLater(() -> mostrarError("Error: " + ex.getMessage()));
-            }
-        }).start();
-    }
-
-    @FXML
-    void onQuitarRol(ActionEvent e) {
-        if (personaSeleccionadaParaRoles == null) { mostrarError("Seleccione una persona"); return; }
-        
-        RolDTO rolSeleccionado = tblRolesUsuario.getSelectionModel().getSelectedItem();
-        if (rolSeleccionado == null) { mostrarError("Seleccione un rol de la tabla para eliminar"); return; }
-        
-        // Confirmar eliminación
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION,
-                "¿Está seguro de que desea quitar el rol '" + rolSeleccionado.getNombre() + "'?",
-                ButtonType.YES, ButtonType.NO);
-        if (confirmacion.showAndWait().orElse(ButtonType.NO) == ButtonType.NO) return;
-        
-        new Thread(() -> {
-            try {
-                backend.eliminarRol(rolSeleccionado.getIdRol(), SesionUsuario.getInstancia().getToken());
-                javafx.application.Platform.runLater(() -> {
-                    cargarRolesDeUsuario(personaSeleccionadaParaRoles.getIdUsuario());
-                    mostrarInfo("Rol eliminado correctamente");
-                });
-            } catch (Exception ex) {
-                javafx.application.Platform.runLater(() -> mostrarError("Error: " + ex.getMessage()));
-            }
-        }).start();
     }
 
     // ── Turnos ────────────────────────────────────────────────
@@ -344,13 +219,11 @@ public class ControladorAdmin implements Initializable {
             tblTurnos.setItems(FXCollections.observableArrayList(
                     todosTurnos.stream().filter(c -> c.getIdMedico() == sel.getIdMedico()).toList()));
         } else {
-            txtTurnoCedMedico.clear();
-            txtTurnoNomMedico.clear();
+            txtTurnoCedMedico.clear(); txtTurnoNomMedico.clear();
             tblTurnos.setItems(FXCollections.observableArrayList(todosTurnos));
         }
-        dpTurnoFecha.setValue(null);
-        cbTurnoHoraInicio.setValue(null);
-        cbTurnoHoraFin.setValue(null);
+        cbTurnoDia.setValue(null);
+        cbTurnoHoraInicio.setValue(null); cbTurnoHoraFin.setValue(null);
         chkTurnoActivo.setSelected(false);
     }
 
@@ -363,8 +236,12 @@ public class ControladorAdmin implements Initializable {
             MedicoDTO m = mapaMedicos.get(c.getValue().getIdMedico());
             return new SimpleStringProperty(m != null ? m.getNombre() + " " + m.getApellido() : "—");
         });
-        colTurnoFecha.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getFecha() != null ? c.getValue().getFecha().toString() : ""));
+        // Mostrar día de la semana derivado de la fecha almacenada
+        colTurnoFecha.setCellValueFactory(c -> {
+            if (c.getValue().getFecha() == null) return new SimpleStringProperty("");
+            return new SimpleStringProperty(
+                    Conversiones.traducirDia(c.getValue().getFecha().getDayOfWeek()));
+        });
         colTurnoHoraInicio.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getHoraInicio() != null ? c.getValue().getHoraInicio().toString() : ""));
         colTurnoHoraFin.setCellValueFactory(c -> new SimpleStringProperty(
@@ -376,7 +253,10 @@ public class ControladorAdmin implements Initializable {
         tblTurnos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tblTurnos.getSelectionModel().selectedItemProperty().addListener((obs, old, cita) -> {
             if (cita == null) return;
-            dpTurnoFecha.setValue(cita.getFecha());
+            // Mostrar el día de la semana de la fecha almacenada
+            if (cita.getFecha() != null) {
+                cbTurnoDia.setValue(Conversiones.traducirDia(cita.getFecha().getDayOfWeek()));
+            }
             cbTurnoHoraInicio.setValue(cita.getHoraInicio());
             cbTurnoHoraFin.setValue(cita.getHoraFin());
             chkTurnoActivo.setSelected(cita.getIdEstadoCita() != null && cita.getIdEstadoCita() == 1);
@@ -412,24 +292,45 @@ public class ControladorAdmin implements Initializable {
         }).start();
     }
 
+    /**
+     * Convierte el día de la semana en español al próximo LocalDate de ese día.
+     * Ej: "Martes" → el próximo martes desde hoy.
+     */
+    private LocalDate proximaFechaDeDia(String diaSemana) {
+        java.time.DayOfWeek dow = switch (diaSemana) {
+            case "Lunes"     -> java.time.DayOfWeek.MONDAY;
+            case "Martes"    -> java.time.DayOfWeek.TUESDAY;
+            case "Miércoles" -> java.time.DayOfWeek.WEDNESDAY;
+            case "Jueves"    -> java.time.DayOfWeek.THURSDAY;
+            case "Viernes"   -> java.time.DayOfWeek.FRIDAY;
+            case "Sábado"    -> java.time.DayOfWeek.SATURDAY;
+            default          -> java.time.DayOfWeek.SUNDAY;
+        };
+        LocalDate hoy = LocalDate.now();
+        int diasHasta = (dow.getValue() - hoy.getDayOfWeek().getValue() + 7) % 7;
+        return hoy.plusDays(diasHasta == 0 ? 7 : diasHasta);
+    }
+
     @FXML
     void onCrearTurno(ActionEvent e) {
         MedicoDTO doctor = cbTurnoDoctor.getValue();
-        if (doctor == null || dpTurnoFecha.getValue() == null
+        String dia = cbTurnoDia.getValue();
+        if (doctor == null || dia == null
                 || cbTurnoHoraInicio.getValue() == null || cbTurnoHoraFin.getValue() == null) {
-            mostrarError("Complete: Doctor, Fecha, Hora Inicio y Hora Final"); return;
+            mostrarError("Complete: Doctor, Día, Hora Inicio y Hora Final"); return;
         }
         try {
             CitaDTO nuevo = new CitaDTO();
             nuevo.setIdMedico(doctor.getIdMedico());
-            nuevo.setFecha(dpTurnoFecha.getValue());
+            // Usar el próximo día de la semana seleccionado como fecha representativa
+            nuevo.setFecha(proximaFechaDeDia(dia));
             nuevo.setHoraInicio(cbTurnoHoraInicio.getValue());
             nuevo.setHoraFin(cbTurnoHoraFin.getValue());
             nuevo.setIdEstadoCita(chkTurnoActivo.isSelected() ? 1 : 2);
             backend.crearCitaManual(nuevo, SesionUsuario.getInstancia().getToken());
             cargarTablaTurnos();
             limpiarFormularioTurno();
-            mostrarInfo("Turno creado correctamente");
+            mostrarInfo("Turno del " + dia + " creado correctamente.");
         } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
     }
 
@@ -440,7 +341,8 @@ public class ControladorAdmin implements Initializable {
         try {
             MedicoDTO doctor = cbTurnoDoctor.getValue();
             if (doctor != null) cita.setIdMedico(doctor.getIdMedico());
-            if (dpTurnoFecha.getValue() != null) cita.setFecha(dpTurnoFecha.getValue());
+            String dia = cbTurnoDia.getValue();
+            if (dia != null) cita.setFecha(proximaFechaDeDia(dia));
             if (cbTurnoHoraInicio.getValue() != null) cita.setHoraInicio(cbTurnoHoraInicio.getValue());
             if (cbTurnoHoraFin.getValue() != null) cita.setHoraFin(cbTurnoHoraFin.getValue());
             cita.setIdEstadoCita(chkTurnoActivo.isSelected() ? 1 : 2);
@@ -465,7 +367,7 @@ public class ControladorAdmin implements Initializable {
     private void limpiarFormularioTurno() {
         cbTurnoDoctor.setValue(null);
         txtTurnoCedMedico.clear(); txtTurnoNomMedico.clear();
-        dpTurnoFecha.setValue(null);
+        cbTurnoDia.setValue(null);
         cbTurnoHoraInicio.setValue(null); cbTurnoHoraFin.setValue(null);
         chkTurnoActivo.setSelected(false);
     }
@@ -516,7 +418,6 @@ public class ControladorAdmin implements Initializable {
         String nombre   = txtPerNombre.getText().trim();
         String apellido = txtPerApellido.getText().trim();
         if (nombre.isEmpty() || apellido.isEmpty()) { mostrarError("Nombre y Apellido son obligatorios"); return; }
-
         java.util.Map<String, Object> body = new java.util.HashMap<>();
         body.put("nombre", nombre);
         body.put("apellido", apellido);
@@ -527,15 +428,11 @@ public class ControladorAdmin implements Initializable {
             body.put("fechaNacimiento", dpPerFechaNac.getValue().toString());
         String generoStr = cbPerGenero.getValue();
         if (generoStr != null) body.put("idGenero", Conversiones.generoAId(generoStr));
-
         final int idPersona = personaSeleccionada.getIdPersona();
         new Thread(() -> {
             try {
                 backend.editarPersona(idPersona, body, SesionUsuario.getInstancia().getToken());
-                javafx.application.Platform.runLater(() -> {
-                    cargarTablaPersonas();
-                    mostrarInfo("Persona actualizada correctamente");
-                });
+                javafx.application.Platform.runLater(() -> { cargarTablaPersonas(); mostrarInfo("Persona actualizada"); });
             } catch (Exception ex) {
                 javafx.application.Platform.runLater(() -> mostrarError("Error: " + ex.getMessage()));
             }
@@ -562,14 +459,12 @@ public class ControladorAdmin implements Initializable {
         String generoStr = cbPerGenero.getValue();
         if (generoStr != null) body.put("idGenero", Conversiones.generoAId(generoStr));
         if (dpPerFechaNac.getValue() != null)
-            body.put("fechaNacimiento", dpPerFechaNac.getValue().toString());
-
+            body.put("fechaNacimiento", dpPerFechaNac.getValue());
         new Thread(() -> {
             try {
                 backend.crearPersonaAdmin(body);
                 javafx.application.Platform.runLater(() -> {
-                    cargarTablaPersonas();
-                    limpiarFormularioPersona();
+                    cargarTablaPersonas(); limpiarFormularioPersona();
                     mostrarInfo("Persona creada.\nUsuario: " + cedula + "\nContraseña: " + cedula);
                 });
             } catch (Exception ex) {
@@ -583,8 +478,7 @@ public class ControladorAdmin implements Initializable {
         String cedula = txtPerCedula.getText().trim();
         if (cedula.isEmpty()) { mostrarError("Seleccione una persona primero"); return; }
         PersonaDTO target = tblPersonas.getItems().stream()
-                .filter(p -> cedula.equals(p.getCedulaCiudadania()))
-                .findFirst().orElse(null);
+                .filter(p -> cedula.equals(p.getCedulaCiudadania())).findFirst().orElse(null);
         if (target == null) { mostrarError("No se encontró la persona con cédula: " + cedula); return; }
         final int id = target.getIdPersona();
         new Thread(() -> {
@@ -592,8 +486,7 @@ public class ControladorAdmin implements Initializable {
                 String token = SesionUsuario.getInstancia().getToken();
                 backend.inactivarPersona(id, token != null ? token : "");
                 javafx.application.Platform.runLater(() -> {
-                    limpiarFormularioPersona();
-                    cargarTablaPersonas();
+                    limpiarFormularioPersona(); cargarTablaPersonas();
                     mostrarInfo("Persona inactivada correctamente");
                 });
             } catch (Exception ex) {
@@ -656,8 +549,7 @@ public class ControladorAdmin implements Initializable {
             try {
                 backend.editarUsuario(idUsuario, body, SesionUsuario.getInstancia().getToken());
                 javafx.application.Platform.runLater(() -> {
-                    cargarTablaUsuarios();
-                    txtUsuNombre.clear(); txtUsuContrasena.clear();
+                    cargarTablaUsuarios(); txtUsuNombre.clear(); txtUsuContrasena.clear();
                     mostrarInfo("Usuario actualizado correctamente");
                 });
             } catch (Exception ex) {
@@ -671,15 +563,11 @@ public class ControladorAdmin implements Initializable {
         String nombre = txtUsuNombre.getText().trim();
         String clave  = txtUsuContrasena.getText().trim();
         if (nombre.isEmpty() || clave.isEmpty()) { mostrarError("Usuario y Contraseña son obligatorios"); return; }
-        java.util.Map<String, Object> body = new java.util.HashMap<>();
-        body.put("usuario", nombre);
-        body.put("contrasena", clave);
         new Thread(() -> {
             try {
-                backend.editarUsuario(0, body, SesionUsuario.getInstancia().getToken());
+                backend.crearUsuario(nombre, clave, SesionUsuario.getInstancia().getToken());
                 javafx.application.Platform.runLater(() -> {
-                    cargarTablaUsuarios();
-                    txtUsuNombre.clear(); txtUsuContrasena.clear();
+                    cargarTablaUsuarios(); txtUsuNombre.clear(); txtUsuContrasena.clear();
                     mostrarInfo("Usuario creado correctamente");
                 });
             } catch (Exception ex) {
@@ -691,17 +579,15 @@ public class ControladorAdmin implements Initializable {
     @FXML
     void onEliminarUsuario(ActionEvent e) {
         Map seleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
-        if (seleccionado == null) { mostrarError("Seleccione un usuario"); return; }
+        if (seleccionado == null) { mostrarError("Seleccione un usuario de la lista"); return; }
         Object idObj = seleccionado.get("idUsuario");
-        if (idObj == null) { mostrarError("No se pudo obtener el ID"); return; }
+        if (idObj == null) { mostrarError("No se pudo obtener el ID del usuario"); return; }
         int idUsuario = ((Number) idObj).intValue();
         new Thread(() -> {
             try {
-                backend.editarUsuario(idUsuario, java.util.Map.of("activo", false),
-                        SesionUsuario.getInstancia().getToken());
+                backend.eliminarUsuario(idUsuario, SesionUsuario.getInstancia().getToken());
                 javafx.application.Platform.runLater(() -> {
-                    cargarTablaUsuarios();
-                    txtUsuNombre.clear(); txtUsuContrasena.clear();
+                    cargarTablaUsuarios(); txtUsuNombre.clear(); txtUsuContrasena.clear();
                     mostrarInfo("Usuario eliminado correctamente");
                 });
             } catch (Exception ex) {
@@ -710,6 +596,110 @@ public class ControladorAdmin implements Initializable {
         }).start();
     }
 
-    private void mostrarError(String msg) { new Alert(Alert.AlertType.ERROR, msg).showAndWait(); }
-    private void mostrarInfo(String msg)  { new Alert(Alert.AlertType.INFORMATION, msg).showAndWait(); }
+    // ── Roles ─────────────────────────────────────────────────
+
+    @SuppressWarnings("unchecked")
+    private void configurarTablaRoles() {
+        tblPersonasRoles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tblPersonasRoles.setItems(FXCollections.observableArrayList());
+        colPerRolCedula.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCedulaCiudadania()));
+        colPerRolNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
+        colPerRolApellido.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getApellido()));
+
+        tblRolesUsuario.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tblRolesUsuario.setItems(FXCollections.observableArrayList());
+        colRolNombre.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().get("nombre") != null ? c.getValue().get("nombre").toString() : ""));
+
+        tblPersonasRoles.getSelectionModel().selectedItemProperty().addListener((obs, old, p) -> {
+            personaRolSeleccionada = p;
+            btnAgregarRol.setDisable(p == null);
+            if (p != null) cargarRolesDePersona(p);
+            else { tblRolesUsuario.getItems().clear(); cbRolesDisponibles.getItems().setAll(ROLES_DISPONIBLES); }
+        });
+
+        tblRolesUsuario.getSelectionModel().selectedItemProperty().addListener((obs, old, r) ->
+                btnQuitarRol.setDisable(r == null));
+    }
+
+    private void cargarTablaPersonasRoles() {
+        new Thread(() -> {
+            try {
+                List<PersonaDTO> personas = backend.listarPersonas();
+                javafx.application.Platform.runLater(() -> {
+                    tblPersonasRoles.getItems().setAll(personas);
+                    cbRolesDisponibles.setItems(FXCollections.observableArrayList(ROLES_DISPONIBLES));
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> mostrarError("Error al cargar personas: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarRolesDePersona(PersonaDTO persona) {
+        if (persona.getIdUsuario() == null) {
+            tblRolesUsuario.getItems().clear();
+            cbRolesDisponibles.getItems().setAll(ROLES_DISPONIBLES);
+            return;
+        }
+        new Thread(() -> {
+            try {
+                String json = com.proyecto.presentacion.ClienteHttp.get(
+                        "/api/roles/usuario/" + persona.getIdUsuario());
+                List<Map> roles = com.proyecto.presentacion.ClienteHttp.parsearLista(json, Map.class);
+                List<String> rolesYaAsignados = roles.stream()
+                        .filter(r -> r.get("nombre") != null)
+                        .map(r -> r.get("nombre").toString().toLowerCase())
+                        .toList();
+                List<String> disponibles = ROLES_DISPONIBLES.stream()
+                        .filter(r -> !rolesYaAsignados.contains(r.toLowerCase()))
+                        .toList();
+                javafx.application.Platform.runLater(() -> {
+                    tblRolesUsuario.getItems().setAll(roles);
+                    cbRolesDisponibles.getItems().setAll(disponibles);
+                    cbRolesDisponibles.setValue(null);
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    tblRolesUsuario.getItems().clear();
+                    cbRolesDisponibles.getItems().setAll(ROLES_DISPONIBLES);
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    void onAgregarRol(ActionEvent e) {
+        if (personaRolSeleccionada == null) { mostrarError("Seleccione una persona"); return; }
+        if (personaRolSeleccionada.getIdUsuario() == null) { mostrarError("La persona no tiene usuario asociado"); return; }
+        String rol = cbRolesDisponibles.getValue();
+        if (rol == null) { mostrarError("Seleccione un rol"); return; }
+        try {
+            backend.asignarRol(personaRolSeleccionada.getIdUsuario(), rol, SesionUsuario.getInstancia().getToken());
+            cargarRolesDePersona(personaRolSeleccionada);
+            mostrarInfo("Rol '" + rol + "' asignado correctamente");
+        } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
+    }
+
+    @SuppressWarnings("unchecked")
+    @FXML
+    void onQuitarRol(ActionEvent e) {
+        Map rolSeleccionado = tblRolesUsuario.getSelectionModel().getSelectedItem();
+        if (rolSeleccionado == null) { mostrarError("Seleccione un rol de la lista"); return; }
+        Object idRolObj = rolSeleccionado.get("idRol");
+        if (idRolObj == null) { mostrarError("No se pudo obtener el ID del rol"); return; }
+        int idRol = ((Number) idRolObj).intValue();
+        try {
+            com.proyecto.presentacion.ClienteHttp.delete("/api/roles/" + idRol, SesionUsuario.getInstancia().getToken());
+            if (personaRolSeleccionada != null) cargarRolesDePersona(personaRolSeleccionada);
+            mostrarInfo("Rol eliminado correctamente");
+        } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
+    }
+
+    // ── Utilidades ────────────────────────────────────────────
+
+    private void mostrarError(String msg)       { new Alert(Alert.AlertType.ERROR, msg).showAndWait(); }
+    private void mostrarInfo(String msg)        { new Alert(Alert.AlertType.INFORMATION, msg).showAndWait(); }
+    private void mostrarAdvertencia(String msg) { new Alert(Alert.AlertType.WARNING, msg).showAndWait(); }
 }
