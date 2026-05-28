@@ -11,7 +11,7 @@ public abstract class PersonaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_persona")
-    private int idPersona;
+    private Integer idPersona;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -45,8 +45,8 @@ public abstract class PersonaEntity {
 
     public PersonaEntity() {}
 
-    public int getIdPersona() { return idPersona; }
-    public void setIdPersona(int idPersona) { this.idPersona = idPersona; }
+    public Integer getIdPersona() { return idPersona; }
+    public void setIdPersona(Integer idPersona) { this.idPersona = idPersona; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }

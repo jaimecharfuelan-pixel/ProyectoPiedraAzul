@@ -15,6 +15,7 @@ import java.util.List;
 public class ValidadorSolapamiento {
 
     private static final int DURACION_SLOT_MINUTOS = 30;
+    private static final int MAX_TURNOS_POR_DIA = 2;
 
     /**
      * Valida si la nueva cita se solapa con citas existentes del mismo médico.
@@ -39,6 +40,35 @@ public class ValidadorSolapamiento {
             }
         }
         return null; // Válida
+    }
+
+    public static String validarHoraDuplicada(int idMedico, LocalDate fecha,
+                                              LocalTime horaInicio,
+                                              List<Cita> citasExistentes) {
+        return citasExistentes.stream()
+                .filter(c -> c.getIdMedico() == idMedico
+                          && c.getFecha() != null
+                          && c.getFecha().equals(fecha)
+                          && c.getIdEstadoCita() != EstadoCitaId.CANCELADA
+                          && c.getHoraInicio() != null
+                          && c.getHoraInicio().equals(horaInicio))
+                .findFirst()
+                .map(c -> "La cita ya está agendada a esa hora: " + horaInicio)
+                .orElse(null);
+    }
+
+    public static String validarLimiteTurnosDiarios(int idMedico, LocalDate fecha,
+                                                    List<Cita> citasExistentes) {
+        long turnosDelDia = citasExistentes.stream()
+                .filter(c -> c.getIdMedico() == idMedico
+                          && c.getFecha() != null
+                          && c.getFecha().equals(fecha)
+                          && c.getIdEstadoCita() != EstadoCitaId.CANCELADA)
+                .count();
+        if (turnosDelDia >= MAX_TURNOS_POR_DIA) {
+            return "El médico ya tiene " + MAX_TURNOS_POR_DIA + " turnos agendados para el " + fecha + ".";
+        }
+        return null;
     }
 
     /**
@@ -69,8 +99,16 @@ public class ValidadorSolapamiento {
                                                      List<Cita> citasExistentes) {
         List<String> errores = new java.util.ArrayList<>();
 
-        String errSolapamiento = validarSolapamientoMedico(idMedico, fecha, horaInicio, horaFin, citasExistentes);
-        if (errSolapamiento != null) errores.add(errSolapamiento);
+        String errHoraDuplicada = validarHoraDuplicada(idMedico, fecha, horaInicio, citasExistentes);
+        if (errHoraDuplicada != null) errores.add(errHoraDuplicada);
+
+        String errMaxTurnos = validarLimiteTurnosDiarios(idMedico, fecha, citasExistentes);
+        if (errMaxTurnos != null) errores.add(errMaxTurnos);
+
+        if (errHoraDuplicada == null) {
+            String errSolapamiento = validarSolapamientoMedico(idMedico, fecha, horaInicio, horaFin, citasExistentes);
+            if (errSolapamiento != null) errores.add(errSolapamiento);
+        }
 
         String errPaciente = validarUnaPendienteOConfirmada(idPaciente, citasExistentes);
         if (errPaciente != null) errores.add(errPaciente);

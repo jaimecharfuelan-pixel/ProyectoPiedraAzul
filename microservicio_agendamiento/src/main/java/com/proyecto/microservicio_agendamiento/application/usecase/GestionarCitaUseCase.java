@@ -61,6 +61,27 @@ public class GestionarCitaUseCase implements GestionarCitaPort {
     @Override
     public boolean editar(Cita cita) {
         if (!citaRepo.existsById(cita.getIdCita())) return false;
+        Cita citaExistente = citaRepo.findById(cita.getIdCita()).orElse(null);
+        if (citaExistente == null) return false;
+        if (cita.getFecha() == null || cita.getHoraInicio() == null || cita.getHoraFin() == null) {
+            throw new IllegalArgumentException("Fecha, horaInicio y horaFin son obligatorios para editar la cita.");
+        }
+
+        List<Cita> otrasCitas = citaRepo.findAll().stream()
+                .filter(c -> c.getIdCita() != cita.getIdCita())
+                .toList();
+        List<String> errores = ValidadorSolapamiento.validarCompletamente(
+                cita.getIdMedico(),
+                cita.getIdPaciente(),
+                cita.getFecha(),
+                cita.getHoraInicio(),
+                cita.getHoraFin(),
+                otrasCitas
+        );
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException(String.join("; ", errores));
+        }
+
         citaRepo.save(cita);
         return true;
     }

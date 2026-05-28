@@ -45,6 +45,11 @@ public class PersonaController {
             return ResponseEntity.status(HttpStatus.CREATED).body(creada);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // Exponer causa raíz para diagnóstico
+            String causa = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno: " + causa);
         }
     }
 

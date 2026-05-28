@@ -32,12 +32,18 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ControladorAgendador implements Initializable {
 
@@ -396,61 +402,91 @@ public class ControladorAgendador implements Initializable {
         VBox content = new VBox(10);
         content.setStyle("-fx-padding: 20;");
 
-        // ── Fecha ──
         Label lblFecha = new Label("Nueva Fecha:");
-        DatePicker dpNuevaFecha = new DatePicker(LocalDate.now().plusDays(1));
+        DatePicker dpNuevaFecha = new DatePicker();
+        dpNuevaFecha.setPromptText("Cargando días disponibles...");
+        dpNuevaFecha.setDisable(true);
 
-        // Deshabilitar días sin jornada del médico y fechas pasadas
-        List<String> diasConJornada = obtenerDiasConJornada(cita.getIdMedico());
-        dpNuevaFecha.setDayCellFactory(p -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate d, boolean empty) {
-                super.updateItem(d, empty);
-                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
-                boolean sinJornada = !diasConJornada.isEmpty()
-                        && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
-                setDisable(d.isBefore(LocalDate.now()) || sinJornada);
-                if (sinJornada && !d.isBefore(LocalDate.now()))
-                    setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #aaa;");
-            }
-        });
-
-        // ── Hora ──
         Label lblHora = new Label("Nueva Hora:");
         ComboBox<LocalTime> cbNuevaHora = new ComboBox<>();
-        cbNuevaHora.setPromptText("Seleccione una hora");
-        cbNuevaHora.setPrefWidth(220);
-
-        // Cargar horas al cambiar fecha
-        dpNuevaFecha.valueProperty().addListener((obs, old, nueva) -> {
-            if (nueva != null) cargarHorasDisponibles(cita.getIdMedico(), nueva, cbNuevaHora);
-        });
-        // Cargar horas para la fecha inicial
-        cargarHorasDisponibles(cita.getIdMedico(), dpNuevaFecha.getValue(), cbNuevaHora);
+        cbNuevaHora.setPromptText("Seleccione primero una fecha");
+        cbNuevaHora.setPrefWidth(260);
+        cbNuevaHora.setDisable(true);
 
         content.getChildren().addAll(lblFecha, dpNuevaFecha, lblHora, cbNuevaHora);
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
+        Map<LocalDate, Boolean> cacheReagendar = new HashMap<>();
+
+        dpNuevaFecha.setDisable(true);
+        dpNuevaFecha.setDayCellFactory(p -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                setDisable(true);
+                setStyle("-fx-background-color: #eeeeee; -fx-text-fill: #cccccc;");
+            }
+        });
+
+        // Cargar días con jornada en hilo para no bloquear UI
+        new Thread(() -> {
+            try {
+                List<String> diasConJornada = backend.listarDiasConJornada(cita.getIdMedico());
+                if (diasConJornada.isEmpty()) {
+                    javafx.application.Platform.runLater(() -> {
+                        mostrarError("El médico no tiene jornadas configuradas.");
+                        dpNuevaFecha.setDisable(true);
+                    });
+                    return;
+                }
+
+                List<LocalDate> fechasCandidatas = obtenerFechasConJornada(diasConJornada, 90);
+                for (LocalDate fecha : fechasCandidatas) {
+                    boolean libre = !backend.consultarDisponibilidad(cita.getIdMedico(), fecha).isEmpty();
+                    cacheReagendar.put(fecha, libre);
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    dpNuevaFecha.setDisable(false);
+                    dpNuevaFecha.setPromptText("Seleccione una fecha");
+                    establecerDayCellFactoryReagendar(cita.getIdMedico(), diasConJornada, cacheReagendar, dpNuevaFecha);
+                    dpNuevaFecha.valueProperty().addListener((obs, old, nueva) -> {
+                        cbNuevaHora.getItems().clear();
+                        cbNuevaHora.setDisable(true);
+                        if (nueva != null) {
+                            cbNuevaHora.setPromptText("Cargando horarios...");
+                            cargarHorasDisponibles(cita.getIdMedico(), nueva, cbNuevaHora);
+                            cbNuevaHora.setDisable(false);
+                        }
+                    });
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    dpNuevaFecha.setDisable(false);
+                    mostrarError("No se pudieron cargar las jornadas: " + e.getMessage());
+                });
+            }
+        }).start();
+
         dialog.showAndWait().ifPresent(result -> {
             if (result != ButtonType.OK) return;
             LocalDate nuevaFecha = dpNuevaFecha.getValue();
             LocalTime nuevaHora  = cbNuevaHora.getValue();
-            if (nuevaFecha == null || nuevaHora == null) { 
-                mostrarError("Debe seleccionar fecha y hora."); 
-                return; 
+            if (nuevaFecha == null || nuevaHora == null) {
+                mostrarError("Debe seleccionar fecha y hora.");
+                return;
             }
             try {
-                ErrorValidacionDTO resultado = backend.reagendarCitaConValidacion(
-                        cita.getIdCita(), nuevaFecha, nuevaHora, null);
-                if (resultado.isExitosa()) {
-                    mostrarInfo("✅ Cita reagendada correctamente.");
+                String respuesta = backend.reagendarCita(cita.getIdCita(), nuevaFecha, nuevaHora, null);
+                if (respuesta != null && respuesta.contains("reagendada")) {
+                    mostrarInfo("Cita reagendada correctamente.");
                     recargarCitas();
                 } else {
-                    mostrarError(formatearErroresValidacion(resultado));
+                    mostrarError("No se pudo reagendar: " + respuesta);
                 }
-            } catch (Exception ex) { 
-                mostrarError("❌ Error al reagendar: " + ex.getMessage()); 
+            } catch (Exception ex) {
+                mostrarError("Error al reagendar: " + ex.getMessage());
             }
         });
     }
@@ -460,11 +496,115 @@ public class ControladorAgendador implements Initializable {
     private void cargarHorasDisponibles(int idMedico, LocalDate fecha, ComboBox<LocalTime> cbHora) {
         cbHora.getItems().clear();
         if (fecha == null) return;
-        try {
-            List<LocalTime> horarios = backend.consultarDisponibilidad(idMedico, fecha);
-            cbHora.getItems().addAll(horarios);
-            if (!horarios.isEmpty()) cbHora.setValue(horarios.get(0));
-        } catch (Exception e) { e.printStackTrace(); }
+        cbHora.setPromptText("Cargando...");
+        new Thread(() -> {
+            try {
+                List<LocalTime> horarios = backend.consultarDisponibilidad(idMedico, fecha);
+                javafx.application.Platform.runLater(() -> {
+                    cbHora.getItems().clear();
+                    if (horarios.isEmpty()) {
+                        cbHora.setPromptText("Sin horarios disponibles");
+                    } else {
+                        cbHora.getItems().addAll(horarios);
+                        cbHora.setPromptText("Seleccione una hora");
+                        cbHora.setValue(horarios.get(0));
+                    }
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> cbHora.setPromptText("Error al cargar"));
+            }
+        }).start();
+    }
+
+    private void establecerDayCellFactoryReagendar(int idMedico,
+                                                   List<String> diasConJornada,
+                                                   Map<LocalDate, Boolean> cacheReagendar,
+                                                   DatePicker dpNuevaFecha) {
+        dpNuevaFecha.setDayCellFactory(p -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate d, boolean empty) {
+                super.updateItem(d, empty);
+                if (empty || d == null) {
+                    setDisable(true);
+                    return;
+                }
+
+                if (d.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #eeeeee; -fx-text-fill: #cccccc;");
+                    return;
+                }
+
+                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
+                if (!tieneJornada(nombreDia, diasConJornada)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #aaaaaa;");
+                    return;
+                }
+
+                Boolean disponible = cacheReagendar.get(d);
+                if (disponible == null) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #fff9c4; -fx-text-fill: #555;");
+                } else if (!disponible) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #aaaaaa;");
+                } else {
+                    setDisable(false);
+                    setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #1b5e20; -fx-font-weight: bold;");
+                }
+            }
+        });
+    }
+
+    private boolean tieneJornada(String nombreDia, List<String> diasConJornada) {
+        return diasConJornada.stream()
+                .anyMatch(j -> normalizarDia(j).equalsIgnoreCase(normalizarDia(nombreDia)));
+    }
+
+    private String normalizarDia(String dia) {
+        if (dia == null) return "";
+        return dia.toLowerCase()
+                .replace("á", "a")
+                .replace("é", "e")
+                .replace("í", "i")
+                .replace("ó", "o")
+                .replace("ú", "u")
+                .replace("ñ", "n")
+                .trim();
+    }
+
+    private List<LocalDate> obtenerFechasConJornada(List<String> diasConJornada, int diasAdelante) {
+        Set<DayOfWeek> diasSemana = new HashSet<>();
+        for (String dia : diasConJornada) {
+            DayOfWeek dow = mapearDiaSemana(dia);
+            if (dow != null) diasSemana.add(dow);
+        }
+
+        List<LocalDate> fechas = new ArrayList<>();
+        LocalDate actual = LocalDate.now();
+        LocalDate limite = actual.plusDays(diasAdelante);
+        while (!actual.isAfter(limite)) {
+            if (diasSemana.contains(actual.getDayOfWeek())) {
+                fechas.add(actual);
+            }
+            actual = actual.plusDays(1);
+        }
+        return fechas;
+    }
+
+    private DayOfWeek mapearDiaSemana(String diaSemana) {
+        if (diaSemana == null) return null;
+        return switch (normalizarDia(diaSemana)) {
+            case "lunes"     -> DayOfWeek.MONDAY;
+            case "martes"    -> DayOfWeek.TUESDAY;
+            case "miercoles" -> DayOfWeek.WEDNESDAY;
+            case "jueves"    -> DayOfWeek.THURSDAY;
+            case "viernes"   -> DayOfWeek.FRIDAY;
+            case "sabado"    -> DayOfWeek.SATURDAY;
+            case "domingo"   -> DayOfWeek.SUNDAY;
+            default           -> null;
+        };
     }
 
     private List<String> obtenerDiasConJornada(int idMedico) {

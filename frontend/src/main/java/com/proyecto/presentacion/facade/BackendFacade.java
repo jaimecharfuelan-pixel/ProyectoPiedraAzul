@@ -88,7 +88,28 @@ public class BackendFacade {
     }
 
     public void crearPersonaAdmin(Map<String, Object> body) throws Exception {
-        ClienteHttp.post("/api/personas", body);
+        // Construir DTO tipado para que Jackson serialice LocalDate correctamente
+        com.proyecto.presentacion.dto.CrearPersonaDTO dto =
+                new com.proyecto.presentacion.dto.CrearPersonaDTO();
+        dto.setNombre((String) body.get("nombre"));
+        dto.setApellido((String) body.get("apellido"));
+        dto.setCedulaCiudadania((String) body.get("cedulaCiudadania"));
+        dto.setCelular((String) body.get("celular"));
+        dto.setCorreo((String) body.get("correo"));
+        dto.setUsuarioLogin((String) body.get("usuarioLogin"));
+        dto.setContrasena((String) body.get("contrasena"));
+        dto.setRol((String) body.get("rol"));
+        if (body.get("idGenero") != null)
+            dto.setIdGenero(((Number) body.get("idGenero")).intValue());
+        if (body.get("fechaNacimiento") != null) {
+            Object fecha = body.get("fechaNacimiento");
+            if (fecha instanceof java.time.LocalDate ld) {
+                dto.setFechaNacimiento(ld);
+            } else {
+                dto.setFechaNacimiento(java.time.LocalDate.parse(fecha.toString()));
+            }
+        }
+        ClienteHttp.post("/api/personas", dto);
     }
 
     public void inactivarPersona(int idPersona, String token) throws Exception {
@@ -121,8 +142,19 @@ public class BackendFacade {
         return ClienteHttp.parsearLista(json, Map.class);
     }
 
+    public void crearUsuario(String nombreUsuario, String contrasena, String token) throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("usuario", nombreUsuario);
+        body.put("contrasena", contrasena);
+        ClienteHttp.post("/api/usuarios", body);
+    }
+
     public void editarUsuario(int idUsuario, Map<String, Object> body, String token) throws Exception {
         ClienteHttp.put("/api/usuarios/" + idUsuario, body, token);
+    }
+
+    public void eliminarUsuario(int idUsuario, String token) throws Exception {
+        ClienteHttp.delete("/api/usuarios/" + idUsuario, token);
     }
 
     // ── Citas ─────────────────────────────────────────────────────────────────
@@ -165,8 +197,30 @@ public class BackendFacade {
         ClienteHttp.postConToken("/api/citas", cita, token);
     }
 
+    public ErrorValidacionDTO crearCitaManualConValidacion(CitaDTO cita, String token) throws Exception {
+        try {
+            ClienteHttp.postConToken("/api/citas", cita, token);
+            return new ErrorValidacionDTO(true, "Cita creada.", List.of(), 0);
+        } catch (Exception e) {
+            ErrorValidacionDTO dto = parsearErrorValidacion(e);
+            if (dto != null) return dto;
+            throw e;
+        }
+    }
+
     public void editarCita(CitaDTO cita, String token) throws Exception {
         ClienteHttp.put("/api/citas/" + cita.getIdCita(), cita, token);
+    }
+
+    public ErrorValidacionDTO editarCitaConValidacion(CitaDTO cita, String token) throws Exception {
+        try {
+            ClienteHttp.put("/api/citas/" + cita.getIdCita(), cita, token);
+            return new ErrorValidacionDTO(true, "Cita actualizada.", List.of(), 0);
+        } catch (Exception e) {
+            ErrorValidacionDTO dto = parsearErrorValidacion(e);
+            if (dto != null) return dto;
+            throw e;
+        }
     }
 
     public void cancelarCita(int idCita, String token) throws Exception {
