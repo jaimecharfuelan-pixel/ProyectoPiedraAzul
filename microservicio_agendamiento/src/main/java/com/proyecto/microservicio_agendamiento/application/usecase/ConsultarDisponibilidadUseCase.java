@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ConsultarDisponibilidadUseCase implements ConsultarDisponibilidadPort {
@@ -30,33 +32,40 @@ public class ConsultarDisponibilidadUseCase implements ConsultarDisponibilidadPo
 
     @Override
     public List<LocalTime> consultar(int idMedico, LocalDate fecha) {
-        List<LocalTime> horariosLibres = new ArrayList<>();
+        return consultar(idMedico, fecha, null);
+    }
+
+    @Override
+    public List<LocalTime> consultar(int idMedico, LocalDate fecha, Integer excluirCitaId) {
+        Set<LocalTime> horariosLibres = new LinkedHashSet<>();
         String diaSemana = traducirDia(fecha.getDayOfWeek());
 
         List<JornadaResumen> jornadas = jornadaConsulta.obtenerJornadasPorMedico(idMedico);
+        List<JornadaResumen> jornadasDelDia = jornadas.stream()
+                .filter(j -> j.getDiaSemana() != null && j.getDiaSemana().equalsIgnoreCase(diaSemana))
+                .toList();
 
-        JornadaResumen jornadaHoy = jornadas.stream()
-                .filter(j -> j.getDiaSemana().equalsIgnoreCase(diaSemana))
-                .findFirst()
-                .orElse(null);
-
-        if (jornadaHoy == null) return horariosLibres;
+        if (jornadasDelDia.isEmpty()) return List.of();
 
         List<Cita> citasOcupadas = citaRepo.findByMedicoFechaExcluyendoEstado(
                 idMedico, fecha, EstadoCitaId.CANCELADA);
 
-        LocalTime actual = jornadaHoy.getHoraInicio();
-        while (actual.isBefore(jornadaHoy.getHoraFin())) {
-            LocalTime slot = actual;
-            boolean ocupado = citasOcupadas.stream().anyMatch(c ->
-                    slot.equals(c.getHoraInicio()) ||
-                    (slot.isAfter(c.getHoraInicio()) && slot.isBefore(c.getHoraFin()))
-            );
-            if (!ocupado) horariosLibres.add(slot);
-            actual = actual.plusMinutes(DURACION_SLOT_MINUTOS);
+        for (JornadaResumen jornada : jornadasDelDia) {
+            LocalTime actual = jornada.getHoraInicio();
+            while (actual != null && actual.isBefore(jornada.getHoraFin())) {
+                LocalTime slot = actual;
+                boolean ocupado = citasOcupadas.stream()
+                        .filter(c -> excluirCitaId == null || c.getIdCita() != excluirCitaId)
+                        .anyMatch(c ->
+                                slot.equals(c.getHoraInicio()) ||
+                                (slot.isAfter(c.getHoraInicio()) && slot.isBefore(c.getHoraFin()))
+                        );
+                if (!ocupado) horariosLibres.add(slot);
+                actual = actual.plusMinutes(DURACION_SLOT_MINUTOS);
+            }
         }
 
-        return horariosLibres;
+        return horariosLibres.stream().sorted(Comparator.naturalOrder()).toList();
     }
 
     private String traducirDia(DayOfWeek day) {

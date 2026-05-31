@@ -29,7 +29,8 @@ public class MedicoController {
                         m.getIdPersona(),
                         m.getNombre(),
                         m.getApellido(),
-                        m.getIdEspecialidad()))
+                        m.getIdEspecialidad(),
+                        m.getIdUsuario()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(medicos);
     }

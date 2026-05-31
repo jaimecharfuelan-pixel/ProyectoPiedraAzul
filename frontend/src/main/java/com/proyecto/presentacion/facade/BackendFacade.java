@@ -231,8 +231,15 @@ public class BackendFacade {
     // ── Disponibilidad ────────────────────────────────────────────────────────
 
     public List<LocalTime> consultarDisponibilidad(int idMedico, LocalDate fecha) throws Exception {
-        String json = ClienteHttp.get(
-                "/api/citas/disponibilidad?idMedico=" + idMedico + "&fecha=" + fecha);
+        return consultarDisponibilidad(idMedico, fecha, null);
+    }
+
+    public List<LocalTime> consultarDisponibilidad(int idMedico, LocalDate fecha, Integer excluirCitaId) throws Exception {
+        String url = "/api/citas/disponibilidad?idMedico=" + idMedico + "&fecha=" + fecha;
+        if (excluirCitaId != null) {
+            url += "&excluirCitaId=" + excluirCitaId;
+        }
+        String json = ClienteHttp.get(url);
         return ClienteHttp.parsearLista(json, LocalTime.class);
     }
 
@@ -260,6 +267,24 @@ public class BackendFacade {
     public List<String> listarDiasConJornada(int idUsuario) throws Exception {
         String json = ClienteHttp.get("/api/jornadas/medico/" + idUsuario + "/dias");
         return ClienteHttp.parsearLista(json, String.class);
+    }
+
+    /** Días con turno del médico (resuelve id_usuario desde MedicoDTO). */
+    public List<String> listarDiasConJornada(MedicoDTO medico) throws Exception {
+        if (medico == null) return listarDiasConJornadaTodos();
+        int idUsuario = medico.getIdUsuario() != null && medico.getIdUsuario() > 0
+                ? medico.getIdUsuario() : medico.getIdMedico();
+        return listarDiasConJornada(idUsuario);
+    }
+
+    /** Días de la semana en que al menos un médico tiene jornada. */
+    public List<String> listarDiasConJornadaTodos() throws Exception {
+        List<JornadaDTO> jornadas = listarJornadas();
+        return jornadas.stream()
+                .map(JornadaDTO::getDiaSemana)
+                .filter(d -> d != null && !d.isBlank())
+                .distinct()
+                .toList();
     }
 
     public List<PersonaDTO> listarPacientes() throws Exception {

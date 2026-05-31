@@ -5,11 +5,13 @@ import com.proyecto.microservicio_agendamiento.domain.model.Cita;
 import com.proyecto.microservicio_agendamiento.domain.model.EstadoCitaId;
 import com.proyecto.microservicio_agendamiento.domain.model.ValidadorSolapamiento;
 import com.proyecto.microservicio_agendamiento.domain.ports.in.GestionarCitaPort;
+import com.proyecto.microservicio_agendamiento.domain.ports.in.ConsultarDisponibilidadPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.out.CitaRepositoryPort;
 import com.proyecto.microservicio_agendamiento.domain.ports.out.EventoCitaPublisherPort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +23,16 @@ public class GestionarCitaUseCase implements GestionarCitaPort {
     private final CitaRepositoryPort citaRepo;
     private final EventoCitaPublisherPort publisher;
     private final RegistrarHistorialCitaUseCase registrarHistorial;
+    private final ConsultarDisponibilidadPort disponibilidad;
 
     public GestionarCitaUseCase(CitaRepositoryPort citaRepo,
                                  EventoCitaPublisherPort publisher,
-                                 RegistrarHistorialCitaUseCase registrarHistorial) {
+                                 RegistrarHistorialCitaUseCase registrarHistorial,
+                                 ConsultarDisponibilidadPort disponibilidad) {
         this.citaRepo             = citaRepo;
         this.publisher            = publisher;
         this.registrarHistorial   = registrarHistorial;
+        this.disponibilidad       = disponibilidad;
     }
 
     @Override
@@ -98,6 +103,14 @@ public class GestionarCitaUseCase implements GestionarCitaPort {
         // Guardar valores anteriores para el historial
         String fechaHoraAnterior = cita.getFecha() + " " + cita.getHoraInicio();
         String fechaHoraNueva = command.getNuevaFecha() + " " + command.getNuevaHora();
+
+        // Validar que la nueva hora esté dentro de la jornada y libre (excluyendo esta cita)
+        List<LocalTime> horasDisponibles = disponibilidad.consultar(
+                cita.getIdMedico(), command.getNuevaFecha(), command.getIdCita());
+        if (!horasDisponibles.contains(command.getNuevaHora())) {
+            throw new IllegalArgumentException(
+                    "El horario seleccionado no está disponible según la jornada laboral del médico.");
+        }
 
         List<Cita> otrasCitas = citaRepo.findAll().stream()
                 .filter(c -> c.getIdCita() != command.getIdCita())

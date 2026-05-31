@@ -2,6 +2,7 @@ package com.proyecto.presentacion.controladores;
 
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
+import com.proyecto.presentacion.util.CalendarioTurnosHelper;
 import com.proyecto.presentacion.util.Conversiones;
 import com.proyecto.presentacion.dto.ErrorValidacionDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
@@ -47,8 +48,10 @@ public class ControladorAgendarCita {
     public void initialize() {
         cargarMedicos();
         cargarGenero();
+        CalendarioTurnosHelper.configurarComboHoras(cbHora);
         cbMedico.setOnAction(e -> { actualizarCalendario(); actualizarHorarios(); });
         dpFecha.setOnAction(e -> actualizarHorarios());
+        dpFecha.valueProperty().addListener((obs, old, nueva) -> actualizarHorarios());
         iniciarValidaciones();
         iniciarListeners();
     }
@@ -163,34 +166,36 @@ public class ControladorAgendarCita {
     }
 
     private void actualizarHorarios() {
-        cbHora.getItems().clear();
-        if (cbMedico.getValue() == null || dpFecha.getValue() == null) return;
+        if (cbMedico.getValue() == null || dpFecha.getValue() == null) {
+            cbHora.getItems().clear();
+            cbHora.setValue(null);
+            return;
+        }
         try {
             List<LocalTime> horarios = backendFacade.consultarDisponibilidad(
                     cbMedico.getValue().getIdMedico(), dpFecha.getValue());
-            cbHora.getItems().addAll(horarios);
+            CalendarioTurnosHelper.cargarHorasEnCombo(cbHora, horarios);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void actualizarCalendario() {
-        if (cbMedico.getValue() == null) return;
-        try {
-            List<String> diasConJornada = backendFacade.listarDiasConJornada(
-                    cbMedico.getValue().getIdMedico());
+        if (cbMedico.getValue() == null) {
             dpFecha.setDayCellFactory(p -> new DateCell() {
-                @Override
-                public void updateItem(LocalDate d, boolean empty) {
+                @Override public void updateItem(LocalDate d, boolean empty) {
                     super.updateItem(d, empty);
-                    String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
-                    boolean sinJornada = !diasConJornada.isEmpty()
-                            && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
-                    setDisable(d.isBefore(LocalDate.now()) || sinJornada);
-                    if (sinJornada && !d.isBefore(LocalDate.now()))
-                        setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #aaa;");
+                    setDisable(!empty && d.isBefore(LocalDate.now()));
                 }
             });
             dpFecha.setValue(null);
             cbHora.getItems().clear();
+            return;
+        }
+        try {
+            List<String> diasConJornada = backendFacade.listarDiasConJornada(cbMedico.getValue());
+            CalendarioTurnosHelper.aplicarCalendarioPorTurnos(dpFecha, diasConJornada, true);
+            dpFecha.setValue(null);
+            cbHora.getItems().clear();
+            cbHora.setValue(null);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -368,12 +373,6 @@ public class ControladorAgendarCita {
     }
 
     private void iniciarValidaciones() {
-        dpFecha.setDayCellFactory(p -> new DateCell() {
-            public void updateItem(LocalDate d, boolean empty) {
-                super.updateItem(d, empty);
-                setDisable(d.isBefore(LocalDate.now()));
-            }
-        });
         dpFechaNac.setDayCellFactory(p -> new DateCell() {
             public void updateItem(LocalDate d, boolean empty) {
                 super.updateItem(d, empty);

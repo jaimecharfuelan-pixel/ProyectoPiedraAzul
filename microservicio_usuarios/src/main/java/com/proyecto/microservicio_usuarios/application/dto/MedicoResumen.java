@@ -9,14 +9,17 @@ public class MedicoResumen {
     private String nombre;
     private String apellido;
     private int idEspecialidad;
+    /** id_usuario en BD — enlaza con jornada_laboral.id_usuario */
+    private Integer idUsuario;
 
     public MedicoResumen() {}
 
-    public MedicoResumen(int idMedico, String nombre, String apellido, int idEspecialidad) {
+    public MedicoResumen(int idMedico, String nombre, String apellido, int idEspecialidad, Integer idUsuario) {
         this.idMedico = idMedico;
         this.nombre = nombre;
         this.apellido = apellido;
         this.idEspecialidad = idEspecialidad;
+        this.idUsuario = idUsuario;
     }
 
     public int getIdMedico() { return idMedico; }
@@ -30,4 +33,7 @@ public class MedicoResumen {
 
     public int getIdEspecialidad() { return idEspecialidad; }
     public void setIdEspecialidad(int idEspecialidad) { this.idEspecialidad = idEspecialidad; }
+
+    public Integer getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
 }

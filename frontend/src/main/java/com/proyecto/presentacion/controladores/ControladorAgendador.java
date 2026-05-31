@@ -2,11 +2,10 @@ package com.proyecto.presentacion.controladores;
 
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
-import com.proyecto.presentacion.util.Conversiones;
+import com.proyecto.presentacion.util.CalendarioTurnosHelper;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.ErrorValidacionDTO;
 import com.proyecto.presentacion.dto.HistorialCitaDTO;
-import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 
@@ -174,36 +173,15 @@ public class ControladorAgendador implements Initializable {
      * Si hay médico, deshabilita días sin jornada de ese médico.
      */
     private void actualizarCalendarioFiltro(MedicoDTO medico) {
-        List<String> diasHabilitados;
         try {
-            if (medico != null) {
-                diasHabilitados = backend.listarDiasConJornada(medico.getIdMedico());
-            } else {
-                List<JornadaDTO> jornadas = backend.listarJornadas();
-                diasHabilitados = jornadas.stream()
-                        .map(JornadaDTO::getDiaSemana)
-                        .filter(d -> d != null)
-                        .distinct()
-                        .toList();
-            }
+            List<String> diasHabilitados = (medico != null)
+                    ? backend.listarDiasConJornada(medico)
+                    : backend.listarDiasConJornadaTodos();
+            CalendarioTurnosHelper.aplicarCalendarioPorTurnos(dpFechaFiltro, diasHabilitados, false);
         } catch (Exception e) {
             e.printStackTrace();
-            diasHabilitados = List.of();
+            CalendarioTurnosHelper.aplicarCalendarioPorTurnos(dpFechaFiltro, List.of(), false);
         }
-
-        final List<String> dias = diasHabilitados;
-        dpFechaFiltro.setDayCellFactory(p -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate d, boolean empty) {
-                super.updateItem(d, empty);
-                if (dias.isEmpty()) return;
-                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
-                boolean sinJornada = dias.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
-                setDisable(sinJornada);
-                if (sinJornada) setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #bbb;");
-                else setStyle("");
-            }
-        });
     }
 
     /**
@@ -388,45 +366,41 @@ public class ControladorAgendador implements Initializable {
     // ─── Reagendar cita ───────────────────────────────────────────────────────
 
     private void onReagendarCita(CitaDTO cita) {
+        MedicoDTO medicoCita = medicos.stream()
+                .filter(m -> m.getIdMedico() == cita.getIdMedico())
+                .findFirst().orElse(null);
+        String nombreMedico = medicoCita != null
+                ? medicoCita.getNombre() + " " + medicoCita.getApellido()
+                : "Médico #" + cita.getIdMedico();
+        String nombrePaciente = mapaPacientes.getOrDefault(cita.getIdPaciente(),
+                "Paciente #" + cita.getIdPaciente());
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Reagendar Cita");
-        dialog.setHeaderText("Paciente #" + cita.getIdPaciente()
-                + "  —  Médico #" + cita.getIdMedico());
+        dialog.setHeaderText(nombrePaciente + "  —  " + nombreMedico);
 
         VBox content = new VBox(10);
         content.setStyle("-fx-padding: 20;");
 
-        // ── Fecha ──
         Label lblFecha = new Label("Nueva Fecha:");
-        DatePicker dpNuevaFecha = new DatePicker(LocalDate.now().plusDays(1));
+        DatePicker dpNuevaFecha = new DatePicker(
+                cita.getFecha() != null && !cita.getFecha().isBefore(LocalDate.now())
+                        ? cita.getFecha() : LocalDate.now().plusDays(1));
 
-        // Deshabilitar días sin jornada del médico y fechas pasadas
-        List<String> diasConJornada = obtenerDiasConJornada(cita.getIdMedico());
-        dpNuevaFecha.setDayCellFactory(p -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate d, boolean empty) {
-                super.updateItem(d, empty);
-                String nombreDia = Conversiones.traducirDia(d.getDayOfWeek().name());
-                boolean sinJornada = !diasConJornada.isEmpty()
-                        && diasConJornada.stream().noneMatch(j -> j.equalsIgnoreCase(nombreDia));
-                setDisable(d.isBefore(LocalDate.now()) || sinJornada);
-                if (sinJornada && !d.isBefore(LocalDate.now()))
-                    setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #aaa;");
-            }
-        });
+        List<String> diasConJornada = obtenerDiasConJornada(medicoCita, cita.getIdMedico());
+        CalendarioTurnosHelper.aplicarCalendarioPorTurnos(dpNuevaFecha, diasConJornada, true);
 
-        // ── Hora ──
         Label lblHora = new Label("Nueva Hora:");
         ComboBox<LocalTime> cbNuevaHora = new ComboBox<>();
-        cbNuevaHora.setPromptText("Seleccione una hora");
         cbNuevaHora.setPrefWidth(220);
+        CalendarioTurnosHelper.configurarComboHoras(cbNuevaHora);
 
-        // Cargar horas al cambiar fecha
         dpNuevaFecha.valueProperty().addListener((obs, old, nueva) -> {
-            if (nueva != null) cargarHorasDisponibles(cita.getIdMedico(), nueva, cbNuevaHora);
+            if (nueva != null) {
+                cargarHorasDisponibles(cita.getIdMedico(), nueva, cbNuevaHora, cita.getIdCita());
+            }
         });
-        // Cargar horas para la fecha inicial
-        cargarHorasDisponibles(cita.getIdMedico(), dpNuevaFecha.getValue(), cbNuevaHora);
+        cargarHorasDisponibles(cita.getIdMedico(), dpNuevaFecha.getValue(), cbNuevaHora, cita.getIdCita());
 
         content.getChildren().addAll(lblFecha, dpNuevaFecha, lblHora, cbNuevaHora);
         dialog.getDialogPane().setContent(content);
@@ -436,9 +410,9 @@ public class ControladorAgendador implements Initializable {
             if (result != ButtonType.OK) return;
             LocalDate nuevaFecha = dpNuevaFecha.getValue();
             LocalTime nuevaHora  = cbNuevaHora.getValue();
-            if (nuevaFecha == null || nuevaHora == null) { 
-                mostrarError("Debe seleccionar fecha y hora."); 
-                return; 
+            if (nuevaFecha == null || nuevaHora == null) {
+                mostrarError("Debe seleccionar fecha y hora disponibles según el turno del médico.");
+                return;
             }
             try {
                 ErrorValidacionDTO resultado = backend.reagendarCitaConValidacion(
@@ -449,28 +423,37 @@ public class ControladorAgendador implements Initializable {
                 } else {
                     mostrarError(formatearErroresValidacion(resultado));
                 }
-            } catch (Exception ex) { 
-                mostrarError("❌ Error al reagendar: " + ex.getMessage()); 
+            } catch (Exception ex) {
+                mostrarError("❌ Error al reagendar: " + ex.getMessage());
             }
         });
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
-    private void cargarHorasDisponibles(int idMedico, LocalDate fecha, ComboBox<LocalTime> cbHora) {
-        cbHora.getItems().clear();
+    private void cargarHorasDisponibles(int idMedico, LocalDate fecha,
+                                        ComboBox<LocalTime> cbHora, Integer excluirCitaId) {
         if (fecha == null) return;
         try {
-            List<LocalTime> horarios = backend.consultarDisponibilidad(idMedico, fecha);
-            cbHora.getItems().addAll(horarios);
-            if (!horarios.isEmpty()) cbHora.setValue(horarios.get(0));
+            List<LocalTime> horarios = backend.consultarDisponibilidad(idMedico, fecha, excluirCitaId);
+            CalendarioTurnosHelper.cargarHorasEnCombo(cbHora, horarios);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private List<String> obtenerDiasConJornada(int idMedico) {
+    private List<String> obtenerDiasConJornada(MedicoDTO medico, int idMedicoFallback) {
         try {
-            return backend.listarDiasConJornada(idMedico);
-        } catch (Exception e) { e.printStackTrace(); return List.of(); }
+            MedicoDTO m = medico;
+            if (m == null && medicos != null) {
+                m = medicos.stream()
+                        .filter(x -> x.getIdMedico() == idMedicoFallback)
+                        .findFirst().orElse(null);
+            }
+            if (m != null) return backend.listarDiasConJornada(m);
+            return backend.listarDiasConJornada(idMedicoFallback);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     private void mostrarInfo(String msg) {

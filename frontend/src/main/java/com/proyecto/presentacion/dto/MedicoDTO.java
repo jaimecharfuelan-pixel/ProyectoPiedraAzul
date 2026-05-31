@@ -8,6 +8,7 @@ public class MedicoDTO {
     private String nombre;
     private String apellido;
     private int    idEspecialidad;
+    private Integer idUsuario;
 
     public MedicoDTO() {}
 
@@ -19,6 +20,8 @@ public class MedicoDTO {
     public void   setApellido(String v)      { this.apellido = v; }
     public int    getIdEspecialidad()        { return idEspecialidad; }
     public void   setIdEspecialidad(int v)   { this.idEspecialidad = v; }
+    public Integer getIdUsuario()             { return idUsuario; }
+    public void   setIdUsuario(Integer v)    { this.idUsuario = v; }
 
     @Override
     public String toString() { return nombre + " " + apellido; }

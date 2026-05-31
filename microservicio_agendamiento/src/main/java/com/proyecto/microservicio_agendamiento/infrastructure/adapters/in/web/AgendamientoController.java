@@ -57,12 +57,13 @@ public class AgendamientoController {
         return ResponseEntity.ok(gestionarCita.listarTodas());
     }
 
-    @Operation(summary = "Consultar disponibilidad", description = "Devuelve los horarios libres de un médico en una fecha.")
+    @Operation(summary = "Consultar disponibilidad", description = "Devuelve los horarios libres de un médico en una fecha según su jornada laboral.")
     @GetMapping("/disponibilidad")
     public ResponseEntity<List<LocalTime>> consultarDisponibilidad(
             @RequestParam int idMedico,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        return ResponseEntity.ok(consultarDisponibilidad.consultar(idMedico, fecha));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Integer excluirCitaId) {
+        return ResponseEntity.ok(consultarDisponibilidad.consultar(idMedico, fecha, excluirCitaId));
     }
 
     @Operation(summary = "Agendar cita (paciente web)", description = "El paciente agenda su cita eligiendo médico, fecha y hora disponible.")
