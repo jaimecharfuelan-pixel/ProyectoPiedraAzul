@@ -215,9 +215,37 @@
     -fx-background-color: #f3f4f6; /* Color de selección suave */
 }
 
-/* El texto de sugerencia (Prompt Text) */
+/* El texto de sugerencia (Prompt Text) — solo la celda del campo cerrado */
 .combo-box > .list-cell {
-    -fx-text-fill: #9ca3af; /* Gris más claro para que parezca sugerencia */
+    -fx-text-fill: #9ca3af;
+}
+
+/* Lista desplegable del ComboBox (popup) */
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1px;
+    -fx-background-insets: 0;
+    -fx-padding: 4;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #1a2b48;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-padding: 8 12 8 12;
+    -fx-min-height: 32px;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #1e40af;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #1e40af;
+    -fx-text-fill: white;
 }
 
 .table-view {

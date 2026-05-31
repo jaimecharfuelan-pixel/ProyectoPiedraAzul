@@ -109,6 +109,7 @@ public class ControladorAdmin implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        configurarCombosTurno();
         cargarCombosPrincipal();
         configurarTablaTurnos();
         configurarTablaPersonas();
@@ -130,7 +131,11 @@ public class ControladorAdmin implements Initializable {
         panel.setVisible(true); panel.toFront();
     }
 
-    @FXML void onAbrirTurnos(ActionEvent e)      { mostrarPanel(panelTurnos);   cargarTablaTurnos(); }
+    @FXML void onAbrirTurnos(ActionEvent e) {
+        configurarCombosTurno();
+        mostrarPanel(panelTurnos);
+        cargarTablaTurnos();
+    }
     @FXML void onAbrirPersonas(ActionEvent e)    { mostrarPanel(panelPersonas); cargarTablaPersonas(); }
     @FXML void onAbrirUsuarios(ActionEvent e)    { mostrarPanel(panelUsuarios); cargarTablaUsuarios(); }
     @FXML void onAbrirRoles(ActionEvent e)       { mostrarPanel(panelRoles);    cargarTablaPersonasRoles(); }
@@ -145,6 +150,53 @@ public class ControladorAdmin implements Initializable {
             Stage stage = (Stage) panelPrincipal.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (Exception ex) { ex.printStackTrace(); }
+    }
+
+    private final StringConverter<LocalTime> convHora = new StringConverter<>() {
+        @Override public String toString(LocalTime t) {
+            return t == null ? "" : String.format("%02d:%02d", t.getHour(), t.getMinute());
+        }
+        @Override public LocalTime fromString(String s) {
+            if (s == null || s.isBlank()) return null;
+            return LocalTime.parse(s.length() == 5 ? s : s.substring(0, 5));
+        }
+    };
+
+    /** Días y horas del formulario de turnos — no dependen del backend. */
+    private void configurarCombosTurno() {
+        List<LocalTime> horas = new java.util.ArrayList<>();
+        for (int h = 6; h <= 20; h++) {
+            horas.add(LocalTime.of(h, 0));
+            if (h < 20) horas.add(LocalTime.of(h, 30));
+        }
+        cbTurnoHoraInicio.setItems(FXCollections.observableArrayList(horas));
+        cbTurnoHoraFin.setItems(FXCollections.observableArrayList(horas));
+        cbTurnoDiaSemana.setItems(FXCollections.observableArrayList(
+                "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"));
+
+        cbTurnoHoraInicio.setConverter(convHora);
+        cbTurnoHoraFin.setConverter(convHora);
+        configurarCeldaHora(cbTurnoHoraInicio);
+        configurarCeldaHora(cbTurnoHoraFin);
+
+        cbTurnoDiaSemana.setVisibleRowCount(7);
+        cbTurnoHoraInicio.setVisibleRowCount(10);
+        cbTurnoHoraFin.setVisibleRowCount(10);
+    }
+
+    private void configurarCeldaHora(ComboBox<LocalTime> combo) {
+        combo.setCellFactory(lv -> new ListCell<>() {
+            @Override protected void updateItem(LocalTime t, boolean empty) {
+                super.updateItem(t, empty);
+                setText(empty || t == null ? null : convHora.toString(t));
+            }
+        });
+        combo.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(LocalTime t, boolean empty) {
+                super.updateItem(t, empty);
+                setText(empty || t == null ? null : convHora.toString(t));
+            }
+        });
     }
 
     // ── Combos principal ──────────────────────────────────────
@@ -181,16 +233,6 @@ public class ControladorAdmin implements Initializable {
 
             cbRol.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
             cbPerGenero.setItems(FXCollections.observableArrayList("Masculino", "Femenino", "No Binario", "Prefiero no decir"));
-
-            List<LocalTime> horas = new java.util.ArrayList<>();
-            for (int h = 7; h <= 20; h++) {
-                horas.add(LocalTime.of(h, 0));
-                if (h < 20) horas.add(LocalTime.of(h, 30));
-            }
-            cbTurnoHoraInicio.setItems(FXCollections.observableArrayList(horas));
-            cbTurnoHoraFin.setItems(FXCollections.observableArrayList(horas));
-            cbTurnoDiaSemana.setItems(FXCollections.observableArrayList(
-                    "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -391,6 +433,14 @@ public class ControladorAdmin implements Initializable {
         chkTurnoActivo.setSelected(false);
     }
 
+    private LocalTime horaEnCombo(LocalTime hora) {
+        if (hora == null) return null;
+        return cbTurnoHoraInicio.getItems().stream()
+                .filter(h -> h.getHour() == hora.getHour() && h.getMinute() == hora.getMinute())
+                .findFirst()
+                .orElse(LocalTime.of(hora.getHour(), hora.getMinute()));
+    }
+
     private void configurarTablaTurnos() {
         colTurnoCedMedico.setCellValueFactory(c -> {
             PersonaDTO p = mapaPersonasPorIdUsuario.get(c.getValue().getIdUsuario());
@@ -416,8 +466,8 @@ public class ControladorAdmin implements Initializable {
         tblTurnos.getSelectionModel().selectedItemProperty().addListener((obs, old, jornada) -> {
             if (jornada == null) return;
             cbTurnoDiaSemana.setValue(jornada.getDiaSemana());
-            cbTurnoHoraInicio.setValue(jornada.getHoraInicio());
-            cbTurnoHoraFin.setValue(jornada.getHoraFin());
+            cbTurnoHoraInicio.setValue(horaEnCombo(jornada.getHoraInicio()));
+            cbTurnoHoraFin.setValue(horaEnCombo(jornada.getHoraFin()));
             chkTurnoActivo.setSelected(jornada.getIdEstado() == 1);
             MedicoDTO medico = medicoDeJornada(jornada);
             PersonaDTO persona = mapaPersonasPorIdUsuario.get(jornada.getIdUsuario());
