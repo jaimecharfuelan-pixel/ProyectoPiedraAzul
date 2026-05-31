@@ -243,8 +243,22 @@ public class BackendFacade {
         return ClienteHttp.parsearLista(json, JornadaDTO.class);
     }
 
-    public List<String> listarDiasConJornada(int idMedico) throws Exception {
-        String json = ClienteHttp.get("/api/jornadas/medico/" + idMedico + "/dias");
+    public JornadaDTO crearJornada(JornadaDTO jornada) throws Exception {
+        String json = ClienteHttp.post("/api/jornadas", jornada);
+        return ClienteHttp.parsear(json, JornadaDTO.class);
+    }
+
+    public JornadaDTO editarJornada(JornadaDTO jornada) throws Exception {
+        String json = ClienteHttp.put("/api/jornadas/" + jornada.getIdJornada(), jornada, null);
+        return ClienteHttp.parsear(json, JornadaDTO.class);
+    }
+
+    public void eliminarJornada(int idJornada) throws Exception {
+        ClienteHttp.delete("/api/jornadas/" + idJornada, null);
+    }
+
+    public List<String> listarDiasConJornada(int idUsuario) throws Exception {
+        String json = ClienteHttp.get("/api/jornadas/medico/" + idUsuario + "/dias");
         return ClienteHttp.parsearLista(json, String.class);
     }
 

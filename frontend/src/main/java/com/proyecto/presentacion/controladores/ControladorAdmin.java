@@ -4,7 +4,7 @@ package com.proyecto.presentacion.controladores;
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
 import com.proyecto.presentacion.util.Conversiones;
-import com.proyecto.presentacion.dto.CitaDTO;
+import com.proyecto.presentacion.dto.JornadaDTO;
 import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 import com.proyecto.presentacion.dto.RolDTO;
@@ -59,14 +59,14 @@ public class ControladorAdmin implements Initializable {
     @FXML private ComboBox<MedicoDTO>         cbTurnoDoctor;
     @FXML private TextField                   txtTurnoCedMedico;
     @FXML private TextField                   txtTurnoNomMedico;
-    @FXML private TableView<CitaDTO>           tblTurnos;
-    @FXML private TableColumn<CitaDTO, String> colTurnoCedMedico;
-    @FXML private TableColumn<CitaDTO, String> colTurnoNomMedico;
-    @FXML private TableColumn<CitaDTO, String> colTurnoFecha;
-    @FXML private TableColumn<CitaDTO, String> colTurnoHoraInicio;
-    @FXML private TableColumn<CitaDTO, String> colTurnoHoraFin;
-    @FXML private TableColumn<CitaDTO, String> colTurnoEstado;
-    @FXML private DatePicker              dpTurnoFecha;
+    @FXML private TableView<JornadaDTO>           tblTurnos;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoCedMedico;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoNomMedico;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoDiaSemana;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoHoraInicio;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoHoraFin;
+    @FXML private TableColumn<JornadaDTO, String> colTurnoEstado;
+    @FXML private ComboBox<String>        cbTurnoDiaSemana;
     @FXML private ComboBox<LocalTime>     cbTurnoHoraInicio;
     @FXML private ComboBox<LocalTime>     cbTurnoHoraFin;
     @FXML private CheckBox                chkTurnoActivo;
@@ -96,7 +96,9 @@ public class ControladorAdmin implements Initializable {
     private PersonaDTO personaSeleccionada = null;
     private PersonaDTO personaSeleccionadaParaRoles = null;
     private final Map<Integer, MedicoDTO> mapaMedicos = new HashMap<>();
-    private List<CitaDTO> todosTurnos = new java.util.ArrayList<>();
+    private final Map<Integer, PersonaDTO> mapaPersonasPorIdUsuario = new HashMap<>();
+    private final Map<Integer, PersonaDTO> mapaPersonasPorIdPersona = new HashMap<>();
+    private List<JornadaDTO> todosTurnos = new java.util.ArrayList<>();
     private List<RolDTO> rolesActualesUsuario = new java.util.ArrayList<>();
     private final BackendFacade backend = new BackendFacade();
 
@@ -163,6 +165,14 @@ public class ControladorAdmin implements Initializable {
                     especialidades.stream().map(esp -> esp.get("nombre").toString()).toList()));
 
             List<PersonaDTO> personas = backend.listarPersonas();
+            mapaPersonasPorIdUsuario.clear();
+            mapaPersonasPorIdPersona.clear();
+            for (PersonaDTO p : personas) {
+                mapaPersonasPorIdPersona.put(p.getIdPersona(), p);
+                if (p.getIdUsuario() != null) {
+                    mapaPersonasPorIdUsuario.put(p.getIdUsuario(), p);
+                }
+            }
             cbPersonaRol.setItems(FXCollections.observableArrayList(personas));
             cbPersonaRol.setConverter(new StringConverter<>() {
                 public String toString(PersonaDTO p)   { return p == null ? "" : p.toString(); }
@@ -179,6 +189,8 @@ public class ControladorAdmin implements Initializable {
             }
             cbTurnoHoraInicio.setItems(FXCollections.observableArrayList(horas));
             cbTurnoHoraFin.setItems(FXCollections.observableArrayList(horas));
+            cbTurnoDiaSemana.setItems(FXCollections.observableArrayList(
+                    "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -333,22 +345,47 @@ public class ControladorAdmin implements Initializable {
         }).start();
     }
 
-    // ── Turnos ────────────────────────────────────────────────
+    // ── Turnos (jornadas laborales) ───────────────────────────
+
+    private PersonaDTO personaDeMedico(MedicoDTO medico) {
+        return medico == null ? null : mapaPersonasPorIdPersona.get(medico.getIdMedico());
+    }
+
+    private MedicoDTO medicoDeJornada(JornadaDTO jornada) {
+        PersonaDTO persona = mapaPersonasPorIdUsuario.get(jornada.getIdUsuario());
+        return persona == null ? null : mapaMedicos.get(persona.getIdPersona());
+    }
+
+    private Integer idUsuarioDeMedico(MedicoDTO medico) {
+        PersonaDTO persona = personaDeMedico(medico);
+        return persona != null ? persona.getIdUsuario() : null;
+    }
 
     @FXML
     void onSeleccionarDoctor(ActionEvent e) {
         MedicoDTO sel = cbTurnoDoctor.getValue();
         if (sel != null) {
-            txtTurnoCedMedico.setText(String.valueOf(sel.getIdMedico()));
-            txtTurnoNomMedico.setText(sel.getNombre() + " " + sel.getApellido());
-            tblTurnos.setItems(FXCollections.observableArrayList(
-                    todosTurnos.stream().filter(c -> c.getIdMedico() == sel.getIdMedico()).toList()));
+            PersonaDTO persona = personaDeMedico(sel);
+            if (persona != null) {
+                txtTurnoCedMedico.setText(persona.getCedulaCiudadania());
+                txtTurnoNomMedico.setText(persona.getNombre() + " " + persona.getApellido());
+            } else {
+                txtTurnoCedMedico.clear();
+                txtTurnoNomMedico.setText(sel.getNombre() + " " + sel.getApellido());
+            }
+            Integer idUsuario = idUsuarioDeMedico(sel);
+            if (idUsuario != null) {
+                tblTurnos.setItems(FXCollections.observableArrayList(
+                        todosTurnos.stream().filter(j -> j.getIdUsuario() == idUsuario).toList()));
+            } else {
+                tblTurnos.setItems(FXCollections.observableArrayList());
+            }
         } else {
             txtTurnoCedMedico.clear();
             txtTurnoNomMedico.clear();
             tblTurnos.setItems(FXCollections.observableArrayList(todosTurnos));
         }
-        dpTurnoFecha.setValue(null);
+        cbTurnoDiaSemana.setValue(null);
         cbTurnoHoraInicio.setValue(null);
         cbTurnoHoraFin.setValue(null);
         chkTurnoActivo.setSelected(false);
@@ -356,38 +393,44 @@ public class ControladorAdmin implements Initializable {
 
     private void configurarTablaTurnos() {
         colTurnoCedMedico.setCellValueFactory(c -> {
-            MedicoDTO m = mapaMedicos.get(c.getValue().getIdMedico());
-            return new SimpleStringProperty(m != null ? String.valueOf(m.getIdMedico()) : "ID: " + c.getValue().getIdMedico());
+            PersonaDTO p = mapaPersonasPorIdUsuario.get(c.getValue().getIdUsuario());
+            return new SimpleStringProperty(p != null ? p.getCedulaCiudadania() : "—");
         });
         colTurnoNomMedico.setCellValueFactory(c -> {
-            MedicoDTO m = mapaMedicos.get(c.getValue().getIdMedico());
-            return new SimpleStringProperty(m != null ? m.getNombre() + " " + m.getApellido() : "—");
+            PersonaDTO p = mapaPersonasPorIdUsuario.get(c.getValue().getIdUsuario());
+            return new SimpleStringProperty(p != null ? p.getNombre() + " " + p.getApellido() : "—");
         });
-        colTurnoFecha.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getFecha() != null ? c.getValue().getFecha().toString() : ""));
+        colTurnoDiaSemana.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getDiaSemana() != null ? c.getValue().getDiaSemana() : ""));
         colTurnoHoraInicio.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getHoraInicio() != null ? c.getValue().getHoraInicio().toString() : ""));
+                c.getValue().getHoraInicio() != null
+                        ? c.getValue().getHoraInicio().toString().substring(0, 5) : ""));
         colTurnoHoraFin.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getHoraFin() != null ? c.getValue().getHoraFin().toString() : ""));
+                c.getValue().getHoraFin() != null
+                        ? c.getValue().getHoraFin().toString().substring(0, 5) : ""));
         colTurnoEstado.setCellValueFactory(c -> {
-            Integer estado = c.getValue().getIdEstadoCita();
-            return new SimpleStringProperty(estado == null ? "" : (estado == 1 ? "Activo" : "Inactivo"));
+            int estado = c.getValue().getIdEstado();
+            return new SimpleStringProperty(estado == 1 ? "Activo" : "Inactivo");
         });
         tblTurnos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tblTurnos.getSelectionModel().selectedItemProperty().addListener((obs, old, cita) -> {
-            if (cita == null) return;
-            dpTurnoFecha.setValue(cita.getFecha());
-            cbTurnoHoraInicio.setValue(cita.getHoraInicio());
-            cbTurnoHoraFin.setValue(cita.getHoraFin());
-            chkTurnoActivo.setSelected(cita.getIdEstadoCita() != null && cita.getIdEstadoCita() == 1);
-            MedicoDTO medico = mapaMedicos.get(cita.getIdMedico());
+        tblTurnos.getSelectionModel().selectedItemProperty().addListener((obs, old, jornada) -> {
+            if (jornada == null) return;
+            cbTurnoDiaSemana.setValue(jornada.getDiaSemana());
+            cbTurnoHoraInicio.setValue(jornada.getHoraInicio());
+            cbTurnoHoraFin.setValue(jornada.getHoraFin());
+            chkTurnoActivo.setSelected(jornada.getIdEstado() == 1);
+            MedicoDTO medico = medicoDeJornada(jornada);
+            PersonaDTO persona = mapaPersonasPorIdUsuario.get(jornada.getIdUsuario());
             if (medico != null) {
                 cbTurnoDoctor.setValue(medico);
-                txtTurnoCedMedico.setText(String.valueOf(medico.getIdMedico()));
-                txtTurnoNomMedico.setText(medico.getNombre() + " " + medico.getApellido());
             } else {
                 cbTurnoDoctor.setValue(null);
-                txtTurnoCedMedico.setText("ID: " + cita.getIdMedico());
+            }
+            if (persona != null) {
+                txtTurnoCedMedico.setText(persona.getCedulaCiudadania());
+                txtTurnoNomMedico.setText(persona.getNombre() + " " + persona.getApellido());
+            } else {
+                txtTurnoCedMedico.setText("Usuario: " + jornada.getIdUsuario());
                 txtTurnoNomMedico.clear();
             }
         });
@@ -396,13 +439,23 @@ public class ControladorAdmin implements Initializable {
     private void cargarTablaTurnos() {
         new Thread(() -> {
             try {
-                List<CitaDTO> citas = backend.listarTodasLasCitas();
-                todosTurnos = citas;
-                MedicoDTO sel = cbTurnoDoctor.getValue();
-                List<CitaDTO> mostrar = (sel != null)
-                        ? citas.stream().filter(c -> c.getIdMedico() == sel.getIdMedico()).toList()
-                        : citas;
+                List<JornadaDTO> jornadas = backend.listarJornadas();
+                List<PersonaDTO> personas = backend.listarPersonas();
+                todosTurnos = jornadas;
                 javafx.application.Platform.runLater(() -> {
+                    mapaPersonasPorIdUsuario.clear();
+                    mapaPersonasPorIdPersona.clear();
+                    for (PersonaDTO p : personas) {
+                        mapaPersonasPorIdPersona.put(p.getIdPersona(), p);
+                        if (p.getIdUsuario() != null) {
+                            mapaPersonasPorIdUsuario.put(p.getIdUsuario(), p);
+                        }
+                    }
+                    MedicoDTO sel = cbTurnoDoctor.getValue();
+                    Integer idUsuario = idUsuarioDeMedico(sel);
+                    List<JornadaDTO> mostrar = (idUsuario != null)
+                            ? jornadas.stream().filter(j -> j.getIdUsuario() == idUsuario).toList()
+                            : jornadas;
                     tblTurnos.getItems().clear();
                     tblTurnos.getItems().addAll(mostrar);
                 });
@@ -415,18 +468,22 @@ public class ControladorAdmin implements Initializable {
     @FXML
     void onCrearTurno(ActionEvent e) {
         MedicoDTO doctor = cbTurnoDoctor.getValue();
-        if (doctor == null || dpTurnoFecha.getValue() == null
+        if (doctor == null || cbTurnoDiaSemana.getValue() == null
                 || cbTurnoHoraInicio.getValue() == null || cbTurnoHoraFin.getValue() == null) {
-            mostrarError("Complete: Doctor, Fecha, Hora Inicio y Hora Final"); return;
+            mostrarError("Complete: Doctor, Día de la Semana, Hora Inicio y Hora Final"); return;
+        }
+        Integer idUsuario = idUsuarioDeMedico(doctor);
+        if (idUsuario == null) {
+            mostrarError("El doctor seleccionado no tiene usuario asociado"); return;
         }
         try {
-            CitaDTO nuevo = new CitaDTO();
-            nuevo.setIdMedico(doctor.getIdMedico());
-            nuevo.setFecha(dpTurnoFecha.getValue());
+            JornadaDTO nuevo = new JornadaDTO();
+            nuevo.setIdUsuario(idUsuario);
+            nuevo.setDiaSemana(cbTurnoDiaSemana.getValue());
             nuevo.setHoraInicio(cbTurnoHoraInicio.getValue());
             nuevo.setHoraFin(cbTurnoHoraFin.getValue());
-            nuevo.setIdEstadoCita(chkTurnoActivo.isSelected() ? 1 : 2);
-            backend.crearCitaManual(nuevo, SesionUsuario.getInstancia().getToken());
+            nuevo.setIdEstado(chkTurnoActivo.isSelected() ? 1 : 2);
+            backend.crearJornada(nuevo);
             cargarTablaTurnos();
             limpiarFormularioTurno();
             mostrarInfo("Turno creado correctamente");
@@ -435,16 +492,21 @@ public class ControladorAdmin implements Initializable {
 
     @FXML
     void onEditarTurno(ActionEvent e) {
-        CitaDTO cita = tblTurnos.getSelectionModel().getSelectedItem();
-        if (cita == null) { mostrarError("Seleccione un turno"); return; }
+        JornadaDTO jornada = tblTurnos.getSelectionModel().getSelectedItem();
+        if (jornada == null) { mostrarError("Seleccione un turno"); return; }
+        MedicoDTO doctor = cbTurnoDoctor.getValue();
+        if (doctor == null) { mostrarError("Seleccione un doctor"); return; }
+        Integer idUsuario = idUsuarioDeMedico(doctor);
+        if (idUsuario == null) {
+            mostrarError("El doctor seleccionado no tiene usuario asociado"); return;
+        }
         try {
-            MedicoDTO doctor = cbTurnoDoctor.getValue();
-            if (doctor != null) cita.setIdMedico(doctor.getIdMedico());
-            if (dpTurnoFecha.getValue() != null) cita.setFecha(dpTurnoFecha.getValue());
-            if (cbTurnoHoraInicio.getValue() != null) cita.setHoraInicio(cbTurnoHoraInicio.getValue());
-            if (cbTurnoHoraFin.getValue() != null) cita.setHoraFin(cbTurnoHoraFin.getValue());
-            cita.setIdEstadoCita(chkTurnoActivo.isSelected() ? 1 : 2);
-            backend.editarCita(cita, SesionUsuario.getInstancia().getToken());
+            jornada.setIdUsuario(idUsuario);
+            if (cbTurnoDiaSemana.getValue() != null) jornada.setDiaSemana(cbTurnoDiaSemana.getValue());
+            if (cbTurnoHoraInicio.getValue() != null) jornada.setHoraInicio(cbTurnoHoraInicio.getValue());
+            if (cbTurnoHoraFin.getValue() != null) jornada.setHoraFin(cbTurnoHoraFin.getValue());
+            jornada.setIdEstado(chkTurnoActivo.isSelected() ? 1 : 2);
+            backend.editarJornada(jornada);
             cargarTablaTurnos();
             mostrarInfo("Turno actualizado correctamente");
         } catch (Exception ex) { mostrarError("Error: " + ex.getMessage()); }
@@ -452,10 +514,10 @@ public class ControladorAdmin implements Initializable {
 
     @FXML
     void onEliminarTurno(ActionEvent e) {
-        CitaDTO cita = tblTurnos.getSelectionModel().getSelectedItem();
-        if (cita == null) { mostrarError("Seleccione un turno"); return; }
+        JornadaDTO jornada = tblTurnos.getSelectionModel().getSelectedItem();
+        if (jornada == null) { mostrarError("Seleccione un turno"); return; }
         try {
-            backend.cancelarCita(cita.getIdCita(), SesionUsuario.getInstancia().getToken());
+            backend.eliminarJornada(jornada.getIdJornada());
             cargarTablaTurnos();
             limpiarFormularioTurno();
             mostrarInfo("Turno eliminado correctamente");
@@ -465,7 +527,7 @@ public class ControladorAdmin implements Initializable {
     private void limpiarFormularioTurno() {
         cbTurnoDoctor.setValue(null);
         txtTurnoCedMedico.clear(); txtTurnoNomMedico.clear();
-        dpTurnoFecha.setValue(null);
+        cbTurnoDiaSemana.setValue(null);
         cbTurnoHoraInicio.setValue(null); cbTurnoHoraFin.setValue(null);
         chkTurnoActivo.setSelected(false);
     }

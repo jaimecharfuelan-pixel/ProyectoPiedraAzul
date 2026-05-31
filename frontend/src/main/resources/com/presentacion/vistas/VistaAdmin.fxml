@@ -114,7 +114,7 @@
                         <columns>
                            <TableColumn fx:id="colTurnoCedMedico"  prefWidth="150" text="Cédula Médico"/>
                            <TableColumn fx:id="colTurnoNomMedico"  prefWidth="210" text="Nombre Médico"/>
-                           <TableColumn fx:id="colTurnoFecha"      prefWidth="150" text="Fecha del Turno"/>
+                           <TableColumn fx:id="colTurnoDiaSemana"  prefWidth="150" text="Día de la Semana"/>
                            <TableColumn fx:id="colTurnoHoraInicio" prefWidth="110" text="Hora Inicio"/>
                            <TableColumn fx:id="colTurnoHoraFin"    prefWidth="110" text="Hora Final"/>
                            <TableColumn fx:id="colTurnoEstado"     prefWidth="110" text="Estado"/>
@@ -151,12 +151,14 @@
                                    style="-fx-background-color: #f0f0f0; -fx-font-size: 14px;"
                                    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-                        <Label text="Fecha del Turno *" style="-fx-font-size: 15px; -fx-font-weight: bold;"
+                        <Label text="Día de la Semana *" style="-fx-font-size: 15px; -fx-font-weight: bold;"
                                GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                         <Label text="Hora Inicio *" style="-fx-font-size: 15px; -fx-font-weight: bold;"
                                GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                        <DatePicker fx:id="dpTurnoFecha" prefHeight="48" maxWidth="Infinity" styleClass="date-picker"
-                                    GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                        <ComboBox fx:id="cbTurnoDiaSemana" prefHeight="48" maxWidth="Infinity"
+                                  promptText="Seleccione un día" styleClass="combo-box"
+                                  style="-fx-font-size: 14px;"
+                                  GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                         <ComboBox fx:id="cbTurnoHoraInicio" prefHeight="48" maxWidth="Infinity"
                                   promptText="Hora inicio" style="-fx-font-size: 14px;"
                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
