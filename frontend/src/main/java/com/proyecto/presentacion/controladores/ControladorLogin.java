@@ -218,6 +218,7 @@ public class ControladorLogin {
         String vista = switch (rol) {
             case "administrador" -> "/com/presentacion/vistas/VistaAdmin.fxml";
             case "agendador"     -> "/com/presentacion/vistas/VistaAgendador.fxml";
+            case "medico"        -> "/com/presentacion/vistas/VistaMedico.fxml";
             case "paciente"      -> "/com/presentacion/vistas/VistaPaciente.fxml";
             default              -> "/com/presentacion/vistas/VistaAgendador.fxml";
         };

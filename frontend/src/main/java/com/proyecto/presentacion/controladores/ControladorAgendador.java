@@ -3,6 +3,7 @@ package com.proyecto.presentacion.controladores;
 import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.facade.BackendFacade;
 import com.proyecto.presentacion.util.CalendarioTurnosHelper;
+import com.proyecto.presentacion.util.EstadoCita;
 import com.proyecto.presentacion.dto.CitaDTO;
 import com.proyecto.presentacion.dto.ErrorValidacionDTO;
 import com.proyecto.presentacion.dto.HistorialCitaDTO;
@@ -47,6 +48,7 @@ public class ControladorAgendador implements Initializable {
     @FXML private TableColumn<CitaDTO, String> colMedico;
     @FXML private TableColumn<CitaDTO, String> colFecha;
     @FXML private TableColumn<CitaDTO, String> colHora;
+    @FXML private TableColumn<CitaDTO, Void>   colEstado;
     @FXML private TableColumn<CitaDTO, Void>   colHistorial;
     @FXML private TableColumn<CitaDTO, Void>   colAcciones;
     @FXML private Label lblTotalHoy;
@@ -102,6 +104,44 @@ public class ControladorAgendador implements Initializable {
         colHora.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getHoraInicio() != null
                         ? c.getValue().getHoraInicio().toString() : ""));
+
+        // ── Columna de Estado (con badge visual y color) ──
+        colEstado.setCellFactory(param -> new TableCell<>() {
+            private final Label lblEstado = new Label();
+
+            {
+                lblEstado.setPrefWidth(120);
+                lblEstado.setWrapText(false);
+                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 8px 12px; -fx-background-radius: 6;");
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableView() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                CitaDTO cita = getTableView().getItems().get(getIndex());
+                if (cita == null) {
+                    setGraphic(null);
+                    return;
+                }
+                // Obtener información del estado
+                Integer idEstado = cita.getIdEstadoCita();
+                String icono = EstadoCita.getIcono(idEstado);
+                String nombre = EstadoCita.getNombre(idEstado);
+                String tooltip = EstadoCita.getDescripcion(idEstado);
+                String css = EstadoCita.generarEstiloCSS(idEstado);
+
+                // Configurar el label con ícono y nombre
+                lblEstado.setText(icono + " " + nombre);
+                lblEstado.setStyle(css);
+                lblEstado.setTooltip(new Tooltip(tooltip));
+
+                setGraphic(lblEstado);
+            }
+        });
 
         // ── Columna de Historial (con botón para ver detalles) ──
         // Patrón elegido: Diálogo modal al hacer click en el botón "Ver Historial"

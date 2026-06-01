@@ -3,7 +3,28 @@
 -- DB 3: db_agendamiento
 -- ============================================================
 
+-- ============================================================
+-- DB 3: db_agendamiento - CREACIÓN DE TABLAS
+-- ============================================================
 
+CREATE TABLE IF NOT EXISTS dominio_estado_cita (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS cita (
+    id SERIAL PRIMARY KEY,
+    id_paciente INT NOT NULL,
+    id_medico INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    id_estado_cita INT REFERENCES dominio_estado_cita(id)
+);
+
+-- ============================================================
+-- DATOS INICIALES (Tu código original empieza aquí abajo)
+-- ============================================================
 
 INSERT INTO dominio_estado_cita (nombre) VALUES
 ('Cancelada'),   -- 1

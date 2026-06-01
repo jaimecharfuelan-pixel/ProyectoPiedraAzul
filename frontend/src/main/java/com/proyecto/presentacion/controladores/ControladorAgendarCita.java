@@ -361,9 +361,11 @@ public class ControladorAgendarCita {
     @FXML
     private void onCancelar(ActionEvent event) {
         String rol = SesionUsuario.getInstancia().getRol();
-        String vista = (rol != null && rol.equals("paciente"))
-                ? "/com/presentacion/vistas/VistaPaciente.fxml"
-                : "/com/presentacion/vistas/VistaAgendador.fxml";
+        String vista = switch (rol) {
+            case "paciente" -> "/com/presentacion/vistas/VistaPaciente.fxml";
+            case "medico" -> "/com/presentacion/vistas/VistaMedico.fxml";
+            default -> "/com/presentacion/vistas/VistaAgendador.fxml";
+        };
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
             Parent root = loader.load();

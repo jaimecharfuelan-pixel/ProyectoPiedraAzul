@@ -138,6 +138,223 @@ DELETE /api/citas/{idCita}             → Cancelar/Inactivar turno
 
 ## ✅ VALIDACIONES IMPLEMENTADAS
 
+---
+
+---
+
+# ✅ FASE 3 — INTEGRACIÓN Y NUEVAS VISTAS (JavaFX)
+
+**Fecha:** 31 de mayo de 2026  
+**Estado:** ✅ Completado, compilado y listo para testing
+**Responsable:** Senior Developer
+**Requisitos cubiertos:** RF-06 (Estados de Citas), RF-04 (Vista del Médico)
+
+---
+
+## 📋 REQUISITOS IMPLEMENTADOS
+
+### RF-06: Estados de Citas en UI (Colores y Etiquetas)
+**Objetivo:** Visualizar el estado de cada cita con color, ícono y etiqueta en la tabla del Agendador
+
+✅ **Implementación:**
+- Clase `EstadoCita.java` centraliza toda la lógica de estados
+- Mapeo completo: ID → Nombre, Color, Ícono, Descripción
+- Columna visual en tabla de Agendador con badges coloreados
+- Tooltip con descripción al pasar el mouse
+- Estilos CSS reutilizables
+
+**Estados visualizados:**
+- 🔴 **Cancelada** → Rojo (#dc2626)
+- 🟠 **Pendiente** → Naranja (#ea8c00)  
+- 🟢 **Confirmada** → Verde (#16a34a)
+- 🔵 **Completada** → Azul (#003E72)
+- ⚫ **No Asistió** → Gris (#6b7280)
+
+---
+
+### RF-04: Vista del Médico (FXML)
+**Objetivo:** Nueva interfaz para que médicos vean y gestionen sus citas
+
+✅ **Implementación:**
+- Vista dedicada con layout similar al Agendador pero enfocado en médico
+- Mostrar solo citas del médico logueado
+- Estadísticas rápidas: Citas Hoy, Pendientes, Pacientes
+- Filtros por fecha y estado
+- Botones de acción: Confirmar, Cancelar, Completar cita
+
+---
+
+## 📁 ARCHIVOS CREADOS
+
+### Nuevos archivos - FASE 3:
+
+1. **`EstadoCita.java`** (Utilidad centralizada)
+   ```
+   frontend/src/main/java/com/proyecto/presentacion/util/EstadoCita.java
+   ```
+   - Enumeración de 5 estados (IDs coinciden con BD)
+   - Métodos: getNombre(), getColor(), getIcono(), getDescripcion()
+   - Método: generarEstiloCSS() para aplicar estilos a componentes
+   - Validación: esEstadoValido()
+
+2. **`VistaMedico.fxml`** (Nueva interfaz)
+   ```
+   frontend/src/main/resources/com/presentacion/vistas/VistaMedico.fxml
+   ```
+   - Header con logo y botones
+   - 3 tarjetas de estadísticas
+   - Filtros por fecha y estado
+   - TableView con 6 columnas: Paciente, Fecha, Hora, Especialidad, Estado, Acciones
+   - Botones de acción: Confirmar, Cancelar, Completar
+
+3. **`ControladorMedico.java`** (Lógica del médico)
+   ```
+   frontend/src/main/java/com/proyecto/presentacion/controladores/ControladorMedico.java
+   ```
+   - Carga automática del médico desde SesionUsuario
+   - Método: cargarDatosMedicoActual() - obtiene médico por idUsuario
+   - Métodos de carga: cargarCitas(), cargarPacientes(), actualizarContadores()
+   - Configuración de columnas con EstadoCita para badges visuales
+   - Filtrado por fecha y estado
+   - Acciones: Confirmar/Cancelar/Completar cita
+
+---
+
+## 📝 ARCHIVOS MODIFICADOS
+
+### 1. **`estilos.css`** (Actualizado)
+   ```
+   frontend/src/main/resources/com/presentacion/Estilos/estilos.css
+   ```
+   - ✅ Agregadas clases para estados: .estado-cancelada, .estado-pendiente, etc.
+   - ✅ Clases para celdas de tabla: .table-cell-estado-*
+   - ✅ Badge genérico: .estado-badge
+   - Colores coherentes con EstadoCita.java
+
+### 2. **`VistaAgendador.fxml`** (Actualizado)
+   ```
+   frontend/src/main/resources/com/presentacion/vistas/VistaAgendador.fxml
+   ```
+   - ✅ Nueva columna: `colEstado` entre colMedico y colHistorial
+   - PrefWidth: 140
+
+### 3. **`ControladorAgendador.java`** (Actualizado)
+   ```
+   frontend/src/main/java/com/proyecto/presentacion/controladores/ControladorAgendador.java
+   ```
+   - ✅ Import: EstadoCita
+   - ✅ Declaración: @FXML private TableColumn<CitaDTO, Void> colEstado;
+   - ✅ Configuración en configurarColumnas(): 
+     - CellFactory que crea Label con ícono + nombre
+     - Aplica CSS de EstadoCita
+     - Tooltip con descripción
+   - Usa patrón de TableCell anónimo existente
+
+### 4. **`ControladorLogin.java`** (Actualizado)
+   ```
+   frontend/src/main/java/com/proyecto/presentacion/controladores/ControladorLogin.java
+   ```
+   - ✅ Agregado case "medico" → "/com/presentacion/vistas/VistaMedico.fxml"
+   - Navegación automática al rol médico
+
+---
+
+## 🔧 ARQUITECTURA Y PATRONES
+
+### Patrón: Centralización con EstadoCita
+- **Beneficio:** Un único punto de cambio para estados
+- **Uso:** Cualquier componente puede usar EstadoCita.getNombre(id) → "Confirmada"
+- **Extensibilidad:** Agregar nuevo estado = modificar solo EstadoCita.java
+
+### Patrón: TableCell Factory
+- **Usado en:** colEstado del Agendador y ControladorMedico
+- **Ventaja:** Componentes JavaFX nativos (Label, Tooltip) dentro de celdas
+- **Coherencia:** Mismo estilo visual en ambas vistas
+
+### Integración SesionUsuario
+- ControladorMedico obtiene idUsuario de sesión
+- Busca médico en lista de médicos activos
+- Filtra citas por idMedico automáticamente
+
+---
+
+## 📊 FLUJO DE USO - Panel Agendador (Mejorado)
+
+1. Agendador ve tabla de citas
+2. **Nueva columna "Estado"** muestra:
+   - Ícono + Nombre (ej: "✓ Confirmada")
+   - Fondo coloreado según estado
+   - Tooltip al pasar mouse: descripción completa
+
+---
+
+## 📊 FLUJO DE USO - Panel Médico (Nuevo)
+
+1. **Médico se loguea** → Rol = "medico"
+2. **Sistema navega a VistaMedico.fxml**
+3. **Carga automática:**
+   - Obtiene idMedico desde idUsuario
+   - Carga todas sus citas
+   - Calcula estadísticas
+4. **Médico puede:**
+   - Filtrar por fecha
+   - Filtrar por estado de cita
+   - Ver detalles: paciente, hora, estado
+   - Cambiar estado: Confirmar, Cancelar, Completar
+5. **Al cambiar estado:**
+   - Cita se actualiza en backend
+   - Tabla se recarga
+   - Estadísticas se recalculan
+
+---
+
+## ✅ VALIDACIONES IMPLEMENTADAS (FASE 3)
+
+✅ **EstadoCita:**
+- Valida que idEstado sea válido: esEstadoValido(id)
+- Retorna "Desconocido" si id es null
+- Todos los 5 estados mapeados en BD
+
+✅ **ControladorMedico:**
+- Verifica que exista médico asociado al usuario
+- Filtra citas solo del médico logueado
+- Actualiza estadísticas al cambiar estado
+
+✅ **Estilos CSS:**
+- Colores coherentes con línea estética del proyecto
+- Badges legibles en cualquier resolución
+
+---
+
+## 🧪 COMPILACIÓN Y BUILD
+
+**Estado:** ✅ BUILD SUCCESS
+```
+✅ 23 archivos compilados
+✅ Sin errores de compilación
+⚠️ Warnings: location of system modules (Info únicamente)
+✅ Compilación completada en 2.819 segundos
+```
+
+---
+
+## 📌 NOTAS IMPORTANTES
+
+- **Compatibilidad:** Funciona con arquitectura existente (BackendFacade, DTOs, etc.)
+- **Reutilización:** EstadoCita es agnóstico y se puede usar en otros controladores
+- **Extensibilidad:** Para agregar nuevo estado: modificar solo EstadoCita.java
+- **Navegación:** Automática según rol en ControladorLogin
+- **Testing:** Requiere médico logueado para probar VistaMedico
+
+---
+
+## 📄 PASOS SIGUIENTES (Fase 4 - Fuera del scope)
+
+⏸️ **No implementado en esta fase:**
+- Exportación CSV de citas
+- Registro autónomo de pacientes (sin admin)
+- Módulos externos adicionales
+
 - ✅ Persona debe tener usuario asociado
 - ✅ No se permiten roles duplicados
 - ✅ ComboBox solo muestra roles no asignados

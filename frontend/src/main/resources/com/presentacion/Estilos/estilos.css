@@ -581,6 +581,101 @@
     -fx-font-size: 13px;
 }
 
+/* ========================================================================= */
+/* --- ESTILOS PARA ESTADOS DE CITAS (RF-06) --- */
+/* ========================================================================= */
+
+/* Badge genérico de estado */
+.estado-badge {
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+/* Estado: Cancelada (Rojo) */
+.estado-cancelada {
+    -fx-background-color: #fecaca;      /* Rojo claro */
+    -fx-text-fill: #dc2626;             /* Rojo oscuro */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Estado: Pendiente (Naranja) */
+.estado-pendiente {
+    -fx-background-color: #fed7aa;      /* Naranja claro */
+    -fx-text-fill: #ea8c00;             /* Naranja oscuro */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Estado: Confirmada (Verde) */
+.estado-confirmada {
+    -fx-background-color: #bbf7d0;      /* Verde claro */
+    -fx-text-fill: #16a34a;             /* Verde oscuro */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Estado: Completada (Azul) */
+.estado-completada {
+    -fx-background-color: #e0f0ff;      /* Azul muy claro */
+    -fx-text-fill: #003E72;             /* Azul principal del proyecto */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Estado: No Asistió (Gris) */
+.estado-no-asistio {
+    -fx-background-color: #f3f4f6;      /* Gris claro */
+    -fx-text-fill: #6b7280;             /* Gris oscuro */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Estilos para celdas de tabla con estados */
+.table-cell-estado-cancelada {
+    -fx-background-color: #fecaca;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+}
+
+.table-cell-estado-pendiente {
+    -fx-background-color: #fed7aa;
+    -fx-text-fill: #ea8c00;
+    -fx-font-weight: bold;
+}
+
+.table-cell-estado-confirmada {
+    -fx-background-color: #bbf7d0;
+    -fx-text-fill: #16a34a;
+    -fx-font-weight: bold;
+}
+
+.table-cell-estado-completada {
+    -fx-background-color: #e0f0ff;
+    -fx-text-fill: #003E72;
+    -fx-font-weight: bold;
+}
+
+.table-cell-estado-no-asistio {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #6b7280;
+    -fx-font-weight: bold;
+}
+
 /* ChoiceBox en registro */
 .field-registro-choice {
     -fx-background-color: white;
