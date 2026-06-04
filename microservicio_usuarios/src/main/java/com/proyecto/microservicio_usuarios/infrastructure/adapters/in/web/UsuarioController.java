@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Listar usuarios")
+    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping
     public ResponseEntity<List<Usuario>> listar() {
         return ResponseEntity.ok(gestionarUsuario.listar());
@@ -37,6 +39,7 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Editar usuario")
+    @PreAuthorize("hasAuthority('Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<String> editar(@PathVariable int id, @RequestBody Usuario usuario) {
         usuario.setIdUsuario(id);
@@ -47,6 +50,7 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Eliminar usuario")
+    @PreAuthorize("hasAuthority('Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         if (gestionarUsuario.eliminar(id)) {

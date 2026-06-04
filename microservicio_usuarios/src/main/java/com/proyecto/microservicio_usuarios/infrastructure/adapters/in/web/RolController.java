@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,18 +23,21 @@ public class RolController {
     }
 
     @Operation(summary = "Listar todos los roles")
+    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping
     public ResponseEntity<List<Rol>> listar() {
         return ResponseEntity.ok(gestionarRol.listar());
     }
 
     @Operation(summary = "Roles de un usuario")
+    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<Rol>> porUsuario(@PathVariable int idUsuario) {
         return ResponseEntity.ok(gestionarRol.listarPorUsuario(idUsuario));
     }
 
     @Operation(summary = "Asignar rol a usuario")
+    @PreAuthorize("hasAuthority('Administrador')")
     @PostMapping
     public ResponseEntity<?> asignar(@RequestBody Rol rol) {
         try {
@@ -45,6 +49,7 @@ public class RolController {
     }
 
     @Operation(summary = "Eliminar rol")
+    @PreAuthorize("hasAuthority('Administrador')")
     @DeleteMapping("/{idRol}")
     public ResponseEntity<String> eliminar(@PathVariable int idRol) {
         if (gestionarRol.eliminar(idRol)) {

@@ -5,6 +5,7 @@ import com.proyecto.microservicio_usuarios.domain.ports.in.GestionarMedicoPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class MedicoController {
     }
 
     @Operation(summary = "Asignar especialidad a médico")
+    @PreAuthorize("hasAuthority('Administrador')")
     @PutMapping("/{id}/especialidad")
     public ResponseEntity<String> asignarEspecialidad(@PathVariable int id,
                                                        @RequestParam int idEspecialidad) {

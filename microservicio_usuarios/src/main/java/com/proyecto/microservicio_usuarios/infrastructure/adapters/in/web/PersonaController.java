@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +25,14 @@ public class PersonaController {
     }
 
     @Operation(summary = "Listar personas activas")
+    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping
     public ResponseEntity<List<Persona>> listar() {
         return ResponseEntity.ok(gestionarPersona.listar());
     }
 
     @Operation(summary = "Buscar persona por cédula")
+    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping("/documento/{cedula}")
     public ResponseEntity<?> buscarPorDocumento(@PathVariable String cedula) {
         return gestionarPersona.buscarPorDocumento(cedula)
@@ -38,6 +41,7 @@ public class PersonaController {
     }
 
     @Operation(summary = "Crear persona (admin)", description = "Crea una persona con usuario y rol asociados.")
+    @PreAuthorize("hasAuthority('Administrador')")
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody CrearPersonaCommand command) {
         try {
@@ -49,6 +53,7 @@ public class PersonaController {
     }
 
     @Operation(summary = "Editar persona (campos parciales)")
+    @PreAuthorize("hasAuthority('Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<String> editar(@PathVariable int id,
                                           @RequestBody Map<String, Object> campos) {
@@ -59,6 +64,7 @@ public class PersonaController {
     }
 
     @Operation(summary = "Inactivar persona")
+    @PreAuthorize("hasAuthority('Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> inactivar(@PathVariable int id) {
         if (gestionarPersona.inactivar(id)) {

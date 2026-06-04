@@ -238,24 +238,16 @@ public class ControladorAgendarCita {
             if (persona != null && persona.getIdPersona() > 0) {
                 idPaciente = persona.getIdPersona();
             } else {
-                // Construir el body con HashMap para evitar problemas de serialización
-                // con Map.of() anidado que Jackson no deserializa correctamente
-                java.util.Map<String, Object> pacienteBody = new java.util.HashMap<>();
-                pacienteBody.put("nombre",           txtNombre.getText().trim());
-                pacienteBody.put("apellido",         txtApellido.getText().trim());
-                pacienteBody.put("cedulaCiudadania", txtCedula.getText().trim());
-                pacienteBody.put("celular",          txtCelular.getText().trim());
-                pacienteBody.put("correo",           txtCorreo.getText().trim());
-                pacienteBody.put("idGenero",         generoAId(cbGenero.getValue()));
-                pacienteBody.put("idEstado",         2);
-
-                java.util.Map<String, Object> usuarioBody = new java.util.HashMap<>();
-                usuarioBody.put("usuario",    txtCedula.getText().trim());
-                usuarioBody.put("contrasena", txtCedula.getText().trim());
-
+                // Body plano que espera RegistrarPacienteCommand
                 java.util.Map<String, Object> body = new java.util.HashMap<>();
-                body.put("paciente", pacienteBody);
-                body.put("usuario",  usuarioBody);
+                body.put("nombre",           txtNombre.getText().trim());
+                body.put("apellido",         txtApellido.getText().trim());
+                body.put("cedulaCiudadania", txtCedula.getText().trim());
+                body.put("celular",          txtCelular.getText().trim());
+                body.put("correo",           txtCorreo.getText().trim());
+                body.put("idGenero",         generoAId(cbGenero.getValue()));
+                body.put("usuarioLogin",     txtCedula.getText().trim());
+                body.put("contrasena",       txtCedula.getText().trim());
 
                 PersonaDTO nuevo = backendFacade.registrarPaciente(body);
                 idPaciente = nuevo.getIdPersona();

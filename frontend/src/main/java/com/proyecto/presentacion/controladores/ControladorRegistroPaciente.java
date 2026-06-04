@@ -215,25 +215,17 @@ public class ControladorRegistroPaciente {
         if (!validarPanel1() || !validarPanel2()) return;
 
         try {
-            // Construir el body para el registro
-            Map<String, Object> pacienteBody = new HashMap<>();
-            pacienteBody.put("nombre", txtNombre.getText().trim());
-            pacienteBody.put("apellido", txtApellido.getText().trim());
-            pacienteBody.put("cedulaCiudadania", txtCedula.getText().trim());
-            pacienteBody.put("celular", txtCelular.getText().trim());
-            pacienteBody.put("correo", txtCorreo.getText().trim());
-            pacienteBody.put("idGenero", generoAId(cbGenero.getValue()));
-            pacienteBody.put("fechaNacimiento", dpFechaNac.getValue());
-            pacienteBody.put("idEstado", 2); // Activo
-            pacienteBody.put("activo", true);
-
-            Map<String, Object> usuarioBody = new HashMap<>();
-            usuarioBody.put("usuario", txtUsuario.getText().trim());
-            usuarioBody.put("contrasena", txtContrasena.getText());
-
+            // Construir el body plano que espera RegistrarPacienteCommand
             Map<String, Object> body = new HashMap<>();
-            body.put("paciente", pacienteBody);
-            body.put("usuario", usuarioBody);
+            body.put("nombre",           txtNombre.getText().trim());
+            body.put("apellido",         txtApellido.getText().trim());
+            body.put("cedulaCiudadania", txtCedula.getText().trim());
+            body.put("celular",          txtCelular.getText().trim());
+            body.put("correo",           txtCorreo.getText().trim());
+            body.put("idGenero",         generoAId(cbGenero.getValue()));
+            body.put("fechaNacimiento",  dpFechaNac.getValue());
+            body.put("usuarioLogin",     txtUsuario.getText().trim());
+            body.put("contrasena",       txtContrasena.getText());
 
             PersonaDTO nuevo = backendFacade.registrarPaciente(body);
             mostrarInfo("¡Paciente registrado correctamente!\n\nUsuario: " + txtUsuario.getText());

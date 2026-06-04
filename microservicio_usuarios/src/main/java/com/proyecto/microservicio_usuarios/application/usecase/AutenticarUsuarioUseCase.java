@@ -9,6 +9,7 @@ import com.proyecto.microservicio_usuarios.domain.ports.out.RolRepositoryPort;
 import com.proyecto.microservicio_usuarios.domain.ports.out.SesionTokenRepositoryPort;
 import com.proyecto.microservicio_usuarios.domain.ports.out.TokenGeneratorPort;
 import com.proyecto.microservicio_usuarios.domain.ports.out.UsuarioRepositoryPort;
+import com.proyecto.microservicio_usuarios.infrastructure.security.JwtTokenProvider;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,15 +21,18 @@ public class AutenticarUsuarioUseCase implements AutenticarUsuarioPort {
     private final SesionTokenRepositoryPort tokenRepo;
     private final RolRepositoryPort rolRepo;
     private final TokenGeneratorPort tokenGenerator;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AutenticarUsuarioUseCase(UsuarioRepositoryPort usuarioRepo,
                                     SesionTokenRepositoryPort tokenRepo,
                                     RolRepositoryPort rolRepo,
-                                    TokenGeneratorPort tokenGenerator) {
+                                    TokenGeneratorPort tokenGenerator,
+                                    JwtTokenProvider jwtTokenProvider) {
         this.usuarioRepo = usuarioRepo;
         this.tokenRepo = tokenRepo;
         this.rolRepo = rolRepo;
         this.tokenGenerator = tokenGenerator;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -39,7 +43,11 @@ public class AutenticarUsuarioUseCase implements AutenticarUsuarioPort {
 
         if (usuario == null) return null;
 
-        String token = tokenGenerator.generarToken(usuario.getIdUsuario(), usuario.getUsuario());
+        String rol = rolRepo.findFirstByIdUsuario(usuario.getIdUsuario())
+                .map(r -> r.getNombre())
+                .orElse("Sin rol");
+
+        String token = tokenGenerator.generarToken(usuario.getIdUsuario(), usuario.getUsuario(), rol);
 
         SesionToken sesion = new SesionToken();
         sesion.setTokenHash(token);
@@ -49,19 +57,19 @@ public class AutenticarUsuarioUseCase implements AutenticarUsuarioPort {
         sesion.setIdUsuario(usuario.getIdUsuario());
         tokenRepo.save(sesion);
 
-        String rol = rolRepo.findFirstByIdUsuario(usuario.getIdUsuario())
-                .map(r -> r.getNombre())
-                .orElse("Sin rol");
-
         return new LoginResult(token, usuario.getIdUsuario(), usuario.getUsuario(), rol);
     }
 
     @Override
     public boolean validarToken(String token) {
-        return tokenRepo.findAll().stream()
-                .anyMatch(t -> t.getTokenHash().equals(token)
-                        && t.getIdEstado() == 2
-                        && t.getFechaExpiracion().isAfter(LocalDateTime.now()));
+        if (!jwtTokenProvider.validarToken(token)) {
+            return false;
+        }
+
+        return tokenRepo.findByToken(token)
+                .filter(t -> t.getIdEstado() == 2)
+                .filter(t -> t.getFechaExpiracion().isAfter(LocalDateTime.now()))
+                .isPresent();
     }
 
     @Override

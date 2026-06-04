@@ -8,6 +8,7 @@ import com.proyecto.presentacion.dto.MedicoDTO;
 import com.proyecto.presentacion.dto.PersonaDTO;
 import com.proyecto.presentacion.dto.RolDTO;
 import com.proyecto.presentacion.dto.ErrorValidacionDTO;
+import com.proyecto.presentacion.SesionUsuario;
 import com.proyecto.presentacion.dto.HistorialCitaDTO;
 
 import java.time.LocalDate;
@@ -27,6 +28,10 @@ import java.util.Map;
  */
 public class BackendFacade {
 
+    private String token() {
+        return SesionUsuario.getInstancia().getToken();
+    }
+
     // ── Autenticación ─────────────────────────────────────────────────────────
 
     public LoginResponseDTO login(String usuario, String contrasena) throws Exception {
@@ -38,7 +43,7 @@ public class BackendFacade {
     // ── Médicos ───────────────────────────────────────────────────────────────
 
     public List<MedicoDTO> listarMedicosActivos() throws Exception {
-        String json = ClienteHttp.get("/api/medicos/activos");
+        String json = ClienteHttp.getConToken("/api/medicos/activos", token());
         return ClienteHttp.parsearLista(json, MedicoDTO.class);
     }
 
@@ -52,20 +57,20 @@ public class BackendFacade {
 
     @SuppressWarnings("unchecked")
     public List<Map> listarEspecialidades() throws Exception {
-        String json = ClienteHttp.get("/api/especialidades");
+        String json = ClienteHttp.getConToken("/api/especialidades", token());
         return ClienteHttp.parsearLista(json, Map.class);
     }
 
     // ── Personas ──────────────────────────────────────────────────────────────
 
     public List<PersonaDTO> listarPersonas() throws Exception {
-        String json = ClienteHttp.get("/api/personas");
+        String json = ClienteHttp.getConToken("/api/personas", token());
         return ClienteHttp.parsearLista(json, PersonaDTO.class);
     }
 
     public PersonaDTO buscarPacientePorDocumento(String cedula) throws Exception {
         try {
-            String json = ClienteHttp.get("/api/pacientes/documento/" + cedula);
+            String json = ClienteHttp.getConToken("/api/pacientes/documento/" + cedula, token());
             return ClienteHttp.parsear(json, PersonaDTO.class);
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("HTTP 404")) return null;
@@ -74,12 +79,12 @@ public class BackendFacade {
     }
 
     public PersonaDTO buscarPacientePorId(int idPaciente) throws Exception {
-        String json = ClienteHttp.get("/api/pacientes/" + idPaciente);
+        String json = ClienteHttp.getConToken("/api/pacientes/" + idPaciente, token());
         return ClienteHttp.parsear(json, PersonaDTO.class);
     }
 
     public PersonaDTO registrarPaciente(Map<String, Object> body) throws Exception {
-        String json = ClienteHttp.post("/api/pacientes", body);
+        String json = ClienteHttp.postConToken("/api/pacientes", body, token());
         return ClienteHttp.parsear(json, PersonaDTO.class);
     }
 
@@ -88,7 +93,7 @@ public class BackendFacade {
     }
 
     public void crearPersonaAdmin(Map<String, Object> body) throws Exception {
-        ClienteHttp.post("/api/personas", body);
+        ClienteHttp.postConToken("/api/personas", body, token());
     }
 
     public void inactivarPersona(int idPersona, String token) throws Exception {
@@ -105,7 +110,7 @@ public class BackendFacade {
     }
 
     public List<RolDTO> listarRolesDeUsuario(int idUsuario) throws Exception {
-        String json = ClienteHttp.get("/api/roles/usuario/" + idUsuario);
+        String json = ClienteHttp.getConToken("/api/roles/usuario/" + idUsuario, token());
         return ClienteHttp.parsearLista(json, RolDTO.class);
     }
 
@@ -117,7 +122,7 @@ public class BackendFacade {
 
     @SuppressWarnings("unchecked")
     public List<Map> listarUsuarios() throws Exception {
-        String json = ClienteHttp.get("/api/usuarios");
+        String json = ClienteHttp.getConToken("/api/usuarios", token());
         return ClienteHttp.parsearLista(json, Map.class);
     }
 
@@ -128,7 +133,7 @@ public class BackendFacade {
     // ── Citas ─────────────────────────────────────────────────────────────────
 
     public List<CitaDTO> listarTodasLasCitas() throws Exception {
-        String json = ClienteHttp.get("/api/citas/todas");
+        String json = ClienteHttp.getConToken("/api/citas/todas", token());
         return ClienteHttp.parsearLista(json, CitaDTO.class);
     }
 
@@ -143,21 +148,21 @@ public class BackendFacade {
         } else {
             url = "/api/citas/todas";
         }
-        return ClienteHttp.parsearLista(ClienteHttp.get(url), CitaDTO.class);
+        return ClienteHttp.parsearLista(ClienteHttp.getConToken(url, token()), CitaDTO.class);
     }
 
     public List<CitaDTO> listarCitasHoy() throws Exception {
-        String json = ClienteHttp.get("/api/citas?fecha=" + LocalDate.now());
+        String json = ClienteHttp.getConToken("/api/citas?fecha=" + LocalDate.now(), token());
         return ClienteHttp.parsearLista(json, CitaDTO.class);
     }
 
     public List<CitaDTO> historialCitasPaciente(int idPaciente) throws Exception {
-        String json = ClienteHttp.get("/api/citas/paciente/" + idPaciente + "/historial");
+        String json = ClienteHttp.getConToken("/api/citas/paciente/" + idPaciente + "/historial", token());
         return ClienteHttp.parsearLista(json, CitaDTO.class);
     }
 
     public List<CitaDTO> citasFuturasPaciente(int idPaciente) throws Exception {
-        String json = ClienteHttp.get("/api/citas/paciente/" + idPaciente + "/futuras");
+        String json = ClienteHttp.getConToken("/api/citas/paciente/" + idPaciente + "/futuras", token());
         return ClienteHttp.parsearLista(json, CitaDTO.class);
     }
 
@@ -198,23 +203,23 @@ public class BackendFacade {
 
     public String agendarCitaWeb(int idPaciente, int idMedico, LocalDate fecha,
                                   LocalTime hora) throws Exception {
-        return ClienteHttp.post("/api/citas/web", Map.of(
+        return ClienteHttp.postConToken("/api/citas/web", Map.of(
                 "idPaciente", String.valueOf(idPaciente),
                 "idMedico",   String.valueOf(idMedico),
                 "fecha",      fecha.toString(),
                 "hora",       hora.toString()
-        ));
+        ), token());
     }
 
     public ErrorValidacionDTO agendarCitaWebConValidacion(int idPaciente, int idMedico, LocalDate fecha,
                                                            LocalTime hora) throws Exception {
         try {
-            String respuesta = ClienteHttp.post("/api/citas/web", Map.of(
+            String respuesta = ClienteHttp.postConToken("/api/citas/web", Map.of(
                     "idPaciente", String.valueOf(idPaciente),
                     "idMedico",   String.valueOf(idMedico),
                     "fecha",      fecha.toString(),
                     "hora",       hora.toString()
-            ));
+            ), token());
             return new ErrorValidacionDTO(true, respuesta, List.of(), 0);
         } catch (Exception e) {
             ErrorValidacionDTO dto = parsearErrorValidacion(e);
@@ -224,7 +229,7 @@ public class BackendFacade {
     }
 
     public List<HistorialCitaDTO> obtenerHistorialCita(int idCita) throws Exception {
-        String json = ClienteHttp.get("/api/citas/" + idCita + "/historial");
+        String json = ClienteHttp.getConToken("/api/citas/" + idCita + "/historial", token());
         return ClienteHttp.parsearLista(json, HistorialCitaDTO.class);
     }
 
@@ -239,33 +244,33 @@ public class BackendFacade {
         if (excluirCitaId != null) {
             url += "&excluirCitaId=" + excluirCitaId;
         }
-        String json = ClienteHttp.get(url);
+        String json = ClienteHttp.getConToken(url, token());
         return ClienteHttp.parsearLista(json, LocalTime.class);
     }
 
     // ── Jornadas ──────────────────────────────────────────────────────────────
 
     public List<JornadaDTO> listarJornadas() throws Exception {
-        String json = ClienteHttp.get("/api/jornadas");
+        String json = ClienteHttp.getConToken("/api/jornadas", token());
         return ClienteHttp.parsearLista(json, JornadaDTO.class);
     }
 
     public JornadaDTO crearJornada(JornadaDTO jornada) throws Exception {
-        String json = ClienteHttp.post("/api/jornadas", jornada);
+        String json = ClienteHttp.postConToken("/api/jornadas", jornada, token());
         return ClienteHttp.parsear(json, JornadaDTO.class);
     }
 
     public JornadaDTO editarJornada(JornadaDTO jornada) throws Exception {
-        String json = ClienteHttp.put("/api/jornadas/" + jornada.getIdJornada(), jornada, null);
+        String json = ClienteHttp.put("/api/jornadas/" + jornada.getIdJornada(), jornada, token());
         return ClienteHttp.parsear(json, JornadaDTO.class);
     }
 
     public void eliminarJornada(int idJornada) throws Exception {
-        ClienteHttp.delete("/api/jornadas/" + idJornada, null);
+        ClienteHttp.delete("/api/jornadas/" + idJornada, token());
     }
 
     public List<String> listarDiasConJornada(int idUsuario) throws Exception {
-        String json = ClienteHttp.get("/api/jornadas/medico/" + idUsuario + "/dias");
+        String json = ClienteHttp.getConToken("/api/jornadas/medico/" + idUsuario + "/dias", token());
         return ClienteHttp.parsearLista(json, String.class);
     }
 
@@ -288,7 +293,7 @@ public class BackendFacade {
     }
 
     public List<PersonaDTO> listarPacientes() throws Exception {
-        String json = ClienteHttp.get("/api/pacientes");
+        String json = ClienteHttp.getConToken("/api/pacientes", token());
         return ClienteHttp.parsearLista(json, PersonaDTO.class);
     }
 
