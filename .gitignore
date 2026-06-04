@@ -1,13 +1,33 @@
 # Archivos compilados Java
 **/target/
 **/*.class
-
+**/*.jar
+**/*.war
 
 # IDE
 .idea/
 *.iml
 .vscode/
+*.iws
+*.ipr
 
-# OS
+# Build
+**/build/
+**/.gradle/
+
+# OS / Temporales
 .DS_Store
 Thumbs.db
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de BD: PERMITIDOS (no ignorar)
+# Descomenta si necesitas ignorar contraseñas en .properties
+# application-secrets.properties
+# application-prod.properties
