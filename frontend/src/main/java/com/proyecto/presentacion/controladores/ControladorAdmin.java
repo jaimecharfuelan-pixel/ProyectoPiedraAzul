@@ -95,9 +95,10 @@ public class ControladorAdmin implements Initializable {
 
     private PersonaDTO personaSeleccionada = null;
     private PersonaDTO personaSeleccionadaParaRoles = null;
-    private final Map<Integer, MedicoDTO> mapaMedicos = new HashMap<>();
-    private final Map<Integer, PersonaDTO> mapaPersonasPorIdUsuario = new HashMap<>();
-    private final Map<Integer, PersonaDTO> mapaPersonasPorIdPersona = new HashMap<>();
+    private final Map<Integer, MedicoDTO>  mapaMedicos                = new HashMap<>();
+    private final Map<Integer, MedicoDTO>  mapaMedicosPorIdUsuario    = new HashMap<>();  // idUsuario → MedicoDTO
+    private final Map<Integer, PersonaDTO> mapaPersonasPorIdUsuario   = new HashMap<>();
+    private final Map<Integer, PersonaDTO> mapaPersonasPorIdPersona   = new HashMap<>();
     private List<JornadaDTO> todosTurnos = new java.util.ArrayList<>();
     private List<RolDTO> rolesActualesUsuario = new java.util.ArrayList<>();
     private final BackendFacade backend = new BackendFacade();
@@ -205,7 +206,11 @@ public class ControladorAdmin implements Initializable {
         try {
             List<MedicoDTO> medicos = backend.listarMedicosActivos();
             mapaMedicos.clear();
-            for (MedicoDTO m : medicos) mapaMedicos.put(m.getIdMedico(), m);
+            mapaMedicosPorIdUsuario.clear();
+            for (MedicoDTO m : medicos) {
+                mapaMedicos.put(m.getIdMedico(), m);
+                if (m.getIdUsuario() != null) mapaMedicosPorIdUsuario.put(m.getIdUsuario(), m);
+            }
 
             cbTurnoDoctor.setItems(FXCollections.observableArrayList(medicos));
             cbTurnoDoctor.setConverter(convMedico);
@@ -225,13 +230,18 @@ public class ControladorAdmin implements Initializable {
                     mapaPersonasPorIdUsuario.put(p.getIdUsuario(), p);
                 }
             }
-            cbPersonaRol.setItems(FXCollections.observableArrayList(personas));
-            cbPersonaRol.setConverter(new StringConverter<>() {
-                public String toString(PersonaDTO p)   { return p == null ? "" : p.toString(); }
-                public PersonaDTO fromString(String s) { return null; }
-            });
-
-            cbRol.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
+            // cbPersonaRol y cbRol fueron deprecados — ya no existen en el FXML
+            // (reemplazados por tblPersonasRoles + cbRolesDisponibles en panelRoles)
+            if (cbPersonaRol != null) {
+                cbPersonaRol.setItems(FXCollections.observableArrayList(personas));
+                cbPersonaRol.setConverter(new StringConverter<>() {
+                    public String toString(PersonaDTO p)   { return p == null ? "" : p.toString(); }
+                    public PersonaDTO fromString(String s) { return null; }
+                });
+            }
+            if (cbRol != null) {
+                cbRol.setItems(FXCollections.observableArrayList("Administrador", "Agendador", "Medico", "Paciente"));
+            }
             cbPerGenero.setItems(FXCollections.observableArrayList("Masculino", "Femenino", "No Binario", "Prefiero no decir"));
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -255,6 +265,8 @@ public class ControladorAdmin implements Initializable {
 
     @FXML
     void onAsignarRol(ActionEvent e) {
+        // cbPersonaRol y cbRol fueron deprecados y ya no existen en el FXML
+        if (cbPersonaRol == null || cbRol == null) return;
         PersonaDTO persona = cbPersonaRol.getValue();
         String rol = cbRol.getValue();
         if (persona == null || rol == null) { mostrarError("Seleccione persona y rol"); return; }
@@ -443,12 +455,34 @@ public class ControladorAdmin implements Initializable {
 
     private void configurarTablaTurnos() {
         colTurnoCedMedico.setCellValueFactory(c -> {
-            PersonaDTO p = mapaPersonasPorIdUsuario.get(c.getValue().getIdUsuario());
-            return new SimpleStringProperty(p != null ? p.getCedulaCiudadania() : "—");
+            int idUsuario = c.getValue().getIdUsuario();
+            // Primero buscar por PersonaDTO (cruce idUsuario)
+            PersonaDTO p = mapaPersonasPorIdUsuario.get(idUsuario);
+            if (p != null && p.getCedulaCiudadania() != null && !p.getCedulaCiudadania().isBlank()) {
+                return new SimpleStringProperty(p.getCedulaCiudadania());
+            }
+            // Fallback: buscar persona del médico cuyo idUsuario coincida
+            MedicoDTO m = mapaMedicosPorIdUsuario.get(idUsuario);
+            if (m != null) {
+                PersonaDTO pm = mapaPersonasPorIdPersona.get(m.getIdMedico());
+                if (pm != null && pm.getCedulaCiudadania() != null) {
+                    return new SimpleStringProperty(pm.getCedulaCiudadania());
+                }
+            }
+            return new SimpleStringProperty("—");
         });
         colTurnoNomMedico.setCellValueFactory(c -> {
-            PersonaDTO p = mapaPersonasPorIdUsuario.get(c.getValue().getIdUsuario());
-            return new SimpleStringProperty(p != null ? p.getNombre() + " " + p.getApellido() : "—");
+            int idUsuario = c.getValue().getIdUsuario();
+            PersonaDTO p = mapaPersonasPorIdUsuario.get(idUsuario);
+            if (p != null) {
+                return new SimpleStringProperty(p.getNombre() + " " + p.getApellido());
+            }
+            // Fallback: usar nombre del MedicoDTO directamente
+            MedicoDTO m = mapaMedicosPorIdUsuario.get(idUsuario);
+            if (m != null) {
+                return new SimpleStringProperty(m.getNombre() + " " + m.getApellido());
+            }
+            return new SimpleStringProperty("—");
         });
         colTurnoDiaSemana.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getDiaSemana() != null ? c.getValue().getDiaSemana() : ""));
@@ -491,15 +525,23 @@ public class ControladorAdmin implements Initializable {
             try {
                 List<JornadaDTO> jornadas = backend.listarJornadas();
                 List<PersonaDTO> personas = backend.listarPersonas();
+                List<MedicoDTO>  medicos  = backend.listarMedicosActivos();
                 todosTurnos = jornadas;
                 javafx.application.Platform.runLater(() -> {
+                    // Reconstruir mapas con datos frescos
                     mapaPersonasPorIdUsuario.clear();
                     mapaPersonasPorIdPersona.clear();
+                    mapaMedicos.clear();
+                    mapaMedicosPorIdUsuario.clear();
                     for (PersonaDTO p : personas) {
                         mapaPersonasPorIdPersona.put(p.getIdPersona(), p);
                         if (p.getIdUsuario() != null) {
                             mapaPersonasPorIdUsuario.put(p.getIdUsuario(), p);
                         }
+                    }
+                    for (MedicoDTO m : medicos) {
+                        mapaMedicos.put(m.getIdMedico(), m);
+                        if (m.getIdUsuario() != null) mapaMedicosPorIdUsuario.put(m.getIdUsuario(), m);
                     }
                     MedicoDTO sel = cbTurnoDoctor.getValue();
                     Integer idUsuario = idUsuarioDeMedico(sel);

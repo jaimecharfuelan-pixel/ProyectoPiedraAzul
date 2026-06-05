@@ -1,0 +1,366 @@
+========================================================================
+  RESUMEN PARA EXPOSICION — CLINICA PIEDRA AZUL
+========================================================================
+
+------------------------------------------------------------------------
+1. DE QUE TRATA EL PROYECTO
+------------------------------------------------------------------------
+
+Sistema de gestion de citas medicas para la Clinica Piedra Azul.
+Permite a pacientes agendar citas, a agendadores crearlas manualmente,
+a medicos consultar su agenda y a administradores gestionar usuarios,
+roles y personal.
+
+La interfaz es una aplicacion de escritorio en JavaFX que se comunica
+con un backend distribuido en microservicios a traves de un API Gateway.
+
+
+------------------------------------------------------------------------
+2. ARQUITECTURA GENERAL
+------------------------------------------------------------------------
+
+El sistema usa arquitectura de MICROSERVICIOS con tres servicios
+independientes mas un API Gateway:
+
+  API Gateway (puerto 8080)
+    Punto de entrada unico. Toda peticion del frontend pasa por aqui.
+    Enruta segun el path:
+      /api/auth/**, /api/usuarios/**, /api/pacientes/**,
+      /api/medicos/**, /api/personas/**, /api/roles/**
+        -> ms-usuarios
+      /api/citas/**
+        -> ms-agendamiento
+      /api/jornadas/**, /api/especialidades/**
+        -> ms-configuracion
+
+  ms-usuarios (puerto 8081)
+    Autenticacion, gestion de personas, pacientes, medicos y roles.
+    Es el unico que emite y valida tokens JWT.
+
+  ms-agendamiento (puerto 8082)
+    Ciclo de vida de las citas: crear, consultar, reagendar, cancelar.
+    Publica eventos a RabbitMQ cuando una cita cambia de estado.
+
+  ms-configuracion (puerto 8083)
+    Jornadas laborales y especialidades medicas.
+
+Cada microservicio tiene su propia base de datos PostgreSQL:
+  db_usuarios, db_agendamiento, db_configuracion.
+
+Todos los servicios corren en contenedores Docker en una red interna
+llamada piedrazul-net. Las bases de datos NO son accesibles desde fuera.
+
+Comunicacion:
+  - Sincrona (REST): frontend -> Gateway -> microservicio
+  - Asincrona (eventos): ms-agendamiento publica en RabbitMQ,
+    ms-usuarios consume los eventos de citas.
+
+
+------------------------------------------------------------------------
+3. ARQUITECTURA HEXAGONAL (Puertos y Adaptadores)
+------------------------------------------------------------------------
+
+Cada microservicio sigue arquitectura hexagonal. Hay tres capas:
+
+  DOMINIO (domain/)
+    El nucleo del negocio. No depende de nada externo.
+    - domain/model: entidades (Cita, Usuario, Paciente, EstadoCita...)
+    - domain/ports/in: interfaces de lo que el dominio OFRECE (use cases)
+      Ejemplo: AutenticarUsuarioPort, RegistrarPacientePort
+    - domain/ports/out: interfaces de lo que el dominio NECESITA
+      Ejemplo: UsuarioRepositoryPort, TokenGeneratorPort, EventoCitaPublisherPort
+
+  APLICACION (application/)
+    Orquesta los casos de uso usando solo interfaces del dominio.
+    - application/usecase: AutenticarUsuarioUseCase, AgendarCitaUseCase,
+      RegistrarPacienteUseCase, etc.
+    - application/dto: comandos y resultados (LoginCommand, LoginResult...)
+
+  INFRAESTRUCTURA (infrastructure/)
+    Implementa los puertos con tecnologias concretas. El dominio no las ve.
+    - adapters/in/web: controladores REST (AuthController, CitaController...)
+    - adapters/in/messaging: consumidores RabbitMQ (CitaEventoConsumer)
+    - adapters/out/persistence: repositorios JPA (UsuarioRepositoryAdapter,
+      CitaRepositoryAdapter...) que implementan los ports/out
+    - adapters/out/token: Base64TokenGeneratorAdapter -> TokenGeneratorPort
+    - adapters/out/messaging: EventoCitaRabbitAdapter -> EventoCitaPublisherPort
+    - adapters/out/http: JornadaHttpAdapter, MedicoHttpAdapter
+
+  BENEFICIO CLAVE: si se cambia PostgreSQL por otro motor, solo se
+  reescriben los adaptadores de persistencia. El dominio y los use cases
+  quedan intactos con 0 cambios.
+
+
+------------------------------------------------------------------------
+4. PRINCIPIOS SOLID
+------------------------------------------------------------------------
+
+S - Single Responsibility (Responsabilidad Unica)
+  Cada clase tiene una sola razon para cambiar.
+  AutenticarUsuarioUseCase solo maneja login/logout/validar.
+  JwtTokenProvider solo firma y verifica tokens.
+  CitaRepositoryAdapter solo traduce entre JPA y dominio.
+
+O - Open/Closed (Abierto/Cerrado)
+  La interfaz EstadoCita esta abierta para extension (agregar un nuevo
+  estado solo requiere una nueva clase que la implemente) y cerrada para
+  modificacion (el resto del codigo no cambia).
+  FabricaEstadoCita solo agrega un caso al switch.
+
+L - Liskov Substitution (Sustitucion de Liskov)
+  Cualquier implementacion de EstadoCita (EstadoPendiente, EstadoConfirmada,
+  EstadoCancelada...) puede usarse donde se espera un EstadoCita sin romper
+  el comportamiento. Los adaptadores (UsuarioRepositoryAdapter) son
+  sustituibles por cualquier otra implementacion de UsuarioRepositoryPort.
+
+I - Interface Segregation (Segregacion de Interfaces)
+  Los puertos de salida son especificos: UsuarioRepositoryPort solo expone
+  lo que necesita el dominio de usuarios. EventoCitaPublisherPort solo
+  tiene publicarCitaCreada y publicarCitaCancelada. Ningun cliente
+  depende de metodos que no usa.
+
+D - Dependency Inversion (Inversion de Dependencias)
+  Los use cases dependen de interfaces (ports), no de implementaciones.
+  AutenticarUsuarioUseCase recibe UsuarioRepositoryPort, no
+  UsuarioRepositoryAdapter. Spring inyecta la implementacion concreta
+  en tiempo de ejecucion. El dominio no importa ninguna clase de Spring,
+  JPA ni RabbitMQ.
+
+
+------------------------------------------------------------------------
+5. PATRONES DE DISENO
+------------------------------------------------------------------------
+
+FACTORY METHOD
+  Donde: FabricaEstadoCita (ms-agendamiento, domain/model)
+  Por que: al reconstruir una cita desde BD se necesita instanciar
+  el objeto EstadoCita correcto a partir de un numero (idEstado).
+  Como: metodo estatico crearEstado(int idEstado) con switch expression
+  que devuelve la implementacion concreta. El resto del codigo solo
+  conoce la interfaz EstadoCita, nunca hace new EstadoPendiente() directo.
+  Tambien: HttpRequestFactory (frontend, ClienteHttp) centraliza la
+  creacion de HttpRequest por verbo HTTP (crearGet, crearPost, etc.)
+
+FACADE
+  Donde: BackendFacade (frontend, presentacion/facade)
+  Por que: el frontend tiene 6 controladores JavaFX que necesitan hablar
+  con mas de 10 endpoints distintos. Sin facade, cada controlador
+  construiria URLs, headers y parseos por su cuenta.
+  Como: clase unica con metodos semanticos (listarMedicosActivos,
+  agendarCitaWebConValidacion, registrarPaciente...) que internamente
+  usan ClienteHttp. Los controladores nunca tocan ClienteHttp directo.
+
+STRATEGY
+  Donde: EstadoCita y sus 5 implementaciones (ms-agendamiento, domain/model)
+  Por que: cada estado de una cita tiene reglas distintas sobre que
+  transiciones son validas. Poner esas reglas en la entidad Cita con
+  if/else seria un metodo gigante e imposible de mantener.
+  Como: interfaz EstadoCita con metodos confirmar(), cancelar(),
+  completar(), marcarNoAsistio(). EstadoPendiente permite confirmar y
+  cancelar pero no completar. EstadoConfirmada permite todo. La cita
+  delega la validacion al estado que tenga en ese momento.
+
+ADAPTER
+  Donde: toda la capa infrastructure/adapters/out/
+  Por que: arquitectura hexagonal — el dominio define interfaces
+  (ports) pero no puede depender de JPA, RabbitMQ ni RestTemplate.
+  Como: UsuarioRepositoryAdapter implementa UsuarioRepositoryPort
+  delegando a JpaUsuarioRepository. EventoCitaRabbitAdapter implementa
+  EventoCitaPublisherPort delegando a RabbitTemplate. El dominio llama
+  a la interfaz sin saber que tecnologia hay detras.
+
+BUILDER
+  Donde: CitaBuilder, CitaWebBuilder, CitaManualBuilder (ms-agendamiento)
+  Por que: una Cita tiene muchos campos y segun el flujo (web o manual)
+  algunos se calculan automaticamente y el estado inicial varia.
+  Como: CitaWebBuilder calcula horaFin = horaInicio + 30 minutos y
+  asigna estado Pendiente. CitaManualBuilder requiere horaFin explicita
+  y asigna estado Confirmada. API encadenada: new CitaWebBuilder()
+  .idPaciente(x).idMedico(y).fecha(f).horaInicio(h).build()
+
+TEMPLATE METHOD
+  Donde: CitaProcesoTemplate, CitaProcesoWeb, CitaProcesoManual
+         (ms-agendamiento)
+  Por que: los flujos web y manual siguen la misma secuencia de pasos
+  (validar, asignar estado, guardar, publicar evento) pero el paso de
+  asignar estado varia entre ambos.
+  Como: clase abstracta con metodo final que define el esqueleto fijo
+  y metodo abstracto asignarEstado(cita) que cada subclase implementa.
+  CitaProcesoWeb asigna Pendiente, CitaProcesoManual asigna Confirmada.
+
+
+------------------------------------------------------------------------
+6. SEGURIDAD CON JWT
+------------------------------------------------------------------------
+
+COMO FUNCIONA EL FLUJO COMPLETO:
+
+  1. El usuario envia POST /api/auth/login con usuario y contrasena.
+  2. AutenticarUsuarioUseCase verifica la contrasena con BCrypt.
+  3. Si es correcta, JwtTokenProvider genera un token firmado con
+     HMAC-SHA256 (HS256) que contiene: idUsuario, usuario, rol.
+  4. El token se guarda en la tabla sesion_token con:
+       id_estado = 2 (activo)
+       fecha_expiracion = ahora + 1 hora
+  5. El token se devuelve al frontend y se guarda en SesionUsuario.
+  6. Cada peticion posterior incluye: Authorization: Bearer <token>
+
+VALIDACION EN CADA REQUEST (JwtAuthenticationFilter):
+  Paso 1: ¿Es ruta publica? (login, registro de paciente)
+            Si -> pasa sin validar
+  Paso 2: ¿Tiene header Authorization: Bearer?
+            No -> 401 Unauthorized
+  Paso 3: JwtTokenProvider.validarToken()
+            Verifica firma HS256 y que no este expirado
+            Falla -> 401
+  Paso 4: AutenticarUsuarioUseCase.validarToken()
+            Busca el token en sesion_token donde
+            id_estado = 2 (activo) AND fecha_expiracion > ahora
+            No encontrado -> 401
+  Paso 5: Extrae el rol del token e inyecta en SecurityContext
+  Paso 6: SecurityConfig decide si el rol tiene permiso para ese endpoint
+
+DOBLE CAPA DE SEGURIDAD:
+  Capa 1 (JwtTokenProvider): verifica la firma criptografica.
+    Un token alterado o de otro sistema no pasa.
+  Capa 2 (sesion_token en BD): permite revocar tokens.
+    Si el usuario hace logout, el token se marca id_estado=1 (inactivo).
+    Aunque la firma siga siendo valida, el token es rechazado.
+    Esto resuelve el problema clasico de JWT: no poder invalidar tokens
+    antes de su expiracion natural.
+
+CONTROL DE ACCESO POR ROL (SecurityConfig):
+  Administrador: personas, usuarios, roles, especialidades de medicos
+  Agendador: citas (crear, editar, cancelar), consulta medicos/pacientes
+  Paciente: agendar su propia cita, consultar su historial
+  Medico: consultar agenda, actualizar estado de citas
+  Publico (sin token): solo login y registro de paciente nuevo
+
+ENDPOINTS PUBLICOS (no requieren token):
+  POST /api/auth/login       -> iniciar sesion
+  POST /api/auth/validar     -> verificar token (usado por Gateway)
+  POST /api/pacientes        -> registro de nuevo paciente
+
+COMUNICACION SEGURA INTERNA:
+  Las bases de datos solo son accesibles desde su microservicio.
+  Los microservicios se comunican en la red interna Docker (piedrazul-net)
+  y no estan expuestos al exterior. Solo el API Gateway tiene el
+  puerto 8080 accesible desde fuera.
+
+
+------------------------------------------------------------------------
+7. COMUNICACION ENTRE MICROSERVICIOS
+------------------------------------------------------------------------
+
+REST sincrono (a traves del Gateway):
+  Frontend -> Gateway -> microservicio correspondiente
+  El token JWT viaja en el header y es validado en cada microservicio.
+
+REST directo entre microservicios (red interna):
+  ms-agendamiento necesita saber el id_usuario de un medico:
+    MedicoHttpAdapter llama a GET /api/medicos/{id} en ms-usuarios
+  ms-agendamiento necesita saber los horarios disponibles:
+    JornadaHttpAdapter llama a GET /api/jornadas/** en ms-configuracion
+  Estas llamadas van por red interna Docker, sin pasar por el Gateway.
+
+Eventos asincronos con RabbitMQ:
+  Cuando se crea una cita:
+    ms-agendamiento publica en citas.exchange con routing key cita.creada
+  Cuando se cancela una cita:
+    ms-agendamiento publica con routing key cita.cancelada
+  ms-usuarios consume esos eventos en CitaEventoConsumer y los procesa
+  a traves de ProcesarEventoCitaUseCase (por ejemplo, para registrar
+  historial o notificar al paciente).
+
+  Ventaja: ms-agendamiento no necesita esperar la respuesta de
+  ms-usuarios. Si ms-usuarios esta caido, el evento queda en la cola
+  y se procesa cuando se recupera (tolerancia a fallos).
+
+
+------------------------------------------------------------------------
+8. MODELO C4 — RESUMEN DE LOS DIAGRAMAS
+------------------------------------------------------------------------
+
+C1 - Contexto: muestra los 4 tipos de usuario y como se comunican
+  con el sistema. Toda comunicacion es HTTPS con Bearer JWT.
+
+C2 - Contenedores: muestra los 9 contenedores Docker (Gateway,
+  3 microservicios, 3 BDs, RabbitMQ, Frontend) y sus relaciones.
+  Evidencia que las BDs estan en red interna y no son accesibles
+  desde fuera.
+
+C3 - Componentes ms-usuarios: muestra los componentes internos con
+  enfasis en los de seguridad: JwtAuthenticationFilter, JwtTokenProvider,
+  SecurityConfig y SesionTokenRepositoryAdapter.
+
+C3 - Componentes ms-agendamiento: muestra CitaController, los use cases,
+  y los patrones de diseno implementados en dominio (Template Method,
+  Factory Method, Strategy) y los adaptadores de salida.
+
+C4 - Codigo Seguridad: muestra el flujo exacto de validacion JWT
+  paso a paso, con la doble capa de seguridad explicada.
+
+
+------------------------------------------------------------------------
+9. TECNOLOGIAS USADAS
+------------------------------------------------------------------------
+
+Backend:    Java 21, Spring Boot 3, Spring Security, Spring Data JPA
+Frontend:   Java 21, JavaFX, Jackson (JSON)
+Base datos: PostgreSQL 15
+Mensajeria: RabbitMQ 3.13
+Gateway:    Spring Cloud Gateway MVC
+Contenedor: Docker, Docker Compose
+Auth:       JWT (JJWT library), HMAC-SHA256, BCrypt
+Doc API:    Swagger / OpenAPI (SpringDoc)
+
+
+------------------------------------------------------------------------
+10. POSIBLES PREGUNTAS DEL PROFESOR Y RESPUESTAS CORTAS
+------------------------------------------------------------------------
+
+Por que arquitectura hexagonal?
+  Para desacoplar el dominio de las tecnologias. Si cambias PostgreSQL
+  por MySQL, solo reescribes los adaptadores. Los use cases no cambian.
+
+Por que microservicios?
+  Cada contexto de dominio (usuarios, agendamiento, configuracion) puede
+  desplegarse, escalarse y modificarse de forma independiente.
+
+Que pasa si RabbitMQ cae?
+  Los microservicios REST siguen funcionando. Los eventos que no se
+  pudieron publicar se perderian en la version actual (no hay cola
+  persistente configurada para ese caso), pero el sistema no cae.
+
+Como se invalida un JWT antes de que expire?
+  Con la tabla sesion_token. El logout cambia id_estado a 1. El filtro
+  verifica ese estado en cada request, entonces el token queda bloqueado
+  aunque la firma siga siendo criptograficamente valida.
+
+Que es un puerto en arquitectura hexagonal?
+  Una interfaz Java que el dominio define para hablar con el exterior.
+  Los puertos de entrada (ports/in) son lo que el dominio ofrece.
+  Los puertos de salida (ports/out) son lo que el dominio necesita.
+  Los adaptadores son las implementaciones concretas en infraestructura.
+
+Como se aplica el principio de inversion de dependencias?
+  AutenticarUsuarioUseCase depende de UsuarioRepositoryPort (interfaz),
+  no de UsuarioRepositoryAdapter (clase JPA concreta). Spring inyecta
+  la implementacion. El dominio no importa ninguna clase de Spring o JPA.
+
+Diferencia entre Strategy y State?
+  En este proyecto EstadoCita es mas cercano a State (el comportamiento
+  cambia segun el estado del objeto) pero se implemento con la estructura
+  de Strategy (interfaz + implementaciones intercambiables). El patron
+  State puro tendria las transiciones dentro de cada estado. Aqui
+  FabricaEstadoCita centraliza las transiciones.
+
+Por que Facade en el frontend?
+  Los 6 controladores JavaFX necesitaban acceder al backend. Sin Facade,
+  cada uno construiria URLs, tokens y parseos por separado. BackendFacade
+  centraliza todo eso: los controladores solo llaman metodos con nombres
+  claros como agendarCitaWebConValidacion() sin saber nada de HTTP.
+
+========================================================================
+  FIN DEL RESUMEN
+========================================================================

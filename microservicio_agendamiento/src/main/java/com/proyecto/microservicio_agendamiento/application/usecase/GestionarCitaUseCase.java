@@ -37,11 +37,19 @@ public class GestionarCitaUseCase implements GestionarCitaPort {
 
     @Override
     public List<Cita> listar(Integer idMedico, LocalDate fecha) {
-        LocalDate fechaFiltro = (fecha != null) ? fecha : LocalDate.now();
-        if (idMedico != null) {
-            return citaRepo.findByMedicoFechaExcluyendoEstado(idMedico, fechaFiltro, EstadoCitaId.CANCELADA);
+        if (idMedico != null && fecha != null) {
+            // Médico + fecha: filtro exacto
+            return citaRepo.findByMedicoFechaExcluyendoEstado(idMedico, fecha, EstadoCitaId.CANCELADA);
+        } else if (idMedico != null) {
+            // Solo médico: todas las citas del médico (sin filtro de fecha)
+            return citaRepo.findByMedicoExcluyendoEstado(idMedico, EstadoCitaId.CANCELADA);
+        } else if (fecha != null) {
+            // Solo fecha: todas las citas de ese día
+            return citaRepo.findByFechaExcluyendoEstado(fecha, EstadoCitaId.CANCELADA);
+        } else {
+            // Sin filtros: citas de hoy (comportamiento por defecto del endpoint /api/citas)
+            return citaRepo.findByFechaExcluyendoEstado(LocalDate.now(), EstadoCitaId.CANCELADA);
         }
-        return citaRepo.findByFechaExcluyendoEstado(fechaFiltro, EstadoCitaId.CANCELADA);
     }
 
     @Override

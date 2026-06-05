@@ -7,7 +7,7 @@
 
 CREATE TABLE IF NOT EXISTS historial_cita (
     id_historial SERIAL PRIMARY KEY,
-    id_cita INT NOT NULL REFERENCES cita(id_cita) ON DELETE CASCADE,
+    id_cita INT NOT NULL REFERENCES cita(id) ON DELETE CASCADE,
     tipo_cambio VARCHAR(50) NOT NULL,      -- REAGENDAMIENTO, CANCELACION, CAMBIO_ESTADO, CREACION
     valor_anterior TEXT,                   -- Valor anterior (estado, fecha/hora, etc.)
     valor_nuevo TEXT,                      -- Valor nuevo (estado, fecha/hora, etc.)

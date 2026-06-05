@@ -84,7 +84,8 @@ public class BackendFacade {
     }
 
     public PersonaDTO registrarPaciente(Map<String, Object> body) throws Exception {
-        String json = ClienteHttp.postConToken("/api/pacientes", body, token());
+        // Endpoint público — no requiere token (el usuario aún no tiene sesión)
+        String json = ClienteHttp.post("/api/pacientes", body);
         return ClienteHttp.parsear(json, PersonaDTO.class);
     }
 
@@ -138,22 +139,38 @@ public class BackendFacade {
     }
 
     public List<CitaDTO> listarCitas(LocalDate fecha, Integer idMedico) throws Exception {
-        String url;
         if (fecha != null && idMedico != null) {
-            url = "/api/citas?fecha=" + fecha + "&idMedico=" + idMedico;
+            // Médico + fecha: filtro exacto en backend
+            String url = "/api/citas?fecha=" + fecha + "&idMedico=" + idMedico;
+            return ClienteHttp.parsearLista(ClienteHttp.getConToken(url, token()), CitaDTO.class);
         } else if (fecha != null) {
-            url = "/api/citas?fecha=" + fecha;
+            // Solo fecha
+            String url = "/api/citas?fecha=" + fecha;
+            return ClienteHttp.parsearLista(ClienteHttp.getConToken(url, token()), CitaDTO.class);
         } else if (idMedico != null) {
-            url = "/api/citas/todas";
+            // Solo médico: traer todas y filtrar en cliente para evitar el default "hoy" del backend
+            final int id = idMedico;
+            return listarTodasLasCitas().stream()
+                    .filter(c -> c.getIdMedico() == id)
+                    .toList();
         } else {
-            url = "/api/citas/todas";
+            // Sin filtros: todas
+            return listarTodasLasCitas();
         }
-        return ClienteHttp.parsearLista(ClienteHttp.getConToken(url, token()), CitaDTO.class);
     }
 
     public List<CitaDTO> listarCitasHoy() throws Exception {
         String json = ClienteHttp.getConToken("/api/citas?fecha=" + LocalDate.now(), token());
         return ClienteHttp.parsearLista(json, CitaDTO.class);
+    }
+
+    public List<CitaDTO> listarTodasLasCitasPaciente(int idPaciente) throws Exception {
+        // Trae historial + futuras combinados para clasificar en el cliente
+        List<CitaDTO> historial = historialCitasPaciente(idPaciente);
+        List<CitaDTO> futuras   = citasFuturasPaciente(idPaciente);
+        java.util.List<CitaDTO> todas = new java.util.ArrayList<>(historial);
+        todas.addAll(futuras);
+        return todas;
     }
 
     public List<CitaDTO> historialCitasPaciente(int idPaciente) throws Exception {

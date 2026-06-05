@@ -1,0 +1,54 @@
+@startuml C2_Contenedores
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama C2 — Contenedores\nClínica Piedra Azul
+
+Person(usuario, "Usuario\n(Paciente / Agendador\n/ Admin / Médico)", "Accede al sistema\nmediante la app de escritorio.")
+
+System_Boundary(sistema, "Sistema Clínica Piedra Azul") {
+    System(frontend,       "Frontend JavaFX",     "Interfaz de escritorio.\nToken JWT guardado en SesionUsuario.\nTodas las llamadas pasan por BackendFacade.")
+    System(gateway,        "API Gateway\n:8080",  "[SEGURIDAD] Punto de entrada único.\nValida token JWT antes de enrutar.\nRutas públicas: POST /api/auth/login\ny POST /api/pacientes.")
+    System(ms_usuarios,    "ms-usuarios\n:8081",  "Autenticación y gestión de usuarios.\nEmite tokens JWT (HS256).\nDoble validación: firma + sesión activa en BD.\nControl de roles por endpoint.")
+    System(ms_agendamiento,"ms-agendamiento\n:8082","Gestión del ciclo de vida de citas.\nPublica eventos a RabbitMQ.")
+    System(ms_config,      "ms-configuracion\n:8083","Gestión de jornadas y especialidades.")
+    System(db_usuarios,    "db_usuarios\nPostgreSQL :5433","Personas, usuarios, roles,\nsesiones de token activas/inactivas.")
+    System(db_agenda,      "db_agendamiento\nPostgreSQL :5434","Citas e historial de cambios.")
+    System(db_config,      "db_configuracion\nPostgreSQL :5435","Jornadas y especialidades.")
+    System(rabbitmq,       "RabbitMQ\n:5672",     "Bus de eventos asíncrono.\nExchange: citas.exchange\nColas: cita.creada, cita.cancelada.")
+}
+
+Rel(usuario,          frontend,        "Usa",                                    "JavaFX local")
+Rel(frontend,         gateway,         "Todas las llamadas REST",                "HTTP + Bearer JWT")
+Rel(gateway,          ms_usuarios,     "/api/auth/** /api/pacientes/**\n/api/usuarios/** /api/medicos/**\n/api/personas/** /api/roles/**", "HTTP interno\npiedrazul-net")
+Rel(gateway,          ms_agendamiento, "/api/citas/**",                          "HTTP interno\npiedrazul-net")
+Rel(gateway,          ms_config,       "/api/jornadas/**\n/api/especialidades/**","HTTP interno\npiedrazul-net")
+Rel(ms_usuarios,      db_usuarios,     "Lee y escribe",                          "JPA/JDBC")
+Rel(ms_agendamiento,  db_agenda,       "Lee y escribe",                          "JPA/JDBC")
+Rel(ms_config,        db_config,       "Lee y escribe",                          "JPA/JDBC")
+Rel(ms_agendamiento,  rabbitmq,        "Publica eventos de citas",               "AMQP")
+Rel(ms_usuarios,      rabbitmq,        "Consume eventos de citas",               "AMQP")
+Rel(ms_agendamiento,  ms_usuarios,     "Consulta idUsuario de médicos",          "HTTP REST interno")
+Rel(ms_agendamiento,  ms_config,       "Consulta jornadas y disponibilidad",     "HTTP REST interno")
+
+note right of gateway
+  <b>[SEGURIDAD] API Gateway:</b>
+  - JwtGatewayFilter valida Bearer token
+    antes de enrutar cualquier petición
+  - Las BDs y microservicios están en
+    red interna Docker (piedrazul-net)
+    y NO son accesibles desde fuera
+end note
+
+note right of ms_usuarios
+  <b>[SEGURIDAD] ms-usuarios:</b>
+  - JwtAuthenticationFilter en cada request
+  - SecurityConfig: permisos por rol
+    (Administrador, Agendador, Paciente)
+  - Tabla sesion_token: token se invalida
+    al hacer logout
+  - Contraseñas hasheadas con BCrypt
+end note
+
+@enduml

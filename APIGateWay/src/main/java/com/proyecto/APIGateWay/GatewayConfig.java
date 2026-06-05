@@ -49,6 +49,8 @@ public class GatewayConfig {
         return GatewayRouterFunctions.route("ms-usuarios")
                 .route(RequestPredicates.path("/api/auth/**")
                         .or(RequestPredicates.path("/api/usuarios/**"))
+                        .or(RequestPredicates.path("/api/pacientes"))
+                        .or(RequestPredicates.path("/api/pacientes/"))
                         .or(RequestPredicates.path("/api/pacientes/**"))
                         .or(RequestPredicates.path("/api/medicos/**"))
                         .or(RequestPredicates.path("/api/personas/**"))

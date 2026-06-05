@@ -23,7 +23,7 @@
             <ImageView fitHeight="60" fitWidth="140" pickOnBounds="true" preserveRatio="true">
                <image><Image url="@/com/presentacion/icons/LOGO_PIEDRA_AZUL.png" /></image>
             </ImageView>
-            <Label styleClass="info-title" text="Hola Paciente" style="-fx-font-size: 26px;" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER"/>
+            <Label styleClass="info-title" text="Hola Paciente" fx:id="lblBienvenida" style="-fx-font-size: 26px;" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER"/>
             <HBox spacing="12" alignment="CENTER_RIGHT">
                <Button text="+ Agendar Cita" prefHeight="46" prefWidth="170" onAction="#onAgendarCita"/>
                <Button styleClass="button-logout" text="- Cerrar Sesión" prefHeight="46" prefWidth="170" onAction="#onCerrarSesion"/>

@@ -47,6 +47,12 @@ public class CitaRepositoryAdapter implements CitaRepositoryPort {
     }
 
     @Override
+    public List<Cita> findByMedicoExcluyendoEstado(int idMedico, int idEstadoExcluido) {
+        return jpa.findByIdMedicoAndIdEstadoCitaNot(idMedico, idEstadoExcluido)
+                .stream().map(this::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
     public List<Cita> findByFechaExcluyendoEstado(LocalDate fecha, int idEstadoExcluido) {
         return jpa.findByFechaAndIdEstadoCitaNot(fecha, idEstadoExcluido)
                 .stream().map(this::toDomain).collect(Collectors.toList());

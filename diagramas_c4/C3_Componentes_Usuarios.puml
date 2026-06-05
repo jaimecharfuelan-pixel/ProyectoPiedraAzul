@@ -1,0 +1,89 @@
+@startuml C3_Componentes_Usuarios
+skinparam rectangle {
+    BackgroundColor #dae8fc
+    BorderColor #6c8ebf
+    FontSize 11
+}
+skinparam rectangleBorderColor #6c8ebf
+skinparam ArrowColor #333333
+skinparam noteBackgroundColor #fff9c4
+skinparam noteBorderColor #f0a500
+skinparam linetype ortho
+
+title Diagrama C3 - Componentes: ms-usuarios\nClinica Piedra Azul
+
+rectangle "API Gateway" as gateway #ffe6cc
+rectangle "db_usuarios\n(PostgreSQL)" as db #f8cecc
+rectangle "RabbitMQ" as rabbitmq #d5e8d4
+
+rectangle "ms-usuarios" {
+
+    rectangle "[SEGURIDAD]\nJwtAuthenticationFilter\n---\nIntercepta cada request.\nExtrae Bearer token del header.\nValida firma con JwtTokenProvider.\nValida sesion activa en BD.\nInyecta rol en SecurityContext." as jwtFilter #fff2cc
+
+    rectangle "[SEGURIDAD]\nSecurityConfig\n---\nRutas publicas:\n  POST /api/auth/login\n  POST /api/pacientes\nPermisos por rol:\n  Administrador, Agendador, Paciente." as secCfg #fff2cc
+
+    rectangle "[SEGURIDAD]\nJwtTokenProvider\n---\nFirma y verifica tokens JWT.\nAlgoritmo: HS256.\nVerifica expiracion y firma." as jwtProv #fff2cc
+
+    rectangle "AuthController\n---\nPOST /api/auth/login (publico)\nPOST /api/auth/logout" as authCtrl
+
+    rectangle "PacienteController\n---\nPOST /api/pacientes (publico)\nGET /api/pacientes (autenticado)" as pacCtrl
+
+    rectangle "PersonaController\n---\nSolo rol Administrador.\nGET/POST/PUT/DELETE\n/api/personas/**" as perCtrl
+
+    rectangle "UsuarioController\n---\nSolo rol Administrador.\nGET/PUT /api/usuarios/**" as usrCtrl
+
+    rectangle "MedicoController\n---\nGET /api/medicos/** (autenticado)\nPUT especialidad: Administrador" as medCtrl
+
+    rectangle "RolController\n---\nSolo rol Administrador.\n/api/roles/**" as rolCtrl
+
+    rectangle "AutenticarUsuarioUseCase\n---\nLogin: verifica BCrypt, genera JWT,\npersiste sesion en sesion_token.\nLogout: invalida sesion en BD.\nvalidarToken: firma + sesion activa." as autUC
+
+    rectangle "RegistrarPacienteUseCase\n---\nCrea usuario + paciente + rol Paciente\nen una transaccion.\nHashea contrasena con BCrypt." as regUC
+
+    rectangle "[SEGURIDAD]\nSesionTokenRepositoryAdapter\n---\nPersiste y consulta sesiones.\nInvalida tokens por logout.\nFiltro: id_estado=2\ny fecha_expiracion activa." as tokenRepo #fff2cc
+
+    rectangle "Base64TokenGeneratorAdapter\n---\nImplementa TokenGeneratorPort.\nDelega generacion a JwtTokenProvider." as jwtAdap
+
+    rectangle "UsuarioRepositoryAdapter\n---\nImplementa UsuarioRepositoryPort." as usrAdap
+
+    rectangle "PacienteRepositoryAdapter\n---\nImplementa PacienteRepositoryPort." as pacAdap
+
+    rectangle "RolRepositoryAdapter\n---\nImplementa RolRepositoryPort." as rolAdap
+
+    rectangle "CitaEventoConsumer\n---\nConsume eventos cita.creada\ny cita.cancelada desde RabbitMQ." as citaCons
+}
+
+gateway    --> jwtFilter  : "toda peticion"
+jwtFilter  --> secCfg     : "consulta reglas"
+jwtFilter  --> jwtProv    : "valida firma JWT"
+jwtFilter  --> autUC      : "valida sesion en BD"
+
+authCtrl   --> autUC      : "login / logout"
+pacCtrl    --> regUC      : "registrar paciente"
+
+autUC      --> usrAdap    : "busca usuario"
+autUC      --> tokenRepo  : "persiste o invalida sesion"
+autUC      --> jwtAdap    : "genera token JWT"
+jwtAdap    --> jwtProv    : "delega firma HS256"
+
+regUC      --> usrAdap    : "crea usuario hasheado"
+regUC      --> pacAdap    : "crea paciente"
+regUC      --> rolAdap    : "asigna rol Paciente"
+
+usrAdap    --> db         : "JDBC/JPA"
+pacAdap    --> db         : "JDBC/JPA"
+tokenRepo  --> db         : "JDBC/JPA"
+rolAdap    --> db         : "JDBC/JPA"
+citaCons   --> rabbitmq   : "escucha eventos AMQP"
+
+note right of jwtFilter
+  Flujo de validacion:
+  1. Ruta publica: pasa sin validar
+  2. Sin Bearer: 401
+  3. Bearer presente: valida firma
+  4. Firma OK: valida sesion en BD
+  5. Sesion activa: SecurityContext con rol
+  6. Cualquier fallo: 401 Unauthorized
+end note
+
+@enduml

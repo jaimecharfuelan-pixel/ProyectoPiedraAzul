@@ -1,5 +1,6 @@
 -- ============================================================
--- SCRIPT DB: db_usuarios
+-- SCRIPT DB: db_usuarios  –  Datos reales Piedrazul
+-- Fecha carga: 2026-06-05
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS dominio_estado (
@@ -68,114 +69,176 @@ CREATE TABLE IF NOT EXISTS paciente (
 );
 
 -- ─────────────────────────────────────────
--- DATOS
+-- DOMINIOS
 -- ─────────────────────────────────────────
 
 INSERT INTO dominio_estado (nombre) VALUES
-('Inactivo'), ('Activo'), ('Suspendido'), ('Pendiente'), ('Eliminado');
+('Inactivo'),    -- 1
+('Activo'),      -- 2
+('Suspendido'),  -- 3
+('Pendiente'),   -- 4
+('Eliminado');   -- 5
 
 INSERT INTO dominio_genero (nombre) VALUES
-('Masculino'), ('Femenino'), ('No Binario'), ('Prefiero no decir');
+('Masculino'),        -- 1
+('Femenino'),         -- 2
+('No Binario'),       -- 3
+('Prefiero no decir');-- 4
 
+-- Especialidades reales de Piedrazul
 INSERT INTO dominio_especialidad (nombre) VALUES
-('Medicina General'), ('Fisioterapia'), ('Psicología'), ('Nutrición'),
-('Cardiología'), ('Neurología'), ('Pediatría'), ('Dermatología'),
-('Ortopedia'), ('Terapia Ocupacional');
+('Terapia Neural'),  -- 1
+('Fisioterapia'),    -- 2
+('Quiropraxia'),     -- 3
+('Medicina General'),-- 4
+('Psicología'),      -- 5
+('Nutrición'),       -- 6
+('Cardiología'),     -- 7
+('Neurología'),      -- 8
+('Pediatría'),       -- 9
+('Ortopedia');       -- 10
+
+-- ─────────────────────────────────────────
+-- USUARIOS
+-- Mapa de IDs:
+--   1  = admin
+--   2  = agendador1
+--   3  = agendador2
+--   4  = clara.cordoba      (Terapia Neural)
+--   5  = jose.garcia        (Terapia Neural)
+--   6  = ibis.gonzalez      (Terapia Neural)
+--   7  = christian.gonzalez (Terapia Neural)
+--   8  = zarama.velasco     (Fisioterapia)
+--   9  = armando.pena       (Quiropraxia)
+--   10..19 = pacientes 1-10
+--   20..24 = pacientes 11-15
+-- ─────────────────────────────────────────
 
 INSERT INTO usuario (usuario, contrasena) VALUES
-('admin',          'admin123'),
-('agendador1',     'agenda123'),
-('agendador2',     'agenda456'),
-('medico.garcia',  'medico123'),
-('medico.lopez',   'medico456'),
-('medico.torres',  'medico789'),
-('medico.ramirez', 'medico321'),
-('medico.vargas',  'medico654'),
-('medico.moreno',  'medico987'),
-('medico.castro',  'medico111'),
-('paciente.perez',    'pac123'),
-('paciente.gomez',    'pac456'),
-('paciente.herrera',  'pac789'),
-('paciente.jimenez',  'pac321'),
-('paciente.mendoza',  'pac654'),
-('paciente.rios',     'pac987'),
-('paciente.silva',    'pac111'),
-('paciente.rojas',    'pac222'),
-('paciente.ortiz',    'pac333'),
-('paciente.nunez',    'pac444'),
-('paciente.vega',     'pac555'),
-('paciente.soto',     'pac666'),
-('paciente.reyes',    'pac777'),
-('paciente.mora',     'pac888'),
-('paciente.leon',     'pac999'),
-('paciente.ruiz',     'pac000'),
-('paciente.diaz',     'pac101'),
-('paciente.fuentes',  'pac202'),
-('paciente.pinto',    'pac303'),
-('paciente.salazar',  'pac404');
+-- Administrador
+('admin',               'admin123'),        -- 1
+
+-- Agendadores
+('agendador1',          'agenda123'),       -- 2
+('agendador2',          'agenda456'),       -- 3
+
+-- Médicos / Terapistas Piedrazul
+('clara.cordoba',       'medico123'),       -- 4
+('jose.garcia',         'medico456'),       -- 5
+('ibis.gonzalez',       'medico789'),       -- 6
+('christian.gonzalez',  'medico321'),       -- 7
+('zarama.velasco',      'medico654'),       -- 8
+('armando.pena',        'medico987'),       -- 9
+
+-- Pacientes
+('paciente.torres',     'pac123'),          -- 10
+('paciente.ramirez',    'pac456'),          -- 11
+('paciente.herrera',    'pac789'),          -- 12
+('paciente.jimenez',    'pac321'),          -- 13
+('paciente.mendoza',    'pac654'),          -- 14
+('paciente.rios',       'pac987'),          -- 15
+('paciente.silva',      'pac111'),          -- 16
+('paciente.rojas',      'pac222'),          -- 17
+('paciente.ortiz',      'pac333'),          -- 18
+('paciente.nunez',      'pac444'),          -- 19
+('paciente.vega',       'pac555'),          -- 20
+('paciente.soto',       'pac666'),          -- 21
+('paciente.reyes',      'pac777'),          -- 22
+('paciente.mora',       'pac888'),          -- 23
+('paciente.leon',       'pac999');          -- 24
+
+-- ─────────────────────────────────────────
+-- ROLES
+-- ─────────────────────────────────────────
 
 INSERT INTO rol (nombre, id_usuario) VALUES
-('Administrador', 1), ('Agendador', 2), ('Agendador', 3),
-('Medico', 4), ('Medico', 5), ('Medico', 6), ('Medico', 7),
-('Medico', 8), ('Medico', 9), ('Medico', 10),
-('Paciente', 11), ('Paciente', 12), ('Paciente', 13), ('Paciente', 14),
-('Paciente', 15), ('Paciente', 16), ('Paciente', 17), ('Paciente', 18),
-('Paciente', 19), ('Paciente', 20), ('Paciente', 21), ('Paciente', 22),
-('Paciente', 23), ('Paciente', 24), ('Paciente', 25), ('Paciente', 26),
-('Paciente', 27), ('Paciente', 28), ('Paciente', 29), ('Paciente', 30);
+('Administrador', 1),
+('Agendador',     2),
+('Agendador',     3),
+('Medico',        4),
+('Medico',        5),
+('Medico',        6),
+('Medico',        7),
+('Medico',        8),
+('Medico',        9),
+('Paciente',     10),
+('Paciente',     11),
+('Paciente',     12),
+('Paciente',     13),
+('Paciente',     14),
+('Paciente',     15),
+('Paciente',     16),
+('Paciente',     17),
+('Paciente',     18),
+('Paciente',     19),
+('Paciente',     20),
+('Paciente',     21),
+('Paciente',     22),
+('Paciente',     23),
+('Paciente',     24);
+
+-- ─────────────────────────────────────────
+-- PERSONAS – Agendadores  (id_persona 1-2)
+-- ─────────────────────────────────────────
 
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
-('Laura',  '10000000001', 'Mendez', '3001000001', 2, '1990-03-15', 'laura.mendez@piedraazul.com',  2, 2, TRUE),
-('Carlos', '10000000002', 'Pineda', '3001000002', 1, '1988-07-22', 'carlos.pineda@piedraazul.com', 3, 2, TRUE);
+('Laura',   '10000000001', 'Mendez', '3001000001', 2, '1990-03-15', 'laura.mendez@piedraazul.com',  2, 2, TRUE),
+('Carlos',  '10000000002', 'Pineda', '3001000002', 1, '1988-07-22', 'carlos.pineda@piedraazul.com', 3, 2, TRUE);
 
 INSERT INTO agendador (id_persona) VALUES (1), (2);
 
+-- ─────────────────────────────────────────
+-- PERSONAS – Médicos / Terapistas Piedrazul  (id_persona 3-8)
+-- ─────────────────────────────────────────
+
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
-('Andrés',    '20000000001', 'García',   '3102000001', 1, '1975-01-10', 'andres.garcia@piedraazul.com',     4, 2, TRUE),
-('Sofía',     '20000000002', 'López',    '3102000002', 2, '1980-05-20', 'sofia.lopez@piedraazul.com',       5, 2, TRUE),
-('Miguel',    '20000000003', 'Torres',   '3102000003', 1, '1978-09-14', 'miguel.torres@piedraazul.com',     6, 2, TRUE),
-('Valentina', '20000000004', 'Ramírez',  '3102000004', 2, '1983-11-30', 'valentina.ramirez@piedraazul.com', 7, 2, TRUE),
-('Julián',    '20000000005', 'Vargas',   '3102000005', 1, '1970-04-05', 'julian.vargas@piedraazul.com',     8, 2, TRUE),
-('Camila',    '20000000006', 'Moreno',   '3102000006', 2, '1985-08-18', 'camila.moreno@piedraazul.com',     9, 2, TRUE),
-('Ricardo',   '20000000007', 'Castro',   '3102000007', 1, '1972-12-25', 'ricardo.castro@piedraazul.com',   10, 2, TRUE);
+('Clara Inés',  '40000000001', 'Córdoba',          '3154000001', 2, '1978-04-12', 'c.cordoba@piedraazul.com',    4, 2, TRUE),   -- id_persona 3
+('Jose Ignacio','40000000002', 'Garcia',            '3154000002', 1, '1975-09-20', 'j.garcia@piedraazul.com',     5, 2, TRUE),   -- id_persona 4
+('Ibis',        '40000000003', 'Gonzalez',          '3154000003', 2, '1982-02-28', 'i.gonzalez@piedraazul.com',   6, 2, TRUE),   -- id_persona 5
+('Christian',   '40000000004', 'Gonzalez',          '3154000004', 1, '1985-11-05', 'ch.gonzalez@piedraazul.com',  7, 2, TRUE),   -- id_persona 6
+('Zarama',      '40000000005', 'Velasco',           '3154000005', 2, '1980-06-17', 'z.velasco@piedraazul.com',    8, 2, TRUE),   -- id_persona 7
+('Armando',     '40000000006', 'Peña',              '3154000006', 1, '1973-08-30', 'a.pena@piedraazul.com',       9, 2, TRUE);   -- id_persona 8
 
 INSERT INTO medico_terapista (id_persona, id_especialidad) VALUES
-(3, 1), (4, 2), (5, 3), (6, 4), (7, 5), (8, 6), (9, 7);
+(3, 1),   -- Clara Inés Córdoba     → Terapia Neural
+(4, 1),   -- Jose Ignacio Garcia    → Terapia Neural
+(5, 1),   -- Ibis Gonzalez          → Terapia Neural
+(6, 1),   -- Christian Gonzalez     → Terapia Neural
+(7, 2),   -- Zarama Velasco         → Fisioterapia
+(8, 3);   -- Armando Peña           → Quiropraxia
+
+-- ─────────────────────────────────────────
+-- PERSONAS – Pacientes  (id_persona 9-23)
+-- ─────────────────────────────────────────
 
 INSERT INTO persona (nombre, cedula_ciudadania, apellido, celular, id_genero, fecha_nacimiento, correo, id_usuario, id_estado, activo) VALUES
-('Juan',      '30000000001', 'Pérez',    '3203000001', 1, '1995-02-14', 'juan.perez@mail.com',       11, 2, TRUE),
-('María',     '30000000002', 'Gómez',    '3203000002', 2, '1992-06-30', 'maria.gomez@mail.com',      12, 2, TRUE),
-('Pedro',     '30000000003', 'Herrera',  '3203000003', 1, '1988-10-05', 'pedro.herrera@mail.com',    13, 2, TRUE),
-('Ana',       '30000000004', 'Jiménez',  '3203000004', 2, '2000-01-20', 'ana.jimenez@mail.com',      14, 2, TRUE),
-('Luis',      '30000000005', 'Mendoza',  '3203000005', 1, '1997-07-11', 'luis.mendoza@mail.com',     15, 2, TRUE),
-('Paola',     '30000000006', 'Ríos',     '3203000006', 2, '1990-03-28', 'paola.rios@mail.com',       16, 2, TRUE),
-('Diego',     '30000000007', 'Silva',    '3203000007', 1, '1985-09-17', 'diego.silva@mail.com',      17, 2, TRUE),
-('Natalia',   '30000000008', 'Rojas',    '3203000008', 2, '1993-12-03', 'natalia.rojas@mail.com',    18, 2, TRUE),
-('Sebastián', '30000000009', 'Ortiz',    '3203000009', 1, '1999-04-22', 'sebastian.ortiz@mail.com',  19, 2, TRUE),
-('Daniela',   '30000000010', 'Núñez',    '3203000010', 2, '1996-08-09', 'daniela.nunez@mail.com',    20, 2, TRUE),
-('Felipe',    '30000000011', 'Vega',     '3203000011', 1, '1987-05-16', 'felipe.vega@mail.com',      21, 2, TRUE),
-('Alejandra', '30000000012', 'Soto',     '3203000012', 2, '2001-11-27', 'alejandra.soto@mail.com',   22, 2, TRUE),
-('Mateo',     '30000000013', 'Reyes',    '3203000013', 1, '1994-01-08', 'mateo.reyes@mail.com',      23, 2, TRUE),
-('Valeria',   '30000000014', 'Mora',     '3203000014', 2, '1991-07-19', 'valeria.mora@mail.com',     24, 2, TRUE),
-('Tomás',     '30000000015', 'León',     '3203000015', 1, '1998-03-04', 'tomas.leon@mail.com',       25, 2, TRUE),
-('Isabella',  '30000000016', 'Ruiz',     '3203000016', 2, '2002-09-13', 'isabella.ruiz@mail.com',    26, 2, TRUE),
-('Nicolás',   '30000000017', 'Díaz',     '3203000017', 1, '1986-06-25', 'nicolas.diaz@mail.com',     27, 2, TRUE),
-('Gabriela',  '30000000018', 'Fuentes',  '3203000018', 2, '1989-02-07', 'gabriela.fuentes@mail.com', 28, 2, TRUE),
-('Esteban',   '30000000019', 'Pinto',    '3203000019', 1, '2003-10-31', 'esteban.pinto@mail.com',    29, 2, TRUE),
-('Mariana',   '30000000020', 'Salazar',  '3203000020', 2, '1984-04-15', 'mariana.salazar@mail.com',  30, 2, TRUE);
+('Juan',       '30000000001', 'Torres',    '3203000001', 1, '1990-03-14', 'juan.torres@mail.com',       10, 2, TRUE),  -- 9
+('María',      '30000000002', 'Ramírez',   '3203000002', 2, '1985-07-22', 'maria.ramirez@mail.com',     11, 2, TRUE),  -- 10
+('Pedro',      '30000000003', 'Herrera',   '3203000003', 1, '1978-11-05', 'pedro.herrera@mail.com',     12, 2, TRUE),  -- 11
+('Ana',        '30000000004', 'Jiménez',   '3203000004', 2, '1995-01-20', 'ana.jimenez@mail.com',       13, 2, TRUE),  -- 12
+('Luis',       '30000000005', 'Mendoza',   '3203000005', 1, '1992-07-11', 'luis.mendoza@mail.com',      14, 2, TRUE),  -- 13
+('Paola',      '30000000006', 'Ríos',      '3203000006', 2, '1988-03-28', 'paola.rios@mail.com',        15, 2, TRUE),  -- 14
+('Diego',      '30000000007', 'Silva',     '3203000007', 1, '1982-09-17', 'diego.silva@mail.com',       16, 2, TRUE),  -- 15
+('Natalia',    '30000000008', 'Rojas',     '3203000008', 2, '1997-12-03', 'natalia.rojas@mail.com',     17, 2, TRUE),  -- 16
+('Sebastián',  '30000000009', 'Ortiz',     '3203000009', 1, '1993-04-22', 'sebastian.ortiz@mail.com',   18, 2, TRUE),  -- 17
+('Daniela',    '30000000010', 'Núñez',     '3203000010', 2, '1991-08-09', 'daniela.nunez@mail.com',     19, 2, TRUE),  -- 18
+('Felipe',     '30000000011', 'Vega',      '3203000011', 1, '1986-05-16', 'felipe.vega@mail.com',       20, 2, TRUE),  -- 19
+('Alejandra',  '30000000012', 'Soto',      '3203000012', 2, '2000-11-27', 'alejandra.soto@mail.com',    21, 2, TRUE),  -- 20
+('Mateo',      '30000000013', 'Reyes',     '3203000013', 1, '1994-01-08', 'mateo.reyes@mail.com',       22, 2, TRUE),  -- 21
+('Valeria',    '30000000014', 'Mora',      '3203000014', 2, '1989-07-19', 'valeria.mora@mail.com',      23, 2, TRUE),  -- 22
+('Tomás',      '30000000015', 'León',      '3203000015', 1, '1996-03-04', 'tomas.leon@mail.com',        24, 2, TRUE);  -- 23
 
 INSERT INTO paciente (id_persona) VALUES
-(10),(11),(12),(13),(14),(15),(16),(17),(18),(19),
-(20),(21),(22),(23),(24),(25),(26),(27),(28),(29);
+(9),(10),(11),(12),(13),(14),(15),(16),(17),(18),(19),(20),(21),(22),(23);
+
+-- ─────────────────────────────────────────
+-- TOKENS DE SESIÓN (inactivos, referencia)
+-- ─────────────────────────────────────────
 
 INSERT INTO sesion_token (token_hash, fecha_creacion, fecha_expiracion, id_estado, id_usuario) VALUES
-('tok_admin_001',     '2026-05-10 08:00:00', '2026-05-10 09:00:00', 1, 1),
-('tok_agend_001',     '2026-05-10 08:05:00', '2026-05-10 09:05:00', 1, 2),
-('tok_med_garcia',    '2026-05-10 08:15:00', '2026-05-10 09:15:00', 1, 4),
-('tok_med_lopez',     '2026-05-10 08:20:00', '2026-05-10 09:20:00', 1, 5),
-('tok_pac_perez',     '2026-05-10 09:00:00', '2026-05-10 10:00:00', 1, 11),
-('tok_active_admin',  '2026-05-27 10:00:00', '2026-05-28 10:00:00', 2, 1),
-('tok_active_agend1', '2026-05-27 10:05:00', '2026-05-28 10:05:00', 2, 2),
-('tok_active_med1',   '2026-05-27 10:10:00', '2026-05-28 10:10:00', 2, 4),
-('tok_active_pac1',   '2026-05-27 10:25:00', '2026-05-28 10:25:00', 2, 11),
-('tok_active_pac2',   '2026-05-27 10:30:00', '2026-05-28 10:30:00', 2, 12);
+('tok_admin_demo',   '2026-06-05 08:00:00', '2026-06-05 09:40:00', 2, 1),
+('tok_agend1_demo',  '2026-06-05 08:05:00', '2026-06-05 09:45:00', 2, 2),
+('tok_clara_demo',   '2026-06-05 08:10:00', '2026-06-05 09:50:00', 2, 4),
+('tok_jose_demo',    '2026-06-05 08:15:00', '2026-06-05 09:55:00', 2, 5),
+('tok_pac1_demo',    '2026-06-05 09:00:00', '2026-06-05 10:40:00', 2, 10),
+('tok_pac2_demo',    '2026-06-05 09:05:00', '2026-06-05 10:45:00', 2, 11);

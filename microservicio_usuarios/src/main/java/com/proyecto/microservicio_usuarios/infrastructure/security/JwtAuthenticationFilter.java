@@ -32,8 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        if (isPermittedPath(path) || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        String path   = request.getRequestURI();
+        String method = request.getMethod();
+
+        if (isPermittedPath(path, method) || "OPTIONS".equalsIgnoreCase(method)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,10 +64,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPermittedPath(String path) {
-        return path.equals("/api/auth/login")
-                || path.equals("/api/auth/validar")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs");
+    /**
+     * Rutas que no requieren token JWT.
+     * Solo el POST a /api/pacientes (registro público) es libre;
+     * el GET requiere autenticación y se gestiona en SecurityConfig.
+     */
+    private boolean isPermittedPath(String path, String method) {
+        if (path.equals("/api/auth/login"))  return true;
+        if (path.equals("/api/auth/validar")) return true;
+        if (path.startsWith("/swagger-ui"))  return true;
+        if (path.startsWith("/v3/api-docs")) return true;
+        // Solo el POST de registro de paciente es público (sin sesión)
+        if ((path.equals("/api/pacientes") || path.equals("/api/pacientes/"))
+                && "POST".equalsIgnoreCase(method)) return true;
+        return false;
     }
 }

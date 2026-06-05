@@ -1,0 +1,75 @@
+@startuml C3_Componentes_Agendamiento
+skinparam rectangle {
+    BackgroundColor #dae8fc
+    BorderColor #6c8ebf
+    FontSize 11
+}
+skinparam ArrowColor #333333
+skinparam noteBackgroundColor #fff9c4
+skinparam noteBorderColor #f0a500
+skinparam linetype ortho
+
+title Diagrama C3 - Componentes: ms-agendamiento\nClinica Piedra Azul
+
+rectangle "API Gateway\n(JWT validado)" as gateway #ffe6cc
+rectangle "ms-usuarios"                 as msUsr   #ffe6cc
+rectangle "ms-configuracion"            as msCfg   #ffe6cc
+rectangle "db_agendamiento\n(PostgreSQL)" as db    #f8cecc
+rectangle "RabbitMQ"                    as rabbit  #d5e8d4
+
+rectangle "ms-agendamiento" {
+
+    rectangle "CitaController\n---\nRequiere Bearer JWT en todos los endpoints.\nGET/POST/PUT/DELETE /api/citas/**\nPATCH /api/citas/{id}/reagendar\nGET /api/citas/disponibilidad" as citaCtrl
+
+    rectangle "AgendarCitaUseCase\n---\nFlujo web: CitaWebBuilder, estado Pendiente.\nFlujo manual: CitaManualBuilder, estado Confirmada.\nUsa CitaProcesoTemplate para guardar y publicar." as agendarUC
+
+    rectangle "ConsultarCitaUseCase\n---\nConsulta citas por fecha, medico o paciente.\nCalcula disponibilidad horaria." as consultarUC
+
+    rectangle "ModificarCitaUseCase\n---\nReagendar y cambiar estado de citas.\nUsa FabricaEstadoCita para validar transiciones." as modificarUC
+
+    rectangle "CancelarCitaUseCase\n---\nCancela cita y publica evento\ncita.cancelada a RabbitMQ." as cancelarUC
+
+    rectangle "CitaProcesoTemplate\n[Template Method]\n---\nEsqueleto fijo: validar, asignarEstado,\nguardar, publicar.\nSubclases: CitaProcesoWeb, CitaProcesoManual." as template #e1d5e7
+
+    rectangle "FabricaEstadoCita\n[Factory Method]\n---\nInstancia EstadoCita segun idEstado.\ncrearEstado(int) / crearEstadoInicial()" as fabrica #e1d5e7
+
+    rectangle "EstadoCita + implementaciones\n[Strategy]\n---\nEstadoPendiente, EstadoConfirmada,\nEstadoCancelada, EstadoCompletada,\nEstadoNoAsistio." as estrategia #e1d5e7
+
+    rectangle "CitaRepositoryAdapter\n---\nImplementa CitaRepositoryPort.\nJPA sobre db_agendamiento." as citaAdap
+
+    rectangle "HistorialCitaRepositoryAdapter\n---\nImplementa HistorialCitaRepositoryPort.\nRegistra cambios de estado." as histAdap
+
+    rectangle "EventoCitaRabbitAdapter\n---\nImplementa EventoCitaPublisherPort.\nPublica eventos a citas.exchange." as rabbitAdap
+
+    rectangle "JornadaHttpAdapter\n---\nImplementa JornadaConsultaPort.\nConsulta ms-configuracion via RestTemplate." as jornadaAdap
+
+    rectangle "MedicoHttpAdapter\n---\nConsulta idUsuario de medicos\nen ms-usuarios via RestTemplate." as medicoAdap
+}
+
+gateway      --> citaCtrl    : "peticiones con JWT valido"
+citaCtrl     --> agendarUC   : "crear cita"
+citaCtrl     --> consultarUC : "consultar / disponibilidad"
+citaCtrl     --> modificarUC : "reagendar / cambiar estado"
+citaCtrl     --> cancelarUC  : "cancelar cita"
+
+agendarUC    --> template    : "ejecuta algoritmo"
+agendarUC    --> fabrica     : "obtiene estado inicial"
+modificarUC  --> fabrica     : "valida transicion"
+fabrica      --> estrategia  : "instancia estado concreto"
+
+agendarUC    --> citaAdap    : "persiste cita"
+modificarUC  --> citaAdap    : "actualiza cita"
+cancelarUC   --> citaAdap    : "actualiza estado"
+consultarUC  --> citaAdap    : "consulta citas"
+modificarUC  --> histAdap    : "registra cambio"
+
+agendarUC    --> rabbitAdap  : "publica cita.creada"
+cancelarUC   --> rabbitAdap  : "publica cita.cancelada"
+rabbitAdap   --> rabbit      : "AMQP"
+
+jornadaAdap  --> msCfg       : "GET /api/jornadas/**"
+medicoAdap   --> msUsr       : "GET /api/medicos/**"
+citaAdap     --> db          : "JDBC/JPA"
+histAdap     --> db          : "JDBC/JPA"
+
+@enduml

@@ -1,0 +1,240 @@
+========================================================================
+  PATRONES DE DISEÑO IMPLEMENTADOS — CLÍNICA PIEDRA AZUL
+========================================================================
+
+------------------------------------------------------------------------
+1. FACTORY METHOD
+------------------------------------------------------------------------
+
+Contexto del problema:
+  En el microservicio de agendamiento, el estado de una cita (Pendiente,
+  Confirmada, Cancelada, Completada, No Asistió) necesita instanciarse
+  en múltiples puntos del código a partir de un identificador numérico
+  (idEstado). Sin un punto de creación centralizado, cada clase que
+  necesitara un EstadoCita debía conocer todas las implementaciones
+  concretas y replicar la lógica de selección, generando código duplicado
+  y frágil ante nuevos estados.
+
+Cómo se aplicó:
+  Se creó la clase FabricaEstadoCita en la capa de dominio
+  (domain/model/FabricaEstadoCita.java) con dos métodos de fábrica
+  estáticos: crearEstado(int idEstado), que usa un switch expression para
+  instanciar la implementación correcta de EstadoCita según el ID, y
+  crearEstadoInicial(), que siempre retorna un EstadoPendiente. El dominio
+  opera únicamente con la interfaz EstadoCita; las clases concretas
+  (EstadoPendiente, EstadoConfirmada, EstadoCancelada, EstadoCompletada,
+  EstadoNoAsistio) solo son conocidas por la fábrica.
+
+  Adicionalmente, en el frontend (ClienteHttp.java) existe una inner
+  class privada HttpRequestFactory con métodos de fábrica estáticos
+  (crearGet, crearPost, crearPut, crearDelete, crearPatch) que centralizan
+  la construcción de objetos HttpRequest. Cada método llama a baseBuilder()
+  para aplicar la URI, los headers y el token de autorización de forma
+  uniforme, devolviendo el tipo de request apropiado según el verbo HTTP.
+
+------------------------------------------------------------------------
+2. FACADE
+------------------------------------------------------------------------
+
+Contexto del problema:
+  La capa de presentación (frontend JavaFX) necesita comunicarse con el
+  backend a través de múltiples endpoints REST para operaciones distintas:
+  autenticación, gestión de citas, médicos, personas, jornadas, roles, etc.
+  Sin una capa de abstracción, cada controlador JavaFX tendría que conocer
+  las URLs exactas, construir los bodies JSON, manejar tokens, parsear
+  respuestas y capturar errores HTTP de forma independiente, generando
+  duplicación masiva y alto acoplamiento.
+
+Cómo se aplicó:
+  Se creó la clase BackendFacade (presentacion/facade/BackendFacade.java)
+  como punto único de acceso al backend desde todos los controladores
+  JavaFX. La fachada encapsula: la obtención del token de sesión desde
+  SesionUsuario, la construcción de las URLs y bodies de cada llamada,
+  la delegación a ClienteHttp para el transporte HTTP, el parseo de las
+  respuestas JSON a DTOs, y la propagación de excepciones con mensajes
+  claros. Los controladores (ControladorLogin, ControladorAgendarCita,
+  ControladorAdmin, etc.) solo invocan métodos semánticos como
+  backendFacade.listarMedicosActivos() o
+  backendFacade.agendarCitaWebConValidacion(...) sin conocer ningún
+  detalle del protocolo subyacente.
+
+------------------------------------------------------------------------
+3. STRATEGY
+------------------------------------------------------------------------
+
+Contexto del problema:
+  Una cita médica pasa por distintos estados durante su ciclo de vida, y
+  cada estado define reglas diferentes sobre qué transiciones son válidas.
+  Por ejemplo, una cita Pendiente puede confirmarse o cancelarse, pero no
+  completarse; una cita Confirmada puede completarse o cancelarse; una cita
+  Cancelada no puede hacer ninguna transición. Codificar estas reglas con
+  if/else o switch en la entidad Cita generaría un método extenso, difícil
+  de mantener y propenso a errores al agregar nuevos estados.
+
+Cómo se aplicó:
+  Se definió la interfaz EstadoCita (domain/model/EstadoCita.java) con los
+  métodos confirmar(), cancelar(), completar(), marcarNoAsistio(),
+  obtenerNombre() y obtenerID(). Cada estado concreto implementa esta
+  interfaz con su propio comportamiento:
+  - EstadoPendiente: confirmar=true, cancelar=true, completar=false,
+    marcarNoAsistio=false.
+  - EstadoConfirmada: todas las transiciones permitidas (true).
+  - EstadoCancelada, EstadoCompletada, EstadoNoAsistio: solo permiten
+    las transiciones que tienen sentido en ese estado.
+  La entidad Cita delega la validación de transiciones al objeto EstadoCita
+  que tenga asignado en ese momento, sin necesidad de condicionales propios.
+  La estrategia activa se intercambia mediante FabricaEstadoCita al
+  reconstruir la cita desde base de datos o al procesar una transición.
+
+------------------------------------------------------------------------
+4. ADAPTER
+------------------------------------------------------------------------
+
+Contexto del problema:
+  En la arquitectura hexagonal del proyecto, el dominio define puertos de
+  salida (interfaces en domain/ports/out) para persistencia, mensajería y
+  consultas HTTP a otros microservicios. El dominio no puede depender de
+  tecnologías concretas como JPA, RabbitMQ o RestTemplate. Se necesitaba
+  un mecanismo para conectar esas interfaces de dominio con las
+  implementaciones de infraestructura sin contaminar el núcleo de negocio.
+
+Cómo se aplicó:
+  Cada puerto de salida tiene un adaptador en
+  infrastructure/adapters/out/ que implementa la interfaz del dominio y
+  delega internamente a la tecnología correspondiente:
+
+  - Persistencia: UsuarioRepositoryAdapter implementa UsuarioRepositoryPort
+    delegando a JpaUsuarioRepository (Spring Data JPA). Incluye conversión
+    entre la entidad JPA (UsuarioEntity) y el modelo de dominio (Usuario).
+    El mismo patrón aplica a CitaRepositoryAdapter,
+    HistorialCitaRepositoryAdapter, PacienteRepositoryAdapter, entre otros.
+
+  - Mensajería: EventoCitaRabbitAdapter implementa EventoCitaPublisherPort
+    delegando a RabbitTemplate. El dominio invoca publicarCitaCreada(cita)
+    sin saber que el transporte es RabbitMQ.
+
+  - HTTP entre microservicios: JornadaHttpAdapter implementa
+    JornadaConsultaPort delegando a RestTemplate para consultar jornadas
+    en ms-configuracion. El dominio de agendamiento consulta disponibilidad
+    sin conocer la URL ni el protocolo.
+
+  - Token JWT: Base64TokenGeneratorAdapter implementa TokenGeneratorPort
+    delegando a JwtTokenProvider. El use case AutenticarUsuarioUseCase
+    genera tokens sin importarle que el mecanismo sea JWT/HS256.
+
+------------------------------------------------------------------------
+5. BUILDER
+------------------------------------------------------------------------
+
+Contexto del problema:
+  La creación de una Cita requiere múltiples campos obligatorios y
+  opcionales, y dependiendo del flujo de origen (web por el paciente o
+  manual por el agendador) algunos valores se calculan automáticamente
+  (horaFin = horaInicio + 30 min en el flujo web) y el estado inicial
+  varía (Pendiente para web, Confirmada para manual). Usar un único
+  constructor con todos los parámetros generaba firmas largas, poco
+  legibles y difíciles de adaptar a cada flujo sin lógica duplicada.
+
+Cómo se aplicó:
+  Se implementó una jerarquía de Builders en el microservicio de
+  agendamiento. CitaBuilder es la clase base con fluent API encadenada
+  (idPaciente(), idMedico(), fecha(), horaInicio(), etc.) y un método
+  build() que construye la Cita. De él heredan dos especializaciones:
+
+  - CitaWebBuilder: al invocar build(), calcula automáticamente horaFin
+    sumando 30 minutos a horaInicio y asigna el estado inicial Pendiente
+    (idEstadoCita = 2), representando el flujo donde el paciente solicita
+    la cita desde la interfaz.
+
+  - CitaManualBuilder: requiere que horaFin sea proporcionada
+    explícitamente y asigna estado Confirmada (idEstadoCita = 3),
+    representando el flujo donde el agendador crea la cita directamente
+    coordinada con el médico.
+
+  Esto permite que el código de los use cases exprese claramente el
+  intento: new CitaWebBuilder().idPaciente(x).idMedico(y).build() vs
+  new CitaManualBuilder().idPaciente(x).horaFin(z).build().
+
+------------------------------------------------------------------------
+6. TEMPLATE METHOD
+------------------------------------------------------------------------
+
+Contexto del problema:
+  En el microservicio de agendamiento, tanto el flujo web
+  (agendarCitaWeb) como el flujo manual (crearCitaManual) necesitaban
+  ejecutar la misma secuencia de pasos: validar que la cita no sea nula,
+  validar las horas (horaFin > horaInicio), asignar el estado
+  correspondiente, guardar en el repositorio y publicar el evento.
+  Duplicar ese algoritmo en dos métodos separados generaba riesgo de
+  inconsistencia si la secuencia cambiaba, y mezclaba la lógica variable
+  (qué estado asignar) con la lógica invariable (guardar y publicar).
+
+Cómo se aplicó:
+  Se creó la clase abstracta CitaProcesoTemplate con un método final
+  que define el esqueleto fijo del algoritmo (validar → asignarEstado →
+  guardar → publicar) y un método abstracto asignarEstado(cita) como
+  paso variable que cada subclase implementa a su manera. Las dos
+  implementaciones concretas son:
+
+  - CitaProcesoWeb: implementa asignarEstado() asignando estado Pendiente,
+    representando que la cita queda en espera de confirmación médica.
+
+  - CitaProcesoManual: implementa asignarEstado() asignando estado
+    Confirmada, representando que el agendador ya coordinó la cita.
+
+  El use case de agendamiento instancia la subclase adecuada según el
+  flujo y llama al método plantilla, garantizando que ambos caminos
+  pasen por exactamente los mismos pasos de validación y persistencia.
+
+========================================================================
+  ESCENARIO DE CALIDAD — MODIFICABILIDAD
+========================================================================
+
+------------------------------------------------------------------------
+5. Escenario de calidad: Modificabilidad
+------------------------------------------------------------------------
+
+Contexto:
+  El sistema se encuentra en fase de mantenimiento o evolución, operando
+  con una arquitectura hexagonal (puertos y adaptadores) distribuida en
+  tres microservicios independientes: ms-usuarios, ms-agendamiento y
+  ms-configuracion. Cada microservicio gestiona su propia base de datos
+  PostgreSQL y se comunica con el resto a través del API Gateway (REST)
+  y RabbitMQ (eventos).
+
+Estímulo:
+  Se solicita cambiar el motor de base de datos actual (PostgreSQL) por
+  una base de datos en la nube o un motor relacional distinto (ej. MySQL)
+  en uno o más microservicios, para optimizar costos de infraestructura,
+  sin afectar la lógica de negocio ni la interfaz de usuario.
+
+Respuesta:
+  El desarrollador crea nuevas implementaciones de los puertos de salida
+  de repositorio correspondientes al microservicio afectado
+  (ej. CitaRepositoryAdapter, UsuarioRepositoryAdapter,
+  PacienteRepositoryAdapter) apuntando al nuevo motor, actualiza la
+  configuración del datasource en application.properties y el servicio
+  en docker-compose.yml. Las interfaces del dominio (CitaRepositoryPort,
+  UsuarioRepositoryPort, etc.) permanecen intactas, así como los use cases
+  que las consumen.
+
+Medición de calidad:
+  El cambio se realiza modificando 0 líneas de código en la capa de
+  dominio (domain/model, domain/ports) y en los use cases
+  (application/usecase). Solo se crean o modifican los adaptadores de
+  salida en infrastructure/adapters/out/persistence/ y los archivos de
+  configuración (application.properties, docker-compose.yml). El tiempo
+  de implementación y pruebas del nuevo adaptador de persistencia no debe
+  exceder las 8 horas hombre por microservicio.
+
+Resultado esperado:
+  El sistema es capaz de persistir y recuperar información desde el nuevo
+  motor de base de datos manteniendo intactas las reglas de negocio, los
+  use cases y la interfaz de usuario, gracias al bajo acoplamiento
+  logrado por la arquitectura hexagonal: el dominio solo conoce los
+  puertos (interfaces), y los adaptadores son la única pieza que cambia
+  al sustituir la tecnología de persistencia.
+
+========================================================================
+  FIN DEL DOCUMENTO
+========================================================================

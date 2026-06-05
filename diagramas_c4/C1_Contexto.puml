@@ -1,0 +1,29 @@
+@startuml C1_Contexto
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama C1 — Contexto del Sistema\nClínica Piedra Azul
+
+Person(paciente,       "Paciente",    "Agenda y consulta sus citas médicas\ndesde la interfaz JavaFX.")
+Person(agendador,      "Agendador",   "Crea y gestiona citas de forma\nmanual desde la interfaz JavaFX.")
+Person(administrador,  "Administrador","Gestiona usuarios, médicos, roles\ny personal desde la interfaz JavaFX.")
+Person(medico,         "Médico",      "Consulta su agenda y actualiza\nel estado de las citas.")
+
+System(sistema, "Sistema Clínica Piedra Azul", "Permite agendar, gestionar y consultar\ncitas médicas. Autenticación con JWT.\nArquitectura de microservicios.")
+
+Rel(paciente,      sistema, "Inicia sesión y agenda citas", "HTTPS / JWT Bearer")
+Rel(agendador,     sistema, "Crea y gestiona citas",        "HTTPS / JWT Bearer")
+Rel(administrador, sistema, "Administra usuarios y roles",  "HTTPS / JWT Bearer")
+Rel(medico,        sistema, "Consulta agenda y actualiza estados", "HTTPS / JWT Bearer")
+
+note right of sistema
+  <b>Seguridad:</b>
+  - Toda petición requiere token JWT válido
+  - Excepto: POST /api/auth/login
+    y POST /api/pacientes (registro)
+  - Roles: Paciente, Agendador,
+    Administrador, Médico
+end note
+
+@enduml

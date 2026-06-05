@@ -10,6 +10,8 @@ public interface JpaCitaRepository extends JpaRepository<CitaEntity, Integer> {
 
     List<CitaEntity> findByIdMedicoAndFechaAndIdEstadoCitaNot(int idMedico, LocalDate fecha, int idEstadoCita);
 
+    List<CitaEntity> findByIdMedicoAndIdEstadoCitaNot(int idMedico, int idEstadoCita);
+
     List<CitaEntity> findByFechaAndIdEstadoCitaNot(LocalDate fecha, int idEstadoCita);
 
     List<CitaEntity> findByIdPaciente(int idPaciente);

@@ -1,0 +1,66 @@
+@startuml C4_Codigo_Seguridad
+skinparam rectangle {
+    BackgroundColor #dae8fc
+    BorderColor #6c8ebf
+    FontSize 11
+}
+skinparam ArrowColor #333333
+skinparam noteBackgroundColor #fff9c4
+skinparam noteBorderColor #f0a500
+skinparam linetype ortho
+
+title Diagrama C4 - Codigo: Flujo de Seguridad JWT\nClinica Piedra Azul
+
+rectangle "Request HTTP\n(Authorization: Bearer token)" as request #ffe6cc
+rectangle "db_usuarios\nTabla: sesion_token\n(id_estado, fecha_expiracion)" as db #f8cecc
+
+rectangle "Capa de Seguridad - ms-usuarios" {
+
+    rectangle "[SEGURIDAD]\nJwtAuthenticationFilter\n---\n1. Extrae token del header.\n2. Si ruta publica: deja pasar.\n3. JwtTokenProvider.validarToken()\n4. AutenticarUseCase.validarToken()\n5. OK: SecurityContext con rol.\n6. Falla: 401 Unauthorized." as jwtFilter #fff2cc
+
+    rectangle "JwtTokenProvider\n---\nvalidarToken():\n  verifica firma HS256\n  y expiracion del token.\ngenerarToken():\n  firma con clave secreta (env var).\nAlgoritmo: HMAC-SHA256." as jwtProv #fff2cc
+
+    rectangle "SecurityConfig\n---\nPublicas: POST /api/auth/login\n  POST /api/auth/validar\n  POST /api/pacientes\nSolo Administrador:\n  /api/personas/**\n  /api/usuarios/**\n  /api/roles/**\nResto: autenticado." as secCfg #fff2cc
+
+    rectangle "AutenticarUsuarioUseCase\n---\nlogin(): verifica BCrypt,\n  genera JWT, persiste sesion.\nvalidarToken(): busca en BD\n  id_estado=2 y expiracion activa.\ncerrarSesion(): cambia id_estado=1,\n  invalida token aunque JWT sea valido." as autUC
+
+    rectangle "SesionTokenRepositoryAdapter\n---\nfindByToken(): busca sesion activa.\nsave(): persiste o actualiza sesion." as tokenRepo
+
+    rectangle "Base64TokenGeneratorAdapter\n---\nImplementa TokenGeneratorPort.\nDelega generarToken() a JwtTokenProvider." as jwtAdap
+}
+
+request   --> jwtFilter  : "toda peticion entrante"
+jwtFilter --> secCfg     : "consulta reglas"
+jwtFilter --> jwtProv    : "valida firma y expiracion"
+jwtFilter --> autUC      : "valida sesion activa en BD"
+autUC     --> tokenRepo  : "busca token en sesion_token"
+autUC     --> jwtAdap    : "genera token en login"
+jwtAdap   --> jwtProv    : "delega firma HS256"
+tokenRepo --> db         : "JDBC/JPA"
+
+note right of jwtFilter
+  Flujo completo por request:
+  - Ruta publica: pasa sin validar
+  - Sin header Bearer: 401
+  - Con Bearer:
+      JwtTokenProvider verifica firma
+      Firma invalida: 401
+      Firma OK: UseCase verifica sesion en BD
+      Sesion inactiva o expirada: 401
+      Todo OK: SecurityContext con rol
+end note
+
+note right of autUC
+  Doble capa de seguridad:
+
+  Capa 1 - JwtTokenProvider:
+    Verifica firma HS256 y campo exp del JWT.
+
+  Capa 2 - sesion_token en BD:
+    Permite revocar tokens por logout
+    antes de su expiracion natural.
+    Token valido en firma pero con
+    id_estado=1 es rechazado.
+end note
+
+@enduml

@@ -25,7 +25,6 @@ public class PersonaController {
     }
 
     @Operation(summary = "Listar personas activas")
-    @PreAuthorize("hasAuthority('Administrador')")
     @GetMapping
     public ResponseEntity<List<Persona>> listar() {
         return ResponseEntity.ok(gestionarPersona.listar());

@@ -12,6 +12,7 @@ public interface CitaRepositoryPort {
     boolean existsById(int id);
     List<Cita> findAll();
     List<Cita> findByMedicoFechaExcluyendoEstado(int idMedico, LocalDate fecha, int idEstadoExcluido);
+    List<Cita> findByMedicoExcluyendoEstado(int idMedico, int idEstadoExcluido);
     List<Cita> findByFechaExcluyendoEstado(LocalDate fecha, int idEstadoExcluido);
     List<Cita> findByPaciente(int idPaciente);
 }

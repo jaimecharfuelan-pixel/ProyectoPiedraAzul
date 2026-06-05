@@ -226,17 +226,13 @@ public class ControladorAgendador implements Initializable {
 
     /**
      * Carga citas activas (no canceladas) con el filtro dado.
-     * Si fecha es null, carga todas las citas sin filtrar por fecha.
+     * El backend ya filtra correctamente por médico y/o fecha.
      */
     private void cargarCitas(Integer idMedico, LocalDate fecha) {
         filtroIdMedico = idMedico;
         filtroFecha    = fecha;
         try {
             List<CitaDTO> citas = backend.listarCitas(fecha, idMedico);
-            if (idMedico != null && fecha == null) {
-                final int id = idMedico;
-                citas = citas.stream().filter(c -> c.getIdMedico() == id).toList();
-            }
             tblCitas.setItems(FXCollections.observableArrayList(citas));
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -525,9 +521,18 @@ public class ControladorAgendador implements Initializable {
      * cambios de estado y quién realizó cada cambio.
      */
     private void onVerHistorial(CitaDTO cita) {
+        // Resolver nombres reales usando los mapas ya cargados
+        String nombrePaciente = mapaPacientes.getOrDefault(
+                cita.getIdPaciente(), "Paciente #" + cita.getIdPaciente());
+        String nombreMedico = (medicos != null) ? medicos.stream()
+                .filter(m -> m.getIdMedico() == cita.getIdMedico())
+                .map(m -> m.getNombre() + " " + m.getApellido())
+                .findFirst().orElse("Médico #" + cita.getIdMedico())
+                : "Médico #" + cita.getIdMedico();
+
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Historial de Cambios - Cita #" + cita.getIdCita());
-        dialog.setHeaderText("Paciente #" + cita.getIdPaciente() + "  —  Médico #" + cita.getIdMedico());
+        dialog.setHeaderText(nombrePaciente + "  —  " + nombreMedico);
 
         VBox content = new VBox(10);
         content.setStyle("-fx-padding: 15;");

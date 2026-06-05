@@ -64,7 +64,8 @@ public class ControladorMedico implements Initializable {
 
     private MedicoDTO medicoActual;
     private List<CitaDTO> todasLasCitas;
-    private final Map<Integer, String> mapaPacientes = new HashMap<>();
+    private final Map<Integer, String> mapaPacientes    = new HashMap<>();
+    private final Map<Integer, String> mapaEspecialidades = new HashMap<>();
     private final BackendFacade backend = new BackendFacade();
 
     @Override
@@ -73,6 +74,7 @@ public class ControladorMedico implements Initializable {
             cargarDatosMedicoActual();
             configurarColumnas();
             cargarPacientes();
+            cargarEspecialidades();
             cargarEstadosDisponibles();
             cargarCitas(null, null);
             actualizarContadores();
@@ -115,6 +117,22 @@ public class ControladorMedico implements Initializable {
         }
     }
 
+    private void cargarEspecialidades() {
+        try {
+            List<Map> especialidades = backend.listarEspecialidades();
+            mapaEspecialidades.clear();
+            for (Map esp : especialidades) {
+                Object id     = esp.get("idEspecialidad");
+                Object nombre = esp.get("nombre");
+                if (id != null && nombre != null) {
+                    mapaEspecialidades.put(((Number) id).intValue(), nombre.toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void cargarEstadosDisponibles() {
         cbEstadoFiltro.setItems(FXCollections.observableArrayList(
                 "",
@@ -147,9 +165,11 @@ public class ControladorMedico implements Initializable {
                         ? c.getValue().getHoraInicio().toString() : ""));
 
         // ── Especialidad ──
-        // Nota: CitaDTO no tiene especialidad; se obtendría del médico (medicoActual)
-        colEspecialidad.setCellValueFactory(c -> 
-                new SimpleStringProperty("Especialidad #" + medicoActual.getIdEspecialidad()));
+        colEspecialidad.setCellValueFactory(c -> {
+            String nombre = mapaEspecialidades.get(medicoActual.getIdEspecialidad());
+            return new SimpleStringProperty(
+                    nombre != null ? nombre : "Especialidad #" + medicoActual.getIdEspecialidad());
+        });
 
         // ── Estado (con badge visual) ──
         colEstado.setCellFactory(param -> new TableCell<>() {
@@ -349,7 +369,9 @@ public class ControladorMedico implements Initializable {
                         "Paciente #" + cita.getIdPaciente());
                 String fecha = cita.getFecha() != null ? cita.getFecha().toString() : "";
                 String hora = cita.getHoraInicio() != null ? cita.getHoraInicio().toString() : "";
-                String especialidad = "Especialidad #" + medicoActual.getIdEspecialidad();
+                String especialidad = mapaEspecialidades.getOrDefault(
+                        medicoActual.getIdEspecialidad(),
+                        "Especialidad #" + medicoActual.getIdEspecialidad());
                 String estado = EstadoCita.getNombre(cita.getIdEstadoCita());
 
                 writer.write(String.join(";",

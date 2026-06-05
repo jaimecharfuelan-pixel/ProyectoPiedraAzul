@@ -24,25 +24,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/api/auth/login", "/api/auth/validar", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/pacientes").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/personas").hasAuthority("Administrador")
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/auth/validar").permitAll()
+                    // Registro de paciente: público (sin sesión)
+                    .requestMatchers(HttpMethod.POST, "/api/pacientes", "/api/pacientes/").permitAll()
+                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    // Lectura de pacientes: cualquier usuario autenticado (Médico, Agendador, Admin, Paciente)
+                    .requestMatchers(HttpMethod.GET, "/api/pacientes", "/api/pacientes/**").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/personas").authenticated()
                     .requestMatchers(HttpMethod.POST, "/api/personas").hasAuthority("Administrador")
                     .requestMatchers(HttpMethod.PUT, "/api/personas/**").hasAuthority("Administrador")
                     .requestMatchers(HttpMethod.DELETE, "/api/personas/**").hasAuthority("Administrador")
                     .requestMatchers(HttpMethod.GET, "/api/usuarios").hasAuthority("Administrador")
                     .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasAuthority("Administrador")
                     .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasAuthority("Administrador")
-                    .requestMatchers(HttpMethod.PUT, "/api/medicos/**/especialidad").hasAuthority("Administrador")
+                    .requestMatchers(HttpMethod.PUT, "/api/medicos/*/especialidad").hasAuthority("Administrador")
                     .requestMatchers("/api/roles/**").hasAuthority("Administrador")
                     .anyRequest().authenticated()
-                .and()
-                .httpBasic().disable()
+                )
+                .httpBasic(httpBasic -> httpBasic.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
