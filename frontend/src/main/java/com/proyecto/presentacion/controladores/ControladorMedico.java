@@ -176,9 +176,10 @@ public class ControladorMedico implements Initializable {
             private final Label lblEstado = new Label();
 
             {
-                lblEstado.setPrefWidth(120);
+                lblEstado.setMinWidth(110);
+                lblEstado.setPrefWidth(130);
                 lblEstado.setWrapText(false);
-                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 8px 12px; -fx-background-radius: 6;");
+                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 6px 14px; -fx-background-radius: 6;");
             }
 
             @Override
@@ -218,12 +219,12 @@ public class ControladorMedico implements Initializable {
 
             {
                 hbox.setAlignment(Pos.CENTER);
-                btnConfirmar.setStyle("-fx-padding: 6 10; -fx-font-size: 10px;");
+                btnConfirmar.setStyle("-fx-padding: 6 12; -fx-font-size: 12px;");
                 btnCancelar.getStyleClass().add("button-logout");
-                btnCancelar.setStyle("-fx-padding: 6 10; -fx-font-size: 10px;");
+                btnCancelar.setStyle("-fx-padding: 6 12; -fx-font-size: 12px;");
                 btnCompletar.getStyleClass().add("button-export");
-                btnCompletar.setStyle("-fx-padding: 6 10; -fx-font-size: 10px;");
-                btnReagendar.setStyle("-fx-padding: 6 10; -fx-font-size: 10px;");
+                btnCompletar.setStyle("-fx-padding: 6 12; -fx-font-size: 12px;");
+                btnReagendar.setStyle("-fx-padding: 6 12; -fx-font-size: 12px;");
 
                 btnConfirmar.setOnAction(e -> onCambiarEstado(getTableView().getItems().get(getIndex()), 3));
                 btnCancelar.setOnAction(e -> onCambiarEstado(getTableView().getItems().get(getIndex()), 1));

@@ -74,19 +74,22 @@
                <Button text="Filtrar" prefWidth="140" prefHeight="48" onAction="#onFiltrar"/>
             </HBox>
 
-            <!-- Tabla de citas del médico -->
-            <VBox styleClass="main-login-card" maxWidth="Infinity" VBox.vgrow="ALWAYS" style="-fx-padding: 8;">
-               <TableView fx:id="tblMisCitas" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity">
-                  <columns>
-                     <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="200"/>
-                     <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="140"/>
-                     <TableColumn fx:id="colHora"     text="Hora"      prefWidth="100"/>
-                     <TableColumn fx:id="colEspecialidad" text="Especialidad" prefWidth="150"/>
-                     <TableColumn fx:id="colEstado"   text="Estado"    prefWidth="140"/>
-                     <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="250"/>
-                  </columns>
-               </TableView>
-            </VBox>
+             <!-- Tabla de citas del médico -->
+             <VBox styleClass="main-login-card" maxWidth="Infinity" VBox.vgrow="ALWAYS" style="-fx-padding: 8;">
+                <TableView fx:id="tblMisCitas" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity">
+                   <columnResizePolicy>
+                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                   </columnResizePolicy>
+                   <columns>
+                      <TableColumn fx:id="colPaciente" text="Paciente"  prefWidth="200" minWidth="130"/>
+                      <TableColumn fx:id="colFecha"    text="Fecha"     prefWidth="140" minWidth="110"/>
+                      <TableColumn fx:id="colHora"     text="Hora"      prefWidth="100" minWidth="80"/>
+                      <TableColumn fx:id="colEspecialidad" text="Especialidad" prefWidth="150" minWidth="110"/>
+                      <TableColumn fx:id="colEstado"   text="Estado"    prefWidth="140" minWidth="120"/>
+                      <TableColumn fx:id="colAcciones" text="Acciones"  prefWidth="280" minWidth="260"/>
+                   </columns>
+                </TableView>
+             </VBox>
 
          </VBox>
       </VBox>

@@ -35,34 +35,40 @@
                <VBox spacing="14" style="-fx-padding: 14;">
 
                   <Label styleClass="info-title" text="Historial de Citas" style="-fx-font-size: 20px;"/>
-                  <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
-                     <TableView fx:id="tblHistorial" prefHeight="220" maxWidth="Infinity">
-                        <columns>
-                           <TableColumn fx:id="colHistNomPaciente" prefWidth="160" text="Nombre Paciente"/>
-                           <TableColumn fx:id="colHistCedMedico"   prefWidth="140" text="Cédula Médico"/>
-                           <TableColumn fx:id="colHistNomMedico"   prefWidth="200" text="Nombre Médico"/>
-                           <TableColumn fx:id="colHistFecha"       prefWidth="150" text="Fecha del Turno"/>
-                           <TableColumn fx:id="colHistHoraInicio"  prefWidth="110" text="Hora Inicio"/>
-                           <TableColumn fx:id="colHistHoraFin"     prefWidth="110" text="Hora Final"/>
-                           <TableColumn fx:id="colHistEstado"      prefWidth="140" text="Estado"/>
-                        </columns>
-                     </TableView>
-                  </VBox>
+                   <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
+                      <TableView fx:id="tblHistorial" prefHeight="220" maxWidth="Infinity">
+                         <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                         </columnResizePolicy>
+                         <columns>
+                            <TableColumn fx:id="colHistNomPaciente" prefWidth="160" minWidth="120" text="Nombre Paciente"/>
+                            <TableColumn fx:id="colHistCedMedico"   prefWidth="140" minWidth="110" text="Cédula Médico"/>
+                            <TableColumn fx:id="colHistNomMedico"   prefWidth="200" minWidth="130" text="Nombre Médico"/>
+                            <TableColumn fx:id="colHistFecha"       prefWidth="150" minWidth="110" text="Fecha del Turno"/>
+                            <TableColumn fx:id="colHistHoraInicio"  prefWidth="110" minWidth="90" text="Hora Inicio"/>
+                            <TableColumn fx:id="colHistHoraFin"     prefWidth="110" minWidth="90" text="Hora Final"/>
+                            <TableColumn fx:id="colHistEstado"      prefWidth="140" minWidth="120" text="Estado"/>
+                         </columns>
+                      </TableView>
+                   </VBox>
 
                   <Label styleClass="info-title" text="Citas Futuras" style="-fx-font-size: 20px;"/>
-                  <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
-                     <TableView fx:id="tblFuturas" prefHeight="220" maxWidth="Infinity">
-                        <columns>
-                           <TableColumn fx:id="colFutNomPaciente" prefWidth="160" text="Nombre Paciente"/>
-                           <TableColumn fx:id="colFutCedMedico"   prefWidth="140" text="Cédula Médico"/>
-                           <TableColumn fx:id="colFutNomMedico"   prefWidth="200" text="Nombre Médico"/>
-                           <TableColumn fx:id="colFutFecha"       prefWidth="150" text="Fecha del Turno"/>
-                           <TableColumn fx:id="colFutHoraInicio"  prefWidth="110" text="Hora Inicio"/>
-                           <TableColumn fx:id="colFutHoraFin"     prefWidth="110" text="Hora Final"/>
-                           <TableColumn fx:id="colFutEstado"      prefWidth="140" text="Estado"/>
-                        </columns>
-                     </TableView>
-                  </VBox>
+                   <VBox styleClass="main-login-card" maxWidth="Infinity" style="-fx-padding: 8;">
+                      <TableView fx:id="tblFuturas" prefHeight="220" maxWidth="Infinity">
+                         <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                         </columnResizePolicy>
+                         <columns>
+                            <TableColumn fx:id="colFutNomPaciente" prefWidth="160" minWidth="120" text="Nombre Paciente"/>
+                            <TableColumn fx:id="colFutCedMedico"   prefWidth="140" minWidth="110" text="Cédula Médico"/>
+                            <TableColumn fx:id="colFutNomMedico"   prefWidth="200" minWidth="130" text="Nombre Médico"/>
+                            <TableColumn fx:id="colFutFecha"       prefWidth="150" minWidth="110" text="Fecha del Turno"/>
+                            <TableColumn fx:id="colFutHoraInicio"  prefWidth="110" minWidth="90" text="Hora Inicio"/>
+                            <TableColumn fx:id="colFutHoraFin"     prefWidth="110" minWidth="90" text="Hora Final"/>
+                            <TableColumn fx:id="colFutEstado"      prefWidth="140" minWidth="120" text="Estado"/>
+                         </columns>
+                      </TableView>
+                   </VBox>
 
                </VBox>
             </content>

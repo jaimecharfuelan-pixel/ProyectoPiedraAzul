@@ -174,10 +174,11 @@ public class ControladorPaciente implements Initializable {
             private final Label lblEstado = new Label();
 
             {
-                lblEstado.setPrefWidth(120);
+                lblEstado.setMinWidth(110);
+                lblEstado.setPrefWidth(130);
                 lblEstado.setWrapText(false);
                 lblEstado.setAlignment(Pos.CENTER);
-                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 6px 10px; -fx-background-radius: 6;");
+                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 6px 14px; -fx-background-radius: 6;");
             }
 
             @Override

@@ -110,9 +110,10 @@ public class ControladorAgendador implements Initializable {
             private final Label lblEstado = new Label();
 
             {
-                lblEstado.setPrefWidth(120);
+                lblEstado.setMinWidth(110);
+                lblEstado.setPrefWidth(130);
                 lblEstado.setWrapText(false);
-                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 8px 12px; -fx-background-radius: 6;");
+                lblEstado.setStyle("-fx-alignment: center; -fx-padding: 6px 14px; -fx-background-radius: 6;");
             }
 
             @Override
@@ -151,7 +152,7 @@ public class ControladorAgendador implements Initializable {
             private final Button btnHistorial = new Button("Ver Historial");
 
             {
-                btnHistorial.setStyle("-fx-padding: 6 12; -fx-font-size: 10px;");
+                btnHistorial.setStyle("-fx-padding: 6 14; -fx-font-size: 12px;");
                 btnHistorial.setOnAction(e -> onVerHistorial(getTableView().getItems().get(getIndex())));
             }
 
@@ -170,8 +171,8 @@ public class ControladorAgendador implements Initializable {
             {
                 hbox.setAlignment(Pos.CENTER);
                 btnCancelar.getStyleClass().add("button-logout");   // rojo
-                btnCancelar.setStyle("-fx-padding: 6 12; -fx-font-size: 11px;");
-                btnReagendar.setStyle("-fx-padding: 6 12; -fx-font-size: 11px;");
+                btnCancelar.setStyle("-fx-padding: 6 14; -fx-font-size: 12px;");
+                btnReagendar.setStyle("-fx-padding: 6 14; -fx-font-size: 12px;");
                 btnCancelar.setOnAction(e  -> onCancelarCita(getTableView().getItems().get(getIndex())));
                 btnReagendar.setOnAction(e -> onReagendarCita(getTableView().getItems().get(getIndex())));
             }
